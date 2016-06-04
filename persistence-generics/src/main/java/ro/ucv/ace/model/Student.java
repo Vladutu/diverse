@@ -47,4 +47,13 @@ public class Student extends Person {
         this.email = email;
         this.subgroup = subgroup;
     }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "email='" + email + '\'' +
+                ", subgroup=" + subgroup +
+                ", group=" + group +
+                '}';
+    }
 }

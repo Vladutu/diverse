@@ -15,7 +15,7 @@ import javax.persistence.*;
 @DiscriminatorValue("P")
 @Getter
 @Setter
-public class Person extends BaseEntity {
+public class Person extends BaseEntity<Integer> {
 
     @Basic
     @Column(name = "SSN", length = 13, nullable = false, unique = true)

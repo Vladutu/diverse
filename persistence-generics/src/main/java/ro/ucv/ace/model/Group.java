@@ -15,7 +15,7 @@ import java.util.List;
 @Table(name = "GROUP_T")
 @Getter
 @Setter
-public class Group extends BaseEntity {
+public class Group extends BaseEntity<Integer> {
 
     @Basic
     @Column(name = "NAME", nullable = false, unique = true)

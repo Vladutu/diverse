@@ -14,9 +14,9 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 @Getter
 @Setter
-public class BaseEntity {
+public class BaseEntity<ID> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected Long id;
+    protected ID id;
 }

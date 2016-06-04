@@ -5,18 +5,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ro.ucv.ace.configuration.JinqSource;
-import ro.ucv.ace.exception.DaoException;
+import ro.ucv.ace.exception.DaoDuplicateEntryException;
+import ro.ucv.ace.exception.DaoEntityNotFoundException;
+import ro.ucv.ace.exception.DaoRelationException;
+import ro.ucv.ace.model.BaseEntity;
+import ro.ucv.ace.parser.ExceptionParser;
+import ro.ucv.ace.repository.misc.Condition;
+import ro.ucv.ace.repository.misc.Page;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
+import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
+import java.util.List;
 
 /**
  * Created by Geo on 28.05.2016.
  */
-public class JpaRepositoryImpl<T, ID> extends AbstractRepository<T, ID> implements JpaRepository<T, ID> {
+public class JpaRepositoryImpl<T extends BaseEntity, ID extends Serializable> extends AbstractRepository<T, ID> implements JpaRepository<T, ID> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JpaRepositoryImpl.class);
 
@@ -27,6 +35,9 @@ public class JpaRepositoryImpl<T, ID> extends AbstractRepository<T, ID> implemen
 
     @Autowired
     private JinqSource jinqSource;
+
+    @Autowired
+    private ExceptionParser exceptionParser;
 
     public JpaRepositoryImpl() {
         this.persistentClass = (Class<T>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
@@ -49,14 +60,94 @@ public class JpaRepositoryImpl<T, ID> extends AbstractRepository<T, ID> implemen
     }
 
     @Override
-    public T save(T t) throws DaoException {
+    public List<T> findAll() {
+        return streamAll().toList();
+    }
+
+    @Override
+    public List<T> findAll(Page page) {
+        return streamAll()
+                .skip(page.getSkip())
+                .limit(page.getLimit())
+                .toList();
+    }
+
+    @Override
+    public List<T> findAllWhere(Condition<T> condition) {
+        return streamAll()
+                .where(condition)
+                .toList();
+    }
+
+    @Override
+    public List<T> findAllWhere(Condition<T> condition, Page page) {
+        return streamAll()
+                .skip(page.getSkip())
+                .limit(page.getLimit())
+                .skip(page.getSkip())
+                .toList();
+    }
+
+
+    @Override
+    public T findOne(ID id) throws DaoEntityNotFoundException {
+        T t = getEntityManager().find(persistentClass, id);
+
+        if (t != null) {
+            return t;
+        }
+
+        throw new DaoEntityNotFoundException("Unable to find " + persistentClass.getSimpleName() + " with id " + id);
+    }
+
+    @Override
+    public T save(T t) throws DaoDuplicateEntryException, DaoRelationException {
         try {
             return getEntityManager().merge(t);
         } catch (EntityNotFoundException enfe) {
-            throw new DaoException(enfe.getMessage());
+            throw new DaoRelationException(exceptionParser.parseForEntityNotFound(enfe));
         } catch (PersistenceException pe) {
-            throw new DaoException(pe.getCause().getCause().toString());
+            throw new DaoDuplicateEntryException(exceptionParser.parseForDuplicateEntry(pe, persistentClass));
         }
+    }
 
+    @Override
+    public T update(T t) throws DaoEntityNotFoundException, DaoRelationException, DaoDuplicateEntryException {
+        findOne((ID) t.getId());
+
+        try {
+            T updated = getEntityManager().merge(t);
+            getEntityManager().flush();
+
+            return t;
+        } catch (EntityNotFoundException enfe) {
+            throw new DaoRelationException(exceptionParser.parseForEntityNotFound(enfe));
+        } catch (PersistenceException pe) {
+            throw new DaoDuplicateEntryException(exceptionParser.parseForDuplicateEntry(pe, persistentClass));
+        }
+    }
+
+    @Override
+    public T delete(ID id) throws DaoEntityNotFoundException {
+        T t = findOne(id);
+        getEntityManager().remove(t);
+
+        return t;
+    }
+
+    @Override
+    public Integer deleteWhere(Condition<T> condition) {
+        List<T> entities = findAllWhere(condition);
+
+        entities.forEach(t -> {
+            getEntityManager().remove(t);
+        });
+
+        return entities.size();
+    }
+
+    @Override
+    public Long count() {
+        return streamAll().count();
     }
 }
