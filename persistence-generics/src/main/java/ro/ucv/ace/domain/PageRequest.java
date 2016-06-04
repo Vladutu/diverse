@@ -1,4 +1,4 @@
-package ro.ucv.ace.repository.misc;
+package ro.ucv.ace.domain;
 
 import lombok.Getter;
 import lombok.Setter;

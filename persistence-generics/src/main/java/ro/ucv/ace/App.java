@@ -10,7 +10,7 @@ import ro.ucv.ace.exception.DaoEntityNotFoundException;
 import ro.ucv.ace.exception.DaoRelationException;
 import ro.ucv.ace.model.Student;
 import ro.ucv.ace.model.Subject;
-import ro.ucv.ace.repository.misc.PageRequest;
+import ro.ucv.ace.domain.PageRequest;
 import ro.ucv.ace.service.StudentService;
 import ro.ucv.ace.service.SubjectService;
 

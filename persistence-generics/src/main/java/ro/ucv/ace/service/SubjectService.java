@@ -8,7 +8,7 @@ import ro.ucv.ace.exception.DaoException;
 import ro.ucv.ace.exception.DaoRelationException;
 import ro.ucv.ace.model.Subject;
 import ro.ucv.ace.repository.made.SubjectRepository;
-import ro.ucv.ace.repository.misc.Page;
+import ro.ucv.ace.domain.Page;
 
 import java.util.List;
 

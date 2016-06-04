@@ -1,4 +1,4 @@
-package ro.ucv.ace.repository.misc;
+package ro.ucv.ace.domain;
 
 /**
  * Created by Geo on 04.06.2016.

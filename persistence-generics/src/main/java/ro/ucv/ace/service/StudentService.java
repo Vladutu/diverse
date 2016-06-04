@@ -9,7 +9,7 @@ import ro.ucv.ace.exception.DaoException;
 import ro.ucv.ace.exception.DaoRelationException;
 import ro.ucv.ace.model.Student;
 import ro.ucv.ace.repository.made.StudentRepository;
-import ro.ucv.ace.repository.misc.Condition;
+import ro.ucv.ace.domain.Condition;
 
 import java.util.List;
 

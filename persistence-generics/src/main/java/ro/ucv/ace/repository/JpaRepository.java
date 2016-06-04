@@ -4,8 +4,8 @@ import ro.ucv.ace.exception.DaoDuplicateEntryException;
 import ro.ucv.ace.exception.DaoEntityNotFoundException;
 import ro.ucv.ace.exception.DaoRelationException;
 import ro.ucv.ace.model.BaseEntity;
-import ro.ucv.ace.repository.misc.Condition;
-import ro.ucv.ace.repository.misc.Page;
+import ro.ucv.ace.domain.Condition;
+import ro.ucv.ace.domain.Page;
 
 import java.io.Serializable;
 import java.util.List;
