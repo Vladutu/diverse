@@ -3,13 +3,10 @@ package ro.ucv.ace.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ro.ucv.ace.exception.DaoDuplicateEntryException;
-import ro.ucv.ace.exception.DaoEntityNotFoundException;
-import ro.ucv.ace.exception.DaoException;
-import ro.ucv.ace.exception.DaoRelationException;
+import ro.ucv.ace.domain.Condition;
+import ro.ucv.ace.exception.*;
 import ro.ucv.ace.model.Student;
 import ro.ucv.ace.repository.made.StudentRepository;
-import ro.ucv.ace.domain.Condition;
 
 import java.util.List;
 
@@ -53,5 +50,9 @@ public class StudentService {
 
     public Integer deleteWHere(Condition<Student> condition) {
         return studentRepository.deleteWhere(condition);
+    }
+
+    public Student findOneWhere(Condition<Student> studentCondition) throws DaoEntityNotFoundException, DaoNonUniqueResultException {
+        return studentRepository.findOneWhere(studentCondition);
     }
 }

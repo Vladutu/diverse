@@ -4,13 +4,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 import ro.ucv.ace.configuration.PersistenceConfig;
+import ro.ucv.ace.domain.PageRequest;
 import ro.ucv.ace.enums.Subgroup;
 import ro.ucv.ace.exception.DaoDuplicateEntryException;
 import ro.ucv.ace.exception.DaoEntityNotFoundException;
+import ro.ucv.ace.exception.DaoNonUniqueResultException;
 import ro.ucv.ace.exception.DaoRelationException;
 import ro.ucv.ace.model.Student;
 import ro.ucv.ace.model.Subject;
-import ro.ucv.ace.domain.PageRequest;
 import ro.ucv.ace.service.StudentService;
 import ro.ucv.ace.service.SubjectService;
 
@@ -34,7 +35,7 @@ public class App {
         app.subjectService = (SubjectService) context.getBean(SubjectService.class);
 
         app.insertStudents();
-        app.update();
+        app.findOneWhere();
     }
 
     private void getSubjectsPage() {
@@ -72,6 +73,15 @@ public class App {
             Student student = studentService.findOne(1);
             System.out.println(student);
         } catch (DaoEntityNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void findOneWhere() {
+        try {
+            Student student = studentService.findOneWhere(s -> s.getFirstName().equals("Georgian"));
+            System.out.println(student);
+        } catch (DaoEntityNotFoundException | DaoNonUniqueResultException e) {
             System.out.println(e.getMessage());
         }
     }

@@ -9,6 +9,7 @@ import ro.ucv.ace.domain.Condition;
 import ro.ucv.ace.domain.Page;
 import ro.ucv.ace.exception.DaoDuplicateEntryException;
 import ro.ucv.ace.exception.DaoEntityNotFoundException;
+import ro.ucv.ace.exception.DaoNonUniqueResultException;
 import ro.ucv.ace.exception.DaoRelationException;
 import ro.ucv.ace.model.BaseEntity;
 import ro.ucv.ace.parser.ExceptionParser;
@@ -20,6 +21,8 @@ import javax.persistence.PersistenceException;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 /**
  * Created by Geo on 28.05.2016.
@@ -98,6 +101,26 @@ public class JpaRepositoryImpl<T extends BaseEntity, ID extends Serializable> ex
         }
 
         throw new DaoEntityNotFoundException("Unable to find " + persistentClass.getSimpleName() + " with id " + id);
+    }
+
+    @Override
+    public T findOneWhere(Condition<T> condition) throws DaoEntityNotFoundException, DaoNonUniqueResultException {
+        Optional<T> optional;
+
+        try {
+            optional = streamAll()
+                    .where(condition)
+                    .findOne();
+        } catch (NoSuchElementException e) {
+            throw new DaoNonUniqueResultException("Multiple entities of type " + persistentClass.getSimpleName() + " found using the searched criteria");
+        }
+
+        if (optional.isPresent()) {
+            return optional.get();
+        }
+
+        throw new DaoEntityNotFoundException("Unable to find " + persistentClass.getSimpleName() + " using the searched criteria");
+
     }
 
     @Override

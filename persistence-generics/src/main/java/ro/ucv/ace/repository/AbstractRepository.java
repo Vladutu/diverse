@@ -1,11 +1,12 @@
 package ro.ucv.ace.repository;
 
-import ro.ucv.ace.exception.DaoDuplicateEntryException;
-import ro.ucv.ace.exception.DaoEntityNotFoundException;
-import ro.ucv.ace.exception.DaoRelationException;
-import ro.ucv.ace.model.BaseEntity;
 import ro.ucv.ace.domain.Condition;
 import ro.ucv.ace.domain.Page;
+import ro.ucv.ace.exception.DaoDuplicateEntryException;
+import ro.ucv.ace.exception.DaoEntityNotFoundException;
+import ro.ucv.ace.exception.DaoNonUniqueResultException;
+import ro.ucv.ace.exception.DaoRelationException;
+import ro.ucv.ace.model.BaseEntity;
 
 import java.io.Serializable;
 import java.util.List;
@@ -26,6 +27,8 @@ public abstract class AbstractRepository<T extends BaseEntity, ID extends Serial
     public abstract List<T> findAllWhere(Condition<T> condition, Page page);
 
     public abstract T findOne(ID id) throws DaoEntityNotFoundException;
+
+    public abstract T findOneWhere(Condition<T> condition) throws DaoEntityNotFoundException, DaoNonUniqueResultException;
 
     public abstract T update(T t) throws DaoEntityNotFoundException, DaoRelationException, DaoDuplicateEntryException;
 
