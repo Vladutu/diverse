@@ -5,9 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.ucv.ace.exception.DaoDuplicateEntryException;
 import ro.ucv.ace.exception.DaoException;
-import ro.ucv.ace.exception.DaoRelationException;
+import ro.ucv.ace.exception.DaoForeignKeyException;
 import ro.ucv.ace.model.Subject;
-import ro.ucv.ace.repository.made.SubjectRepository;
+import ro.ucv.ace.dao.made.SubjectDao;
 import ro.ucv.ace.domain.Page;
 
 import java.util.List;
@@ -20,9 +20,9 @@ import java.util.List;
 public class SubjectService {
 
     @Autowired
-    private SubjectRepository subjectRepository;
+    private SubjectDao subjectRepository;
 
-    public void save(Subject subject) throws DaoDuplicateEntryException, DaoRelationException {
+    public void save(Subject subject) throws DaoDuplicateEntryException, DaoForeignKeyException {
         subjectRepository.save(subject);
     }
 

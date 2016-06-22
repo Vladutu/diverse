@@ -1,7 +1,9 @@
 package ro.ucv.ace.exception;
 
 /**
- * Created by Geo on 05.06.2016.
+ * This exception is thrown when a unique result is expected, but more than one result is returned.
+ *
+ * @author Georgian Vladutu
  */
 public class DaoNonUniqueResultException extends DaoException {
 

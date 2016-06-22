@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ro.ucv.ace.domain.Condition;
 import ro.ucv.ace.exception.*;
 import ro.ucv.ace.model.Student;
-import ro.ucv.ace.repository.made.StudentRepository;
+import ro.ucv.ace.dao.made.StudentDao;
 
 import java.util.List;
 
@@ -18,9 +18,9 @@ import java.util.List;
 public class StudentService {
 
     @Autowired
-    private StudentRepository studentRepository;
+    private StudentDao studentRepository;
 
-    public Student save(Student student) throws DaoDuplicateEntryException, DaoRelationException {
+    public Student save(Student student) throws DaoDuplicateEntryException, DaoForeignKeyException {
         return studentRepository.save(student);
     }
 
@@ -32,7 +32,7 @@ public class StudentService {
         return studentRepository.findOne(id);
     }
 
-    public Student update(Student student) throws DaoEntityNotFoundException, DaoRelationException, DaoDuplicateEntryException {
+    public Student update(Student student) throws DaoEntityNotFoundException, DaoForeignKeyException, DaoDuplicateEntryException {
         Student student1 = studentRepository.update(student);
 
         int x = 3;

@@ -1,4 +1,4 @@
-package ro.ucv.ace.repository;
+package ro.ucv.ace.dao;
 
 import org.jinq.jpa.JPAJinqStream;
 import org.slf4j.Logger;
@@ -9,8 +9,8 @@ import ro.ucv.ace.domain.Condition;
 import ro.ucv.ace.domain.Page;
 import ro.ucv.ace.exception.DaoDuplicateEntryException;
 import ro.ucv.ace.exception.DaoEntityNotFoundException;
+import ro.ucv.ace.exception.DaoForeignKeyException;
 import ro.ucv.ace.exception.DaoNonUniqueResultException;
-import ro.ucv.ace.exception.DaoRelationException;
 import ro.ucv.ace.model.BaseEntity;
 import ro.ucv.ace.parser.ExceptionParser;
 
@@ -25,11 +25,14 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
- * Created by Geo on 28.05.2016.
+ * This class implements JpaDao interface.
+ *
+ * @param <T>  type of the entity
+ * @param <ID> type of the entity primary key.
  */
-public class JpaRepositoryImpl<T extends BaseEntity, ID extends Serializable> extends AbstractRepository<T, ID> implements JpaRepository<T, ID> {
+public class JpaDaoImpl<T extends BaseEntity, ID extends Serializable> extends AbstractDao<T, ID> implements JpaDao<T, ID> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JpaRepositoryImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JpaDaoImpl.class);
 
     private final Class<T> persistentClass;
 
@@ -42,7 +45,7 @@ public class JpaRepositoryImpl<T extends BaseEntity, ID extends Serializable> ex
     @Autowired
     private ExceptionParser exceptionParser;
 
-    public JpaRepositoryImpl() {
+    public JpaDaoImpl() {
         this.persistentClass = (Class<T>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     }
 
@@ -124,18 +127,18 @@ public class JpaRepositoryImpl<T extends BaseEntity, ID extends Serializable> ex
     }
 
     @Override
-    public T save(T t) throws DaoDuplicateEntryException, DaoRelationException {
+    public T save(T t) throws DaoDuplicateEntryException, DaoForeignKeyException {
         try {
             return getEntityManager().merge(t);
         } catch (EntityNotFoundException enfe) {
-            throw new DaoRelationException(exceptionParser.parseForEntityNotFound(enfe));
+            throw new DaoForeignKeyException(exceptionParser.parseEntityNotFoundException(enfe));
         } catch (PersistenceException pe) {
-            throw new DaoDuplicateEntryException(exceptionParser.parseForDuplicateEntry(pe, persistentClass));
+            throw new DaoDuplicateEntryException(exceptionParser.parsePersistenceException(pe, persistentClass));
         }
     }
 
     @Override
-    public T update(T t) throws DaoEntityNotFoundException, DaoRelationException, DaoDuplicateEntryException {
+    public T update(T t) throws DaoEntityNotFoundException, DaoForeignKeyException, DaoDuplicateEntryException {
         findOne((ID) t.getId());
 
         try {
@@ -144,9 +147,9 @@ public class JpaRepositoryImpl<T extends BaseEntity, ID extends Serializable> ex
 
             return t;
         } catch (EntityNotFoundException enfe) {
-            throw new DaoRelationException(exceptionParser.parseForEntityNotFound(enfe));
+            throw new DaoForeignKeyException(exceptionParser.parseEntityNotFoundException(enfe));
         } catch (PersistenceException pe) {
-            throw new DaoDuplicateEntryException(exceptionParser.parseForDuplicateEntry(pe, persistentClass));
+            throw new DaoDuplicateEntryException(exceptionParser.parsePersistenceException(pe, persistentClass));
         }
     }
 
@@ -161,12 +164,13 @@ public class JpaRepositoryImpl<T extends BaseEntity, ID extends Serializable> ex
     @Override
     public Integer deleteWhere(Condition<T> condition) {
         List<T> entities = findAllWhere(condition);
+        int size = entities.size();
 
         entities.forEach(t -> {
             getEntityManager().remove(t);
         });
 
-        return entities.size();
+        return size;
     }
 
     @Override

@@ -9,7 +9,7 @@ import ro.ucv.ace.enums.Subgroup;
 import ro.ucv.ace.exception.DaoDuplicateEntryException;
 import ro.ucv.ace.exception.DaoEntityNotFoundException;
 import ro.ucv.ace.exception.DaoNonUniqueResultException;
-import ro.ucv.ace.exception.DaoRelationException;
+import ro.ucv.ace.exception.DaoForeignKeyException;
 import ro.ucv.ace.model.Student;
 import ro.ucv.ace.model.Subject;
 import ro.ucv.ace.service.StudentService;
@@ -35,7 +35,7 @@ public class App {
         app.subjectService = (SubjectService) context.getBean(SubjectService.class);
 
         app.insertStudents();
-        app.findOneWhere();
+        app.update();
     }
 
     private void getSubjectsPage() {
@@ -59,7 +59,7 @@ public class App {
             studentService.save(student2);
         } catch (DaoDuplicateEntryException e) {
             System.out.println(e.getMessage());
-        } catch (DaoRelationException e) {
+        } catch (DaoForeignKeyException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -92,7 +92,7 @@ public class App {
 
         try {
             System.out.println(studentService.update(student));
-        } catch (DaoEntityNotFoundException | DaoRelationException | DaoDuplicateEntryException e) {
+        } catch (DaoEntityNotFoundException | DaoForeignKeyException | DaoDuplicateEntryException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -143,7 +143,7 @@ public class App {
         subjectList.forEach(s -> {
             try {
                 subjectService.save(s);
-            } catch (DaoDuplicateEntryException | DaoRelationException e) {
+            } catch (DaoDuplicateEntryException | DaoForeignKeyException e) {
                 System.out.println(e.getMessage());
             }
         });

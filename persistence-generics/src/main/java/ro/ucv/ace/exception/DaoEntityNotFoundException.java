@@ -1,7 +1,9 @@
 package ro.ucv.ace.exception;
 
 /**
- * Created by Geo on 29.05.2016.
+ * This exception is thrown when an entity is not found.
+ *
+ * @author Georgian Vladutu
  */
 public class DaoEntityNotFoundException extends DaoException {
 

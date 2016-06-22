@@ -1,7 +1,9 @@
 package ro.ucv.ace.exception;
 
 /**
- * Created by Geo on 29.05.2016.
+ * This exception is thrown when a save or update operation occurs and a field that is set as unique already exists.
+ *
+ * @author Georgian Vladutu
  */
 public class DaoDuplicateEntryException extends DaoException {
 

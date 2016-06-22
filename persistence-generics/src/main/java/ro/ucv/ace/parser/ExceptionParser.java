@@ -7,12 +7,21 @@ import javax.persistence.PersistenceException;
 import java.util.Arrays;
 
 /**
- * Created by Geo on 29.05.2016.
+ * This class is a parser used to modify the plain messages returned by the JPA exceptions.
+ *
+ * @author Georgian Vladutu
  */
 @Component
 public class ExceptionParser {
 
-    public String parseForDuplicateEntry(PersistenceException e, Class<?> clazz) {
+    /**
+     * Parses the message of a PersistenceException object and returns the new message.
+     *
+     * @param e     PersistenceException object
+     * @param clazz the class of the entity which caused the exception
+     * @return String the new message
+     */
+    public String parsePersistenceException(PersistenceException e, Class<?> clazz) {
         String unformattedMessage = e.getCause().getCause().toString();
         String className = clazz.getSimpleName();
         String[] tokens = unformattedMessage.split(" ");
@@ -20,7 +29,13 @@ public class ExceptionParser {
         return createString(className, ": ", tokens[1], " ", tokens[2], " ", tokens[3]);
     }
 
-    public String parseForEntityNotFound(EntityNotFoundException e) {
+    /**
+     * Parses the message of a EntityNotFoundException object and returns the new message.
+     *
+     * @param e EntityNotFoundException object
+     * @return String the new message
+     */
+    public String parseEntityNotFoundException(EntityNotFoundException e) {
         String unformattedMessage = e.getMessage();
         String tokens[] = unformattedMessage.split(" ");
         String className = tokens[3].split("\\.")[4];

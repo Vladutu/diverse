@@ -1,7 +1,9 @@
 package ro.ucv.ace.exception;
 
 /**
- * Created by Geo on 28.05.2016.
+ * This is a generic exception that the persistence layer can throw.
+ *
+ * @author Georgian Vladutu
  */
 public class DaoException extends Exception {
 

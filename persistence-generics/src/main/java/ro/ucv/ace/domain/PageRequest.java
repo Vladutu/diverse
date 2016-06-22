@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Created by Geo on 04.06.2016.
+ * This class implements the Page interface.
  */
 @Getter
 @Setter

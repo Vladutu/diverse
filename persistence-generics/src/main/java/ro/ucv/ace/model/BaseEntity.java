@@ -9,7 +9,9 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
 /**
- * Created by Geo on 28.05.2016.
+ * This is a base JPA entity. All other entities must extend this class. It contains the unique identifier for each entity.
+ *
+ * @param <ID> type of the unique identifier
  */
 @MappedSuperclass
 @Getter
