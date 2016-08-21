@@ -13,6 +13,10 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import ro.ucv.ace.dao.JpaRepository;
+import ro.ucv.ace.dao.JpaRepositoryImpl;
+import ro.ucv.ace.model.Student;
+import ro.ucv.ace.model.Subject;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -82,5 +86,17 @@ public class PersistenceConfig {
     @Bean
     JpaVendorAdapter jpaVendorAdapter() {
         return new HibernateJpaVendorAdapter();
+    }
+
+    @Bean(name = "subjectJpaRepository")
+    JpaRepository<Subject, Integer> subjectJpaRepository() {
+        return new JpaRepositoryImpl<Subject, Integer>() {
+        };
+    }
+
+    @Bean(name = "studentJpaRepository")
+    JpaRepository<Student, Integer> studentJpaRepository() {
+        return new JpaRepositoryImpl<Student, Integer>() {
+        };
     }
 }

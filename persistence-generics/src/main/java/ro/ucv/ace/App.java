@@ -36,6 +36,8 @@ public class App {
 
         app.insertStudents();
         app.update();
+
+        app.insertManySubjects();
     }
 
     private void getSubjectsPage() {

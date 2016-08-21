@@ -29,7 +29,7 @@ import java.util.Optional;
  * @param <T>  type of the entity
  * @param <ID> type of the entity primary key.
  */
-public class JpaRepositoryImpl<T extends BaseEntity, ID extends Serializable> extends AbstractRepository<T, ID> implements JpaRepository<T, ID> {
+public abstract class JpaRepositoryImpl<T extends BaseEntity, ID extends Serializable> extends AbstractRepository<T, ID> implements JpaRepository<T, ID> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JpaRepositoryImpl.class);
 
