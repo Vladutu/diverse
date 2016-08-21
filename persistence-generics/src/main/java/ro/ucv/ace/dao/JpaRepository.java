@@ -2,10 +2,10 @@ package ro.ucv.ace.dao;
 
 import ro.ucv.ace.domain.Condition;
 import ro.ucv.ace.domain.Page;
-import ro.ucv.ace.exception.DaoDuplicateEntryException;
-import ro.ucv.ace.exception.DaoEntityNotFoundException;
-import ro.ucv.ace.exception.DaoForeignKeyException;
-import ro.ucv.ace.exception.DaoNonUniqueResultException;
+import ro.ucv.ace.exception.DuplicateEntryException;
+import ro.ucv.ace.exception.EntityNotFoundException;
+import ro.ucv.ace.exception.ForeignKeyException;
+import ro.ucv.ace.exception.NonUniqueResultException;
 import ro.ucv.ace.model.BaseEntity;
 
 import java.io.Serializable;
@@ -17,7 +17,7 @@ import java.util.List;
  * @param <T>  type of the entity
  * @param <ID> type of the entity primary key
  */
-public interface JpaDao<T extends BaseEntity, ID extends Serializable> {
+public interface JpaRepository<T extends BaseEntity, ID extends Serializable> {
 
     /**
      * Returns all entities of the type.
@@ -57,51 +57,51 @@ public interface JpaDao<T extends BaseEntity, ID extends Serializable> {
      *
      * @param id id of the entity
      * @return entity
-     * @throws DaoEntityNotFoundException if the entity is not found
+     * @throws EntityNotFoundException if the entity is not found
      */
-    T findOne(ID id) throws DaoEntityNotFoundException;
+    T findOne(ID id) throws EntityNotFoundException;
 
     /**
      * Returns the entity which meet the condition provided by the Condition object.
      *
      * @param condition condition
      * @return entity
-     * @throws DaoEntityNotFoundException  if the entity is not found
-     * @throws DaoNonUniqueResultException if more than one entity are found
+     * @throws EntityNotFoundException  if the entity is not found
+     * @throws NonUniqueResultException if more than one entity are found
      */
-    T findOneWhere(Condition<T> condition) throws DaoEntityNotFoundException, DaoNonUniqueResultException;
+    T findOneWhere(Condition<T> condition) throws EntityNotFoundException, NonUniqueResultException;
 
     /**
      * Saves the entity.
      *
      * @param t entity to be saved
      * @return saved entity
-     * @throws DaoDuplicateEntryException if a field that is set as unique is found in the database and in the entity to be saved
-     * @throws DaoForeignKeyException     if the entity has a OneToOne, OneToMany or ManyToMany relationship
+     * @throws DuplicateEntryException if a field that is set as unique is found in the database and in the entity to be saved
+     * @throws ForeignKeyException     if the entity has a OneToOne, OneToMany or ManyToMany relationship
      *                                    and the other entity in the relationship is not found
      */
-    T save(T t) throws DaoDuplicateEntryException, DaoForeignKeyException;
+    T save(T t) throws DuplicateEntryException, ForeignKeyException;
 
     /**
      * Updates the entity.
      *
      * @param t entity to be updated
      * @return updated entity
-     * @throws DaoEntityNotFoundException if the entity is not found
-     * @throws DaoForeignKeyException     if the entity has a OneToOne, OneToMany or ManyToMany relationship
+     * @throws EntityNotFoundException if the entity is not found
+     * @throws ForeignKeyException     if the entity has a OneToOne, OneToMany or ManyToMany relationship
      *                                    and the other entity in the relationship is not found
-     * @throws DaoDuplicateEntryException if a field that is set as unique is found in the database and in the entity to be saved
+     * @throws DuplicateEntryException if a field that is set as unique is found in the database and in the entity to be saved
      */
-    T update(T t) throws DaoEntityNotFoundException, DaoForeignKeyException, DaoDuplicateEntryException;
+    T update(T t) throws EntityNotFoundException, ForeignKeyException, DuplicateEntryException;
 
     /**
      * Deletes the entity whose id is  the same as the method parameter.
      *
      * @param id id of the entity
      * @return deleted entity
-     * @throws DaoEntityNotFoundException if the entity is not found
+     * @throws EntityNotFoundException if the entity is not found
      */
-    T delete(ID id) throws DaoEntityNotFoundException;
+    T delete(ID id) throws EntityNotFoundException;
 
     /**
      * Deletes all the entity meeting the condition provided by the Condition object.

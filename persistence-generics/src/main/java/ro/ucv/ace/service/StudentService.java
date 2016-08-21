@@ -3,10 +3,13 @@ package ro.ucv.ace.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ro.ucv.ace.dao.made.StudentRepository;
 import ro.ucv.ace.domain.Condition;
-import ro.ucv.ace.exception.*;
+import ro.ucv.ace.exception.DuplicateEntryException;
+import ro.ucv.ace.exception.EntityNotFoundException;
+import ro.ucv.ace.exception.ForeignKeyException;
+import ro.ucv.ace.exception.NonUniqueResultException;
 import ro.ucv.ace.model.Student;
-import ro.ucv.ace.dao.made.StudentDao;
 
 import java.util.List;
 
@@ -14,13 +17,13 @@ import java.util.List;
  * Created by Geo on 28.05.2016.
  */
 @Service
-@Transactional(rollbackFor = DaoException.class)
+@Transactional(rollbackFor = Exception.class)
 public class StudentService {
 
     @Autowired
-    private StudentDao studentRepository;
+    private StudentRepository studentRepository;
 
-    public Student save(Student student) throws DaoDuplicateEntryException, DaoForeignKeyException {
+    public Student save(Student student) throws DuplicateEntryException, ForeignKeyException {
         return studentRepository.save(student);
     }
 
@@ -28,11 +31,11 @@ public class StudentService {
         return studentRepository.findAll();
     }
 
-    public Student findOne(Integer id) throws DaoEntityNotFoundException {
+    public Student findOne(Integer id) throws EntityNotFoundException {
         return studentRepository.findOne(id);
     }
 
-    public Student update(Student student) throws DaoEntityNotFoundException, DaoForeignKeyException, DaoDuplicateEntryException {
+    public Student update(Student student) throws EntityNotFoundException, ForeignKeyException, DuplicateEntryException {
         Student student1 = studentRepository.update(student);
 
         int x = 3;
@@ -44,7 +47,7 @@ public class StudentService {
         return studentRepository.findAllWhere(condition);
     }
 
-    public Student delete(Integer id) throws DaoEntityNotFoundException {
+    public Student delete(Integer id) throws EntityNotFoundException {
         return studentRepository.delete(id);
     }
 
@@ -52,7 +55,7 @@ public class StudentService {
         return studentRepository.deleteWhere(condition);
     }
 
-    public Student findOneWhere(Condition<Student> studentCondition) throws DaoEntityNotFoundException, DaoNonUniqueResultException {
+    public Student findOneWhere(Condition<Student> studentCondition) throws EntityNotFoundException, NonUniqueResultException {
         return studentRepository.findOneWhere(studentCondition);
     }
 }

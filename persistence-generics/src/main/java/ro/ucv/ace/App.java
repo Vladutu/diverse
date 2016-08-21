@@ -6,10 +6,10 @@ import org.springframework.stereotype.Component;
 import ro.ucv.ace.configuration.PersistenceConfig;
 import ro.ucv.ace.domain.PageRequest;
 import ro.ucv.ace.enums.Subgroup;
-import ro.ucv.ace.exception.DaoDuplicateEntryException;
-import ro.ucv.ace.exception.DaoEntityNotFoundException;
-import ro.ucv.ace.exception.DaoNonUniqueResultException;
-import ro.ucv.ace.exception.DaoForeignKeyException;
+import ro.ucv.ace.exception.DuplicateEntryException;
+import ro.ucv.ace.exception.EntityNotFoundException;
+import ro.ucv.ace.exception.ForeignKeyException;
+import ro.ucv.ace.exception.NonUniqueResultException;
 import ro.ucv.ace.model.Student;
 import ro.ucv.ace.model.Subject;
 import ro.ucv.ace.service.StudentService;
@@ -57,9 +57,9 @@ public class App {
         try {
             studentService.save(student);
             studentService.save(student2);
-        } catch (DaoDuplicateEntryException e) {
+        } catch (DuplicateEntryException e) {
             System.out.println(e.getMessage());
-        } catch (DaoForeignKeyException e) {
+        } catch (ForeignKeyException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -72,7 +72,7 @@ public class App {
         try {
             Student student = studentService.findOne(1);
             System.out.println(student);
-        } catch (DaoEntityNotFoundException e) {
+        } catch (EntityNotFoundException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -81,7 +81,7 @@ public class App {
         try {
             Student student = studentService.findOneWhere(s -> s.getFirstName().equals("Georgian"));
             System.out.println(student);
-        } catch (DaoEntityNotFoundException | DaoNonUniqueResultException e) {
+        } catch (EntityNotFoundException | NonUniqueResultException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -92,7 +92,7 @@ public class App {
 
         try {
             System.out.println(studentService.update(student));
-        } catch (DaoEntityNotFoundException | DaoForeignKeyException | DaoDuplicateEntryException e) {
+        } catch (EntityNotFoundException | ForeignKeyException | DuplicateEntryException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -107,7 +107,7 @@ public class App {
         try {
             Student student = studentService.delete(2);
             System.out.println(student);
-        } catch (DaoEntityNotFoundException e) {
+        } catch (EntityNotFoundException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -143,7 +143,7 @@ public class App {
         subjectList.forEach(s -> {
             try {
                 subjectService.save(s);
-            } catch (DaoDuplicateEntryException | DaoForeignKeyException e) {
+            } catch (DuplicateEntryException | ForeignKeyException e) {
                 System.out.println(e.getMessage());
             }
         });

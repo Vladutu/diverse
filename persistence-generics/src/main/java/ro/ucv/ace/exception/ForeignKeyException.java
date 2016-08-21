@@ -6,24 +6,24 @@ package ro.ucv.ace.exception;
  *
  * @author Georgian Vladutu
  */
-public class DaoForeignKeyException extends DaoException {
+public class ForeignKeyException extends MyApplicationException {
 
-    public DaoForeignKeyException() {
+    public ForeignKeyException() {
     }
 
-    public DaoForeignKeyException(String message) {
+    public ForeignKeyException(String message) {
         super(message);
     }
 
-    public DaoForeignKeyException(String message, Throwable cause) {
+    public ForeignKeyException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public DaoForeignKeyException(Throwable cause) {
+    public ForeignKeyException(Throwable cause) {
         super(cause);
     }
 
-    public DaoForeignKeyException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public ForeignKeyException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

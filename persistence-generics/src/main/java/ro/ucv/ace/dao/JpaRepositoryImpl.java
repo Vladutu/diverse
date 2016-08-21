@@ -7,15 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ro.ucv.ace.configuration.JinqSource;
 import ro.ucv.ace.domain.Condition;
 import ro.ucv.ace.domain.Page;
-import ro.ucv.ace.exception.DaoDuplicateEntryException;
-import ro.ucv.ace.exception.DaoEntityNotFoundException;
-import ro.ucv.ace.exception.DaoForeignKeyException;
-import ro.ucv.ace.exception.DaoNonUniqueResultException;
+import ro.ucv.ace.exception.DuplicateEntryException;
+import ro.ucv.ace.exception.EntityNotFoundException;
+import ro.ucv.ace.exception.ForeignKeyException;
+import ro.ucv.ace.exception.NonUniqueResultException;
 import ro.ucv.ace.model.BaseEntity;
-import ro.ucv.ace.parser.ExceptionParser;
+import ro.ucv.ace.parser.ExceptionParserImpl;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import java.io.Serializable;
@@ -25,14 +24,14 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
- * This class implements JpaDao interface.
+ * This class implements JpaRepository interface.
  *
  * @param <T>  type of the entity
  * @param <ID> type of the entity primary key.
  */
-public class JpaDaoImpl<T extends BaseEntity, ID extends Serializable> extends AbstractDao<T, ID> implements JpaDao<T, ID> {
+public class JpaRepositoryImpl<T extends BaseEntity, ID extends Serializable> extends AbstractRepository<T, ID> implements JpaRepository<T, ID> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JpaDaoImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JpaRepositoryImpl.class);
 
     private final Class<T> persistentClass;
 
@@ -43,9 +42,9 @@ public class JpaDaoImpl<T extends BaseEntity, ID extends Serializable> extends A
     private JinqSource jinqSource;
 
     @Autowired
-    private ExceptionParser exceptionParser;
+    private ExceptionParserImpl exceptionParser;
 
-    public JpaDaoImpl() {
+    public JpaRepositoryImpl() {
         this.persistentClass = (Class<T>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     }
 
@@ -96,18 +95,18 @@ public class JpaDaoImpl<T extends BaseEntity, ID extends Serializable> extends A
 
 
     @Override
-    public T findOne(ID id) throws DaoEntityNotFoundException {
+    public T findOne(ID id) throws EntityNotFoundException {
         T t = getEntityManager().find(persistentClass, id);
 
         if (t != null) {
             return t;
         }
 
-        throw new DaoEntityNotFoundException("Unable to find " + persistentClass.getSimpleName() + " with id " + id);
+        throw new EntityNotFoundException("Unable to find " + persistentClass.getSimpleName() + " with id " + id);
     }
 
     @Override
-    public T findOneWhere(Condition<T> condition) throws DaoEntityNotFoundException, DaoNonUniqueResultException {
+    public T findOneWhere(Condition<T> condition) throws EntityNotFoundException, NonUniqueResultException {
         Optional<T> optional;
 
         try {
@@ -115,30 +114,30 @@ public class JpaDaoImpl<T extends BaseEntity, ID extends Serializable> extends A
                     .where(condition)
                     .findOne();
         } catch (NoSuchElementException e) {
-            throw new DaoNonUniqueResultException("Multiple entities of type " + persistentClass.getSimpleName() + " found using the searched criteria");
+            throw new NonUniqueResultException("Multiple entities of type " + persistentClass.getSimpleName() + " found using the searched criteria");
         }
 
         if (optional.isPresent()) {
             return optional.get();
         }
 
-        throw new DaoEntityNotFoundException("Unable to find " + persistentClass.getSimpleName() + " using the searched criteria");
+        throw new EntityNotFoundException("Unable to find " + persistentClass.getSimpleName() + " using the searched criteria");
 
     }
 
     @Override
-    public T save(T t) throws DaoDuplicateEntryException, DaoForeignKeyException {
+    public T save(T t) throws DuplicateEntryException, ForeignKeyException {
         try {
             return getEntityManager().merge(t);
-        } catch (EntityNotFoundException enfe) {
-            throw new DaoForeignKeyException(exceptionParser.parseEntityNotFoundException(enfe));
+        } catch (javax.persistence.EntityNotFoundException enfe) {
+            throw new ForeignKeyException(exceptionParser.parseEntityNotFoundException(enfe));
         } catch (PersistenceException pe) {
-            throw new DaoDuplicateEntryException(exceptionParser.parsePersistenceException(pe, persistentClass));
+            throw new DuplicateEntryException(exceptionParser.parsePersistenceException(pe, persistentClass));
         }
     }
 
     @Override
-    public T update(T t) throws DaoEntityNotFoundException, DaoForeignKeyException, DaoDuplicateEntryException {
+    public T update(T t) throws EntityNotFoundException, ForeignKeyException, DuplicateEntryException {
         findOne((ID) t.getId());
 
         try {
@@ -146,15 +145,15 @@ public class JpaDaoImpl<T extends BaseEntity, ID extends Serializable> extends A
             getEntityManager().flush();
 
             return t;
-        } catch (EntityNotFoundException enfe) {
-            throw new DaoForeignKeyException(exceptionParser.parseEntityNotFoundException(enfe));
+        } catch (javax.persistence.EntityNotFoundException enfe) {
+            throw new ForeignKeyException(exceptionParser.parseEntityNotFoundException(enfe));
         } catch (PersistenceException pe) {
-            throw new DaoDuplicateEntryException(exceptionParser.parsePersistenceException(pe, persistentClass));
+            throw new DuplicateEntryException(exceptionParser.parsePersistenceException(pe, persistentClass));
         }
     }
 
     @Override
-    public T delete(ID id) throws DaoEntityNotFoundException {
+    public T delete(ID id) throws EntityNotFoundException {
         T t = findOne(id);
         getEntityManager().remove(t);
 
