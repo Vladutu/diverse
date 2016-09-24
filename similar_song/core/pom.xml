@@ -7,10 +7,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>persistence</artifactId>
+    <artifactId>core</artifactId>
     <packaging>jar</packaging>
 
-    <name>persistence</name>
+    <name>core</name>
     <url>http://maven.apache.org</url>
 
     <properties>
@@ -19,8 +19,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>ro.ucv.ace</groupId>
-            <artifactId>core</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
         </dependency>
     </dependencies>
 </project>

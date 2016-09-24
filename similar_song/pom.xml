@@ -7,6 +7,7 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>persistence</module>
+        <module>core</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -25,9 +26,9 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>io.springfox</groupId>
-                <artifactId>springfox-swagger2</artifactId>
-                <version>2.1.2</version>
+                <groupId>ro.ucv.ace</groupId>
+                <artifactId>core</artifactId>
+                <version>1.0-SNAPSHOT</version>
             </dependency>
 
             <dependency>
