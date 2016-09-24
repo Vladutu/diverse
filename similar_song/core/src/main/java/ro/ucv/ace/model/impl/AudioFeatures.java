@@ -7,29 +7,29 @@ import ro.ucv.ace.model.IAudioFeatures;
  */
 public class AudioFeatures implements IAudioFeatures {
 
-    private float danceability;
+    private double danceability;
 
-    private float energy;
+    private double energy;
 
-    private float key;
+    private double key;
 
-    private float loudness;
+    private double loudness;
 
-    private float mode;
+    private double mode;
 
-    private float speechiness;
+    private double speechiness;
 
-    private float acousticness;
+    private double acousticness;
 
-    private float instrumentalness;
+    private double instrumentalness;
 
-    private float liveness;
+    private double liveness;
 
-    private float valence;
+    private double valence;
 
-    private float tempo;
+    private double tempo;
 
-    private float timeSignature;
+    private double timeSignature;
 
 
     public AudioFeatures(float danceability, float energy, float key, float loudness, float mode, float speechiness,

@@ -29,4 +29,9 @@ public class SongDetails implements ISongDetails {
 
     public SongDetails() {
     }
+
+    @Override
+    public String completeUrl(String baseUrl) {
+        return baseUrl + id;
+    }
 }
