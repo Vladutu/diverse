@@ -1,6 +1,6 @@
 package ro.ucv.ace.repository;
 
-import ro.ucv.ace.exception.EntityNotFoundException;
+import ro.ucv.ace.exception.InvalidSongException;
 import ro.ucv.ace.model.IAudioFeatures;
 import ro.ucv.ace.model.ISongDetails;
 
@@ -9,7 +9,7 @@ import ro.ucv.ace.model.ISongDetails;
  */
 public interface ISpotifyRepository {
 
-    ISongDetails findSongDetails(String artistName, String songName) throws EntityNotFoundException;
+    ISongDetails findSongDetails(String artistName, String songName) throws InvalidSongException;
 
     IAudioFeatures findAudioFeatures(ISongDetails songDetails);
 }
