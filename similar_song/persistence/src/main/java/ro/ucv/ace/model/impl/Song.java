@@ -37,8 +37,8 @@ public class Song implements ISong {
     }
 
     @Override
-    public List<ISong> findSimilarSongs() {
-        return audioFeatures.findSimilarSongs();
+    public List<ISong> findSimilarSongs(int limit) {
+        return audioFeatures.findSimilarSongs(limit);
     }
 
     @Override

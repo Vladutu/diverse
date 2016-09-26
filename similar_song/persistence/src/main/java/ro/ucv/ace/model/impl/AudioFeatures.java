@@ -32,7 +32,7 @@ public class AudioFeatures implements IAudioFeatures {
 
     @Basic
     @Column(name = "S_KEY", nullable = false)
-    private double key;
+    private double sKey;
 
     @Basic
     @Column(name = "LOUDNESS", nullable = false)
@@ -71,12 +71,12 @@ public class AudioFeatures implements IAudioFeatures {
     private ISongRepository songRepository;
 
 
-    public AudioFeatures(String id, double danceability, double energy, double key, double loudness, double mode, double speechiness,
+    public AudioFeatures(String id, double danceability, double energy, double sKey, double loudness, double mode, double speechiness,
                          double acousticness, double instrumentalness, double liveness, double valence, double tempo) {
         this.id = id;
         this.danceability = danceability;
         this.energy = energy;
-        this.key = key;
+        this.sKey = sKey;
         this.loudness = loudness;
         this.mode = mode;
         this.speechiness = speechiness;
@@ -91,12 +91,12 @@ public class AudioFeatures implements IAudioFeatures {
     }
 
     @Override
-    public List<ISong> findSimilarSongs() {
-        return songRepository.findSongsHavingSimilarAudioProperties(fieldsToArray());
+    public List<ISong> findSimilarSongs(int limit) {
+        return songRepository.findSongsHavingSimilarAudioProperties(fieldsToArray(), limit);
     }
 
     private double[] fieldsToArray() {
-        return new double[]{danceability, energy, key, loudness, mode, speechiness, acousticness, instrumentalness,
+        return new double[]{danceability, energy, sKey, loudness, speechiness, acousticness, instrumentalness,
                 liveness, valence, tempo};
     }
 
@@ -106,7 +106,7 @@ public class AudioFeatures implements IAudioFeatures {
                 "id=" + id +
                 ", danceability=" + danceability +
                 ", energy=" + energy +
-                ", key=" + key +
+                ", sKey=" + sKey +
                 ", loudness=" + loudness +
                 ", mode=" + mode +
                 ", speechiness=" + speechiness +

@@ -12,5 +12,5 @@ public interface ISongRepository {
 
     ISong findSong(String artistName, String songName) throws EntityNotFoundException;
 
-    List<ISong> findSongsHavingSimilarAudioProperties(double[] audioProperties);
+    List<ISong> findSongsHavingSimilarAudioProperties(double[] audioProperties, int limit);
 }

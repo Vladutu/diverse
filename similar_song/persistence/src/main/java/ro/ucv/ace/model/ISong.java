@@ -7,5 +7,5 @@ import java.util.List;
  */
 public interface ISong {
 
-    List<ISong> findSimilarSongs();
+    List<ISong> findSimilarSongs(int limit);
 }

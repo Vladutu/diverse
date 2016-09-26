@@ -7,5 +7,5 @@ import java.util.List;
  */
 public interface IAudioFeatures {
 
-    List<ISong> findSimilarSongs();
+    List<ISong> findSimilarSongs(int limit);
 }

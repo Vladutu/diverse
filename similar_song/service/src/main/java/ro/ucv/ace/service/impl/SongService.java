@@ -18,6 +18,6 @@ public class SongService implements ISongService {
     public List<ISong> findSongsSimilarTo(String artistName, String songName) throws EntityNotFoundException {
         ISong song = songRepository.findSong(artistName, songName);
 
-        return song.findSimilarSongs();
+        return song.findSimilarSongs(limit);
     }
 }
