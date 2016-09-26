@@ -2,7 +2,6 @@ package ro.ucv.ace.repository.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import ro.ucv.ace.api.ISpotifyApi;
 import ro.ucv.ace.config.JinqSource;
 import ro.ucv.ace.exception.EntityNotFoundException;
@@ -19,7 +18,6 @@ import java.util.List;
  * Created by Geo on 26.09.2016.
  */
 @Repository("songRepository")
-@Transactional
 public class SongRepository implements ISongRepository {
 
     @Autowired

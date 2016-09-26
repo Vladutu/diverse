@@ -10,5 +10,5 @@ import java.util.List;
  */
 public interface ISongService {
 
-    List<ISong> findSongsSimilarTo(String artistName, String songName) throws EntityNotFoundException;
+    List<ISong> findSongsSimilarTo(String artistName, String songName, int limit) throws EntityNotFoundException;
 }

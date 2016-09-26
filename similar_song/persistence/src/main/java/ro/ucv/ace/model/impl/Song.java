@@ -1,5 +1,7 @@
 package ro.ucv.ace.model.impl;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import ro.ucv.ace.model.IAudioFeatures;
 import ro.ucv.ace.model.ISong;
 import ro.ucv.ace.model.ISongDetails;
@@ -12,18 +14,22 @@ import java.util.List;
  */
 @Entity
 @Table(name = "SONG")
+@JsonTypeName("song")
 public class Song implements ISong {
 
     @Id
     @Column(name = "ID")
+    @JsonProperty
     private String id;
 
     @OneToOne(targetEntity = SongDetails.class, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "SONG_DETAILS_ID", referencedColumnName = "ID", nullable = false)
+    @JsonProperty
     private ISongDetails songDetails;
 
     @OneToOne(targetEntity = AudioFeatures.class, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "AUDIO_FEATURES_ID", referencedColumnName = "ID", nullable = false)
+    @JsonProperty
     private IAudioFeatures audioFeatures;
 
 

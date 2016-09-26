@@ -1,5 +1,7 @@
 package ro.ucv.ace.model.impl;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import ro.ucv.ace.model.ISongDetails;
 
 import javax.persistence.*;
@@ -9,26 +11,32 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "SONG_DETAILS")
+@JsonTypeName("sd")
 public class SongDetails implements ISongDetails {
 
     @Id
     @Column(name = "ID", unique = true)
+    @JsonProperty
     private String id;
 
     @Basic
     @Column(name = "NAME", nullable = false)
+    @JsonProperty
     private String name;
 
     @Basic
     @Column(name = "ARTIST", nullable = false)
+    @JsonProperty
     private String artist;
 
     @Basic
     @Column(name = "PREVIEW_URL", length = 200, nullable = false, unique = true)
+    @JsonProperty
     private String previewUrl;
 
     @Basic
     @Column(name = "ALBUM_IMAGE_URL", length = 200, nullable = false)
+    @JsonProperty
     private String albumImageUrl;
 
     public SongDetails(String id, String previewUrl, String albumImageUrl, String artist, String name) {
