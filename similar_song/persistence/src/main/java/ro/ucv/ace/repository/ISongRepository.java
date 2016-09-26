@@ -2,7 +2,6 @@ package ro.ucv.ace.repository;
 
 import ro.ucv.ace.exception.EntityNotFoundException;
 import ro.ucv.ace.model.ISong;
-import ro.ucv.ace.model.ISongDetails;
 
 import java.util.List;
 
@@ -11,9 +10,7 @@ import java.util.List;
  */
 public interface ISongRepository {
 
-    ISong findSong(ISongDetails songDetails) throws EntityNotFoundException;
+    ISong findSong(String artistName, String songName) throws EntityNotFoundException;
 
-    List<ISong> findSimilarSongs(ISong song);
-
-    ISong save(ISong newSong);
+    List<ISong> findSongsHavingSimilarAudioProperties(double[] audioProperties);
 }

@@ -1,14 +1,18 @@
 package ro.ucv.ace.api.impl;
 
+
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import ro.ucv.ace.api.ISpotifyApi;
 import ro.ucv.ace.builder.IAudioFeaturesBuilder;
+import ro.ucv.ace.builder.ISongBuilder;
 import ro.ucv.ace.builder.ISongDetailsBuilder;
 import ro.ucv.ace.exception.InvalidSongException;
 import ro.ucv.ace.model.IAudioFeatures;
+import ro.ucv.ace.model.ISong;
 import ro.ucv.ace.model.ISongDetails;
 
 import java.net.URI;
@@ -30,9 +34,16 @@ public class SpotifyApi implements ISpotifyApi {
 
     private RestTemplate restTemplate;
 
+    private String currentId;
+
+    @Autowired
     private ISongDetailsBuilder songDetailsBuilder;
 
+    @Autowired
     private IAudioFeaturesBuilder audioFeaturesBuilder;
+
+    @Autowired
+    private ISongBuilder songBuilder;
 
 
     public SpotifyApi(String grantType, String authCode, String baseUrl, String loginUrl, RestTemplate restTemplate) {
@@ -50,9 +61,16 @@ public class SpotifyApi implements ISpotifyApi {
         parseAuthResult(authResult);
     }
 
-
     @Override
-    public ISongDetails findSongDetails(String artistName, String songName) throws InvalidSongException {
+    public ISong findSong(String artistName, String songName) throws InvalidSongException {
+        ISongDetails songDetails = findSongDetails(artistName, songName);
+        IAudioFeatures audioFeatures = findAudioFeatures(songDetails);
+
+        return songBuilder.build(songDetails, audioFeatures);
+    }
+
+
+    private ISongDetails findSongDetails(String artistName, String songName) throws InvalidSongException {
         HttpEntity<String> entity = buildHeadersForRequest();
         URI uri = buildUrlForSearchRequest(artistName, songName);
 
@@ -64,10 +82,9 @@ public class SpotifyApi implements ISpotifyApi {
         }
     }
 
-    @Override
-    public IAudioFeatures findAudioFeatures(ISongDetails songDetails) {
+    private IAudioFeatures findAudioFeatures(ISongDetails songDetails) {
         HttpEntity<String> entity = buildHeadersForRequest();
-        String audioFeaturesUrl = buildUrlForAudioFeatures(songDetails);
+        String audioFeaturesUrl = buildUrlForAudioFeatures();
 
         HttpEntity<String> response = restTemplate.exchange(audioFeaturesUrl, HttpMethod.GET, entity, String.class);
 
@@ -95,7 +112,7 @@ public class SpotifyApi implements ISpotifyApi {
 
     private URI buildUrlForSearchRequest(String artistName, String songName) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl + "/search")
-                .queryParam("q", "track:\"" + songName + "\" artist:\"" + artistName + "\"")
+                .queryParam("q", "track:" + songName + " artist:" + artistName)
                 .queryParam("type", "track")
                 .queryParam("limit", "1");
 
@@ -110,6 +127,7 @@ public class SpotifyApi implements ISpotifyApi {
                 .getJSONArray("items")
                 .getJSONObject(0)
                 .getString("id");
+        currentId = id;
         String previewUrl = json
                 .getJSONObject("tracks")
                 .getJSONArray("items")
@@ -141,13 +159,12 @@ public class SpotifyApi implements ISpotifyApi {
         double liveness = json.getDouble("liveness");
         double valence = json.getDouble("valence");
         double tempo = json.getDouble("tempo");
-        double timeSignature = json.getDouble("time_signature");
 
         return audioFeaturesBuilder.build(danceability, energy, key, loudness, mode, speechiness, acousticness, instrumentalness, liveness,
-                valence, tempo, timeSignature);
+                valence, tempo);
     }
 
-    private String buildUrlForAudioFeatures(ISongDetails songDetails) {
-        return songDetails.completeUrl(baseUrl + "/audio-features/");
+    private String buildUrlForAudioFeatures() {
+        return baseUrl + "/audio-features/" + currentId;
     }
 }

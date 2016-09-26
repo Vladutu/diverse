@@ -1,6 +1,6 @@
 package ro.ucv.ace.service;
 
-import ro.ucv.ace.exception.InvalidSongException;
+import ro.ucv.ace.exception.EntityNotFoundException;
 import ro.ucv.ace.model.ISong;
 
 import java.util.List;
@@ -10,5 +10,5 @@ import java.util.List;
  */
 public interface ISongService {
 
-    List<ISong> findSongsSimilarTo(String artistName, String songName) throws InvalidSongException;
+    List<ISong> findSongsSimilarTo(String artistName, String songName) throws EntityNotFoundException;
 }

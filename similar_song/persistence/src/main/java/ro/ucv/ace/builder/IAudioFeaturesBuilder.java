@@ -7,6 +7,5 @@ import ro.ucv.ace.model.IAudioFeatures;
  */
 public interface IAudioFeaturesBuilder {
     IAudioFeatures build(double danceability, double energy, double key, double loudness, double mode, double speechiness,
-                         double acousticness, double instrumentalness, double liveness, double valence, double tempo,
-                         double timeSignature);
+                         double acousticness, double instrumentalness, double liveness, double valence, double tempo);
 }

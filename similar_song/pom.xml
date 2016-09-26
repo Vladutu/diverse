@@ -114,11 +114,17 @@
             <dependency>
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
-                <version>6.0.4</version>
+                <version>5.1.6</version>
             </dependency>
 
 
             <!-- Spring -->
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-aspects</artifactId>
+                <version>${springframework.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-core</artifactId>
@@ -157,6 +163,7 @@
                 <artifactId>json</artifactId>
                 <version>20160810</version>
             </dependency>
+
         </dependencies>
     </dependencyManagement>
 
