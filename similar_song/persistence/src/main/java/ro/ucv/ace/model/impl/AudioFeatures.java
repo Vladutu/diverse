@@ -19,9 +19,8 @@ import java.util.List;
 public class AudioFeatures implements IAudioFeatures {
 
     @Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    @Column(name = "ID", unique = true)
+    private String id;
 
     @Basic
     @Column(name = "DANCEABILITY", nullable = false)
@@ -72,8 +71,9 @@ public class AudioFeatures implements IAudioFeatures {
     private ISongRepository songRepository;
 
 
-    public AudioFeatures(double danceability, double energy, double key, double loudness, double mode, double speechiness,
+    public AudioFeatures(String id, double danceability, double energy, double key, double loudness, double mode, double speechiness,
                          double acousticness, double instrumentalness, double liveness, double valence, double tempo) {
+        this.id = id;
         this.danceability = danceability;
         this.energy = energy;
         this.key = key;

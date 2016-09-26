@@ -9,5 +9,5 @@ import ro.ucv.ace.model.ISongDetails;
  */
 public interface ISongBuilder {
 
-    ISong build(ISongDetails songDetails, IAudioFeatures audioFeatures);
+    ISong build(String id, ISongDetails songDetails, IAudioFeatures audioFeatures);
 }

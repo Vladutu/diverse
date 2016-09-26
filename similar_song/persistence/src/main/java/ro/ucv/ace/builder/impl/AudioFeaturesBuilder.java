@@ -11,10 +11,10 @@ import ro.ucv.ace.model.impl.AudioFeatures;
 @Component
 public class AudioFeaturesBuilder implements IAudioFeaturesBuilder {
     @Override
-    public IAudioFeatures build(double danceability, double energy, double key, double loudness, double mode,
+    public IAudioFeatures build(String id, double danceability, double energy, double key, double loudness, double mode,
                                 double speechiness, double acousticness, double instrumentalness, double liveness,
                                 double valence, double tempo) {
-        return  new AudioFeatures(danceability, energy,key,loudness,mode,speechiness, acousticness,instrumentalness,
+        return  new AudioFeatures(id,danceability, energy,key,loudness,mode,speechiness, acousticness,instrumentalness,
                 liveness,valence,tempo);
     }
 }

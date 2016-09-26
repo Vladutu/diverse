@@ -64,9 +64,9 @@ public class SpotifyApi implements ISpotifyApi {
     @Override
     public ISong findSong(String artistName, String songName) throws InvalidSongException {
         ISongDetails songDetails = findSongDetails(artistName, songName);
-        IAudioFeatures audioFeatures = findAudioFeatures(songDetails);
+        IAudioFeatures audioFeatures = findAudioFeatures();
 
-        return songBuilder.build(songDetails, audioFeatures);
+        return songBuilder.build(currentId, songDetails, audioFeatures);
     }
 
 
@@ -82,7 +82,7 @@ public class SpotifyApi implements ISpotifyApi {
         }
     }
 
-    private IAudioFeatures findAudioFeatures(ISongDetails songDetails) {
+    private IAudioFeatures findAudioFeatures() {
         HttpEntity<String> entity = buildHeadersForRequest();
         String audioFeaturesUrl = buildUrlForAudioFeatures();
 
@@ -160,7 +160,7 @@ public class SpotifyApi implements ISpotifyApi {
         double valence = json.getDouble("valence");
         double tempo = json.getDouble("tempo");
 
-        return audioFeaturesBuilder.build(danceability, energy, key, loudness, mode, speechiness, acousticness, instrumentalness, liveness,
+        return audioFeaturesBuilder.build(currentId, danceability, energy, key, loudness, mode, speechiness, acousticness, instrumentalness, liveness,
                 valence, tempo);
     }
 

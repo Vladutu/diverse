@@ -16,8 +16,7 @@ public class Song implements ISong {
 
     @Id
     @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private String id;
 
     @OneToOne(targetEntity = SongDetails.class, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "SONG_DETAILS_ID", referencedColumnName = "ID", nullable = false)
@@ -28,7 +27,8 @@ public class Song implements ISong {
     private IAudioFeatures audioFeatures;
 
 
-    public Song(ISongDetails songDetails, IAudioFeatures audioFeatures) {
+    public Song(String id, ISongDetails songDetails, IAudioFeatures audioFeatures) {
+        this.id = id;
         this.songDetails = songDetails;
         this.audioFeatures = audioFeatures;
     }

@@ -13,7 +13,7 @@ import ro.ucv.ace.model.impl.Song;
 @Component
 public class SongBuilder implements ISongBuilder {
     @Override
-    public ISong build(ISongDetails songDetails, IAudioFeatures audioFeatures) {
-        return new Song(songDetails, audioFeatures);
+    public ISong build(String id, ISongDetails songDetails, IAudioFeatures audioFeatures) {
+        return new Song(id, songDetails, audioFeatures);
     }
 }
