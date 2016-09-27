@@ -54,7 +54,7 @@ public class SongRepository implements ISongRepository {
     }
 
     private String orderByQuery(double[] audioProperties) {
-        String orderBy = "(a.audioFeatures.danceability * :danceability + a.audioFeatures.energy * :energy + a.audioFeatures.sKey * :key + " +
+        String orderBy = "ABS((a.audioFeatures.danceability * :danceability + a.audioFeatures.energy * :energy + a.audioFeatures.sKey * :key + " +
                 "a.audioFeatures.loudness * :loudness + a.audioFeatures.speechiness * :speechiness + a.audioFeatures.acousticness * :acousticness + " +
                 "a.audioFeatures.instrumentalness * :instrumentalness + a.audioFeatures.liveness * :liveness + a.audioFeatures.valence * :valence +" +
                 "a.audioFeatures.tempo * :tempo) / " +
@@ -68,7 +68,7 @@ public class SongRepository implements ISongRepository {
                 "SQRT(:danceability * :danceability + :energy * :energy + :key * :key + :loudness * :loudness + " +
                 ":speechiness * :speechiness + :acousticness * :acousticness + :instrumentalness * :instrumentalness " +
                 "+ :liveness * :liveness + :valence * :valence + :tempo * :tempo)" +
-                ") DESC";
+                ")) DESC";
         orderBy = orderBy.replaceAll(":danceability", "(" + String.valueOf(audioProperties[0]) + ")");
         orderBy = orderBy.replaceAll(":energy", "(" + String.valueOf(audioProperties[1]) + ")");
         orderBy = orderBy.replaceAll(":key", "(" + String.valueOf(audioProperties[2]) + ")");

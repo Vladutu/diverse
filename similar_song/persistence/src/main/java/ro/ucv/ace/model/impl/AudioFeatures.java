@@ -2,7 +2,6 @@ package ro.ucv.ace.model.impl;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -19,42 +18,34 @@ import java.util.List;
 @Configurable(preConstruction = true, dependencyCheck = true, autowire = Autowire.BY_TYPE)
 @Entity
 @Table(name = "AUDIO_FEATURES")
-@JsonTypeName("af")
 public class AudioFeatures implements IAudioFeatures {
 
     @Id
     @Column(name = "ID", unique = true)
-    @JsonProperty
     private String id;
 
     @Basic
     @Column(name = "DANCEABILITY", nullable = false)
-    @JsonProperty
     private double danceability;
 
     @Basic
     @Column(name = "ENERGY", nullable = false)
-    @JsonProperty
     private double energy;
 
     @Basic
     @Column(name = "S_KEY", nullable = false)
-    @JsonProperty
     private double sKey;
 
     @Basic
     @Column(name = "LOUDNESS", nullable = false)
-    @JsonProperty
     private double loudness;
 
     @Basic
     @Column(name = "MODE", nullable = false)
-    @JsonProperty
     private double mode;
 
     @Basic
     @Column(name = "SPEECHINESS", nullable = false)
-    @JsonProperty
     private double speechiness;
 
     @Basic
@@ -64,22 +55,18 @@ public class AudioFeatures implements IAudioFeatures {
 
     @Basic
     @Column(name = "INSTRUMENTALNESS", nullable = false)
-    @JsonProperty
     private double instrumentalness;
 
     @Basic
     @Column(name = "LIVENESS", nullable = false)
-    @JsonProperty
     private double liveness;
 
     @Basic
     @Column(name = "VALENCE", nullable = false)
-    @JsonProperty
     private double valence;
 
     @Basic
     @Column(name = "TEMPO", nullable = false)
-    @JsonProperty
     private double tempo;
 
     @Transient

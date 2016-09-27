@@ -29,7 +29,6 @@ public class Song implements ISong {
 
     @OneToOne(targetEntity = AudioFeatures.class, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "AUDIO_FEATURES_ID", referencedColumnName = "ID", nullable = false)
-    @JsonProperty
     private IAudioFeatures audioFeatures;
 
 
