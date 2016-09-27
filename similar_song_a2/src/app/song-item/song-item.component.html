@@ -1,0 +1,22 @@
+<div class="bottom10">
+  <div class="row">
+    <div class="col-md-12 text-center">
+      <h2><span *ngIf="index != null">{{ index }}. </span>{{ song.songDetails.artist }}
+        - {{ song.songDetails.name }}</h2>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12 text-center">
+      <img [src]="song.songDetails.albumImageUrl">
+    </div>
+  </div>
+
+  <div class="row top7">
+    <div class="col-md-12 text-center">
+      <audio #audio controls>
+        <source [src]="song.songDetails.previewUrl" type="audio/ogg">
+      </audio>
+    </div>
+  </div>
+</div>

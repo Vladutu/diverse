@@ -44,8 +44,7 @@ public class SongRepository implements ISongRepository {
     public List<ISong> findSongsHavingSimilarAudioProperties(double[] audioProperties, int limit) {
         return entityManager.createQuery("SELECT a FROM Song a ORDER BY " + orderByQuery(audioProperties)
                 , ISong.class)
-                .setFirstResult(1)
-                .setMaxResults(limit)
+                .setMaxResults(limit + 1)
                 .getResultList();
     }
 

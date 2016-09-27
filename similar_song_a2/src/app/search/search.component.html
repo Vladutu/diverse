@@ -1,0 +1,27 @@
+<div class="alert alert-danger" role="alert" *ngIf="error">The song you have searched was not found</div>
+<div *ngIf="song != null">
+  <app-song-item [song]="song"></app-song-item>
+</div>
+
+
+<div class="row top15">
+  <div class="col-md-12">
+    <form class="form-inline text-center" [formGroup]="myFrom" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="artist">Artist</label>
+        <input type="text" class="form-control" id="artist" formControlName="artist">
+      </div>
+      <div class="form-group">
+        <label for="song">Song</label>
+        <input type="text" class="form-control" id="song" formControlName="song">
+      </div>
+      <div class="form-group">
+        <label for="limit">Limit</label>
+        <input type="number" class="form-control" id="number" formControlName="limit">
+      </div>
+      <button type="submit" class="btn btn-primary" [disabled]="!myFrom.valid"><span
+        class="glyphicon glyphicon-search"></span> Search
+      </button>
+    </form>
+  </div>
+</div>
