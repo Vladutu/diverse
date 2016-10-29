@@ -54,7 +54,7 @@ public class App {
 
     private void insertStudents() {
         Student student = new Student("1940826160041", "Georgian", "Vladutu", "vladutu_georgian_4d@yahoo.com", Subgroup.A);
-        Student student2 = new Student("1940826160031", "Cristian", "Totolin", "cristian_totolin@yahoo.com", Subgroup.A);
+        Student student2 = new Student("1940826160041", "Cristian", "Totolin", "cristian_totolin@yahoo.com", Subgroup.A);
 
         try {
             studentService.save(student);
