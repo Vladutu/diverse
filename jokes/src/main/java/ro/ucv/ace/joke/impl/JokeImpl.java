@@ -1,6 +1,7 @@
 package ro.ucv.ace.joke.impl;
 
 import ro.ucv.ace.joke.Joke;
+import ro.ucv.ace.joke.SimilarityAlgorithm;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,17 +15,26 @@ public class JokeImpl implements Joke {
 
     private Map<String, Integer> wordsMap = new HashMap<>();
 
-    public JokeImpl(String text) {
+    private SimilarityAlgorithm similarityAlgorithm;
+
+    public JokeImpl(String text, SimilarityAlgorithm similarityAlgorithm) {
+        this.similarityAlgorithm = similarityAlgorithm;
         this.text = text;
+
+        splitTextInWords(text);
+    }
+
+    private void splitTextInWords(String text) {
         String[] words = text.replaceAll("[^a-zA-Z ]", " ").toLowerCase().split("\\s+");
         for (String word : words) {
-            if (wordsMap.containsKey(word)) {
-                wordsMap.replace(word, wordsMap.get(word) + 1);
-            } else {
-                wordsMap.put(word, 1);
+            if (word.length() > 1) {
+                if (wordsMap.containsKey(word)) {
+                    wordsMap.replace(word, wordsMap.get(word) + 1);
+                } else {
+                    wordsMap.put(word, 1);
+                }
             }
         }
-
     }
 
     @Override
@@ -34,23 +44,7 @@ public class JokeImpl implements Joke {
 
     @Override
     public double computeCosineSimilarity(Map<String, Integer> otherJokeWords) {
-        double abSum = 0;
-        double aSquare = 0;
-        double bSquare = 0;
-
-        for (Map.Entry<String, Integer> entry : wordsMap.entrySet()) {
-            if (otherJokeWords.containsKey(entry.getKey())) {
-                abSum += (entry.getValue() * otherJokeWords.get(entry.getKey()));
-            }
-
-            aSquare += entry.getValue() * entry.getValue();
-        }
-
-        for (Map.Entry<String, Integer> entry : otherJokeWords.entrySet()) {
-            bSquare += entry.getValue() * entry.getValue();
-        }
-
-        return Math.acos(abSum / (Math.sqrt(aSquare) * Math.sqrt(bSquare)));
+        return similarityAlgorithm.computeSimilarity(wordsMap, otherJokeWords);
     }
 
     @Override

@@ -4,10 +4,7 @@ import ro.ucv.ace.joke.Comparator;
 import ro.ucv.ace.joke.Joke;
 import ro.ucv.ace.joke.JokeParser;
 import ro.ucv.ace.joke.JokeRepository;
-import ro.ucv.ace.joke.impl.CosineComparator;
-import ro.ucv.ace.joke.impl.JokeBuilderImpl;
-import ro.ucv.ace.joke.impl.JokeParseImpl;
-import ro.ucv.ace.joke.impl.JokeRepositoryImpl;
+import ro.ucv.ace.joke.impl.*;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -18,7 +15,7 @@ import java.util.List;
  */
 public class App {
     public static void main(String[] args) {
-        JokeParser jokeParser = new JokeParseImpl(new JokeBuilderImpl());
+        JokeParser jokeParser = new JokeParseImpl(new JokeBuilderImpl(new CosineAlgorithm()));
         List<Joke> jokes = new ArrayList<>();
 
         String folderName = "jokes/";
