@@ -14,7 +14,7 @@ public class LinkedPriorityQueue<T extends Comparable<T>> {
         int index = 0;
 
         for (T item : list) {
-            if (item.compareTo(newItem) > 0) {
+            if (item.compareTo(newItem) >= 0) {
                 break;
             }
 

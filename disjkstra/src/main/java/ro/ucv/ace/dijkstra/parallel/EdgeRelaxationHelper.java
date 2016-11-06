@@ -20,8 +20,6 @@ public class EdgeRelaxationHelper implements Runnable {
 
     private Map<Vertex, Set<Vertex>> adjacentVerticesMap;
 
-    private Map<Vertex, Double> distance;
-
     private Map<Vertex, Vertex> predecessors;
 
     private List<Edge> edges;
@@ -34,12 +32,11 @@ public class EdgeRelaxationHelper implements Runnable {
 
 
     public EdgeRelaxationHelper(int id, LinkedPriorityQueue<Vertex> weightMinQueue,
-                                Map<Vertex, Set<Vertex>> adjacentVerticesMap, Map<Vertex, Double> distance,
-                                Map<Vertex, Vertex> predecessors, List<Edge> edges, Lock lock, Boolean done) {
+                                Map<Vertex, Set<Vertex>> adjacentVerticesMap, Map<Vertex, Vertex> predecessors,
+                                List<Edge> edges, Lock lock, Boolean done) {
         this.id = id;
         this.weightMinQueue = weightMinQueue;
         this.adjacentVerticesMap = adjacentVerticesMap;
-        this.distance = distance;
         this.predecessors = predecessors;
         this.edges = edges;
         this.lock = lock;
@@ -73,14 +70,13 @@ public class EdgeRelaxationHelper implements Runnable {
     }
 
     private void relaxEdges(Vertex x, Vertex y) {
-        Double sum = distance.get(x) + distance(x, y);
+        Double sum = x.getDistanceToSource() + distance(x, y);
 
-        if (distance.get(y) > sum) {
+        if (y.getDistanceToSource() > sum) {
             weightMinQueue.remove(y);
             y.setDistanceToSource(sum);
             weightMinQueue.add(y);
 
-            distance.replace(y, sum);
             predecessors.replace(y, x);
         }
     }

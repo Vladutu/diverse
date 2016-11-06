@@ -24,13 +24,12 @@ public class SequentialDijkstraAlgorithm extends AbstractDijkstraAlgorithm imple
             Set<Vertex> adjacentVertices = adjacentVerticesMap.get(u);
 
             adjacentVertices.forEach(v -> {
-                Double sum = distance.get(u) + distance(u, v);
-                if (distance.get(v) > sum) {
+                Double sum = u.getDistanceToSource() + distance(u, v);
+                if (v.getDistanceToSource() > sum) {
                     weightMinQueue.remove(v);
                     v.setDistanceToSource(sum);
                     weightMinQueue.add(v);
 
-                    distance.replace(v, sum);
                     predecessors.replace(v, u);
                 }
             });
@@ -40,20 +39,17 @@ public class SequentialDijkstraAlgorithm extends AbstractDijkstraAlgorithm imple
     protected void initialize(Vertex source) {
         // this.weightMinQueue = new PriorityQueue<>((v1, v2) -> v1.getDistanceToSource().compareTo(v2.getDistanceToSource()));
         this.weightMinQueue = new LinkedPriorityQueue<>();
-        this.distance = new HashMap<>();
         this.predecessors = new HashMap<>();
         adjacentVerticesMap = new HashMap<>();
 
         vertices.forEach(v -> adjacentVerticesMap.put(v, findAdjacentVertices(v)));
 
         vertices.forEach(v -> {
-            distance.put(v, Double.POSITIVE_INFINITY);
             predecessors.put(v, null);
             v.setDistanceToSource(Double.POSITIVE_INFINITY);
             weightMinQueue.add(v);
         });
 
-        distance.replace(source, 0.0);
         weightMinQueue.remove(source);
         source.setDistanceToSource(0.0);
         weightMinQueue.add(source);

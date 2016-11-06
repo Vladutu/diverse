@@ -14,8 +14,6 @@ public abstract class AbstractDijkstraAlgorithm implements DijkstraAlgorithm {
 
     protected LinkedPriorityQueue<Vertex> weightMinQueue;
 
-    protected Map<Vertex, Double> distance;
-
     protected Map<Vertex, Vertex> predecessors;
 
     protected List<Vertex> vertices;
@@ -27,7 +25,6 @@ public abstract class AbstractDijkstraAlgorithm implements DijkstraAlgorithm {
 
     public AbstractDijkstraAlgorithm(Graph graph) {
         this.weightMinQueue = new LinkedPriorityQueue<>();
-        this.distance = new HashMap<>();
         this.predecessors = new HashMap<>();
         this.vertices = graph.getVertices();
         this.edges = graph.getEdges();

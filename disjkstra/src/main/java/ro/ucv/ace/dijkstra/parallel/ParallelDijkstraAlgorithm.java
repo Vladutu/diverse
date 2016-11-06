@@ -35,12 +35,12 @@ public class ParallelDijkstraAlgorithm extends AbstractDijkstraAlgorithm impleme
             done = false;
 
             for (Vertex v : adjacentVertices) {
-                Double sum = distance.get(u) + distance(u, v);
-                if (distance.get(v) > sum) {
-                    lock.lock();
-                    relaxEdges(u, v, sum);
-                    lock.unlock();
-                }
+                Double sum = u.getDistanceToSource() + distance(u, v);
+
+                lock.lock();
+                relaxEdges(u, v, sum);
+                lock.unlock();
+
             }
 
             lock.lock();
@@ -50,32 +50,29 @@ public class ParallelDijkstraAlgorithm extends AbstractDijkstraAlgorithm impleme
     }
 
     private void relaxEdges(Vertex u, Vertex v, Double sum) {
-        weightMinQueue.remove(v);
-        v.setDistanceToSource(sum);
-        weightMinQueue.add(v);
+        if (v.getDistanceToSource() > sum) {
+            weightMinQueue.remove(v);
+            v.setDistanceToSource(sum);
+            weightMinQueue.add(v);
 
-        distance.replace(v, sum);
-        predecessors.replace(v, u);
-
+            predecessors.replace(v, u);
+        }
     }
 
     protected void initialize(Vertex source) {
         this.done = false;
         this.weightMinQueue = new LinkedPriorityQueue<>();
-        this.distance = new HashMap<>();
         this.predecessors = new HashMap<>();
         adjacentVerticesMap = new HashMap<>();
 
         vertices.forEach(v -> adjacentVerticesMap.put(v, findAdjacentVertices(v)));
 
         vertices.forEach(v -> {
-            distance.put(v, Double.POSITIVE_INFINITY);
             predecessors.put(v, null);
             v.setDistanceToSource(Double.POSITIVE_INFINITY);
             weightMinQueue.add(v);
         });
 
-        distance.replace(source, 0.0);
         weightMinQueue.remove(source);
         source.setDistanceToSource(0.0);
         weightMinQueue.add(source);
@@ -87,7 +84,7 @@ public class ParallelDijkstraAlgorithm extends AbstractDijkstraAlgorithm impleme
         Runnable[] helpers = new Runnable[NO_THREADS];
 
         for (int i = 0; i < NO_THREADS; i++) {
-            helpers[i] = new EdgeRelaxationHelper(i, weightMinQueue, adjacentVerticesMap, distance, predecessors, edges, lock, done);
+            helpers[i] = new EdgeRelaxationHelper(i, weightMinQueue, adjacentVerticesMap, predecessors, edges, lock, done);
         }
 
         for (Runnable helper : helpers) {

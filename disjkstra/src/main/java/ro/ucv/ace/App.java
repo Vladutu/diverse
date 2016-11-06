@@ -15,14 +15,16 @@ import java.util.concurrent.locks.ReentrantLock;
 public class App {
 
     public static void main(String[] args) {
+        Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+
         File file = new File(App.class.getClassLoader().getResource("dag.txt").getFile());
 
         GraphParser graphParser = new GraphParser();
         Graph graph = graphParser.readGraph(file);
-        Boolean done = false;
+        Boolean done = true;
         Lock lock = new ReentrantLock();
 
-       // DijkstraAlgorithm dijkstraAlgorithm = new SequentialDijkstraAlgorithm(graph);
+        //DijkstraAlgorithm dijkstraAlgorithm = new SequentialDijkstraAlgorithm(graph);
         DijkstraAlgorithm dijkstraAlgorithm = new ParallelDijkstraAlgorithm(graph, done, lock);
 
         dijkstraAlgorithm.execute(graph.getVertices().get(0));
