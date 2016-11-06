@@ -19,7 +19,7 @@ public class ParallelDijkstraAlgorithm extends AbstractDijkstraAlgorithm impleme
 
     private Lock lock;
 
-    private final static int NO_THREADS = 4;
+    private final static int NO_THREADS = 3;
 
     public ParallelDijkstraAlgorithm(Graph graph, Boolean done, Lock lock) {
         super(graph);
@@ -36,9 +36,11 @@ public class ParallelDijkstraAlgorithm extends AbstractDijkstraAlgorithm impleme
 
             for (Vertex v : adjacentVertices) {
                 Double sum = distance.get(u) + distance(u, v);
-                lock.lock();
-                relaxEdges(u, v, sum);
-                lock.unlock();
+                if (distance.get(v) > sum) {
+                    lock.lock();
+                    relaxEdges(u, v, sum);
+                    lock.unlock();
+                }
             }
 
             lock.lock();
@@ -48,14 +50,13 @@ public class ParallelDijkstraAlgorithm extends AbstractDijkstraAlgorithm impleme
     }
 
     private void relaxEdges(Vertex u, Vertex v, Double sum) {
-        if (distance.get(v) > sum) {
-            weightMinQueue.remove(v);
-            v.setDistanceToSource(sum);
-            weightMinQueue.add(v);
+        weightMinQueue.remove(v);
+        v.setDistanceToSource(sum);
+        weightMinQueue.add(v);
 
-            distance.replace(v, sum);
-            predecessors.replace(v, u);
-        }
+        distance.replace(v, sum);
+        predecessors.replace(v, u);
+
     }
 
     protected void initialize(Vertex source) {

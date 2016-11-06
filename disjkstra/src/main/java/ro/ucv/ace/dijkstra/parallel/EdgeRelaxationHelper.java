@@ -53,7 +53,7 @@ public class EdgeRelaxationHelper implements Runnable {
                 stop = false;
                 Vertex vertex = weightMinQueue.get(id);
 
-                if (vertex != null) {
+                if (vertex != null && vertex.getDistanceToSource() != Double.POSITIVE_INFINITY) {
                     Set<Vertex> adjacent = adjacentVerticesMap.get(vertex);
 
                     for (Vertex y : adjacent) {
