@@ -1,9 +1,9 @@
-package ro.ucv.ace;
+package ro.ucv.ace.generator;
 
 /**
  * Created by Geo on 05.11.2016.
  */
-public class DAGEdge {
+public class DCGEdge {
 
     private int source;
 
@@ -11,7 +11,7 @@ public class DAGEdge {
 
     private int cost;
 
-    public DAGEdge(int source, int destination, int cost) {
+    public DCGEdge(int source, int destination, int cost) {
         this.source = source;
         this.destination = destination;
         this.cost = cost;
@@ -50,12 +50,12 @@ public class DAGEdge {
             return false;
         }
 
-        DAGEdge dagEdge = (DAGEdge) o;
+        DCGEdge DCGEdge = (DCGEdge) o;
 
-        if (source != dagEdge.source) {
+        if (source != DCGEdge.source) {
             return false;
         }
-        return destination == dagEdge.destination;
+        return destination == DCGEdge.destination;
 
     }
 

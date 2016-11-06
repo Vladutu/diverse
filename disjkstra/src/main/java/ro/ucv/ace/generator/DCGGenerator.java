@@ -1,4 +1,4 @@
-package ro.ucv.ace;
+package ro.ucv.ace.generator;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -12,7 +12,7 @@ import java.util.Random;
 /**
  * Created by Geo on 05.11.2016.
  */
-public class DAGGenerator {
+public class DCGGenerator {
 
     private List<String> lines = new ArrayList<>();
 
@@ -20,13 +20,13 @@ public class DAGGenerator {
 
     private int noEdges;
 
-    private List<DAGEdge> edges = new ArrayList<>();
+    private List<DCGEdge> edges = new ArrayList<>();
 
-    List<Integer> allVertices = new ArrayList<>();
+    private List<Integer> allVertices = new ArrayList<>();
 
-    Random random = new Random();
+    private Random random = new Random();
 
-    public DAGGenerator(int noVertices, int noEdges) {
+    public DCGGenerator(int noVertices, int noEdges) {
         this.noVertices = noVertices;
         this.noEdges = noEdges;
 
@@ -37,10 +37,11 @@ public class DAGGenerator {
 
     public void generate(Path path) {
         generateDAG();
+        addLines();
+        writeToFile(path);
+    }
 
-        lines.add(noVertices + " " + noEdges);
-        edges.forEach(e -> lines.add(e.getSource() + " " + e.getDestination() + " " + e.getCost()));
-
+    private void writeToFile(Path path) {
         try {
             Files.write(path, lines, Charset.forName("UTF-8"));
         } catch (IOException e) {
@@ -48,21 +49,26 @@ public class DAGGenerator {
         }
     }
 
+    private void addLines() {
+        lines.add(noVertices + " " + noEdges);
+        edges.forEach(e -> lines.add(e.getSource() + " " + e.getDestination() + " " + e.getCost()));
+    }
+
     private void generateDAG() {
         int total = 0;
 
         while (total < noEdges) {
-            DAGEdge dagEdge = generateEdge();
-            if (!edges.contains(dagEdge)) {
-                edges.add(dagEdge);
+            DCGEdge DCGEdge = generateEdge();
+            if (!edges.contains(DCGEdge)) {
+                edges.add(DCGEdge);
                 total++;
             }
         }
     }
 
-    private DAGEdge generateEdge() {
+    private DCGEdge generateEdge() {
         Collections.shuffle(allVertices);
 
-        return new DAGEdge(allVertices.get(0), allVertices.get(1), Math.abs(random.nextInt() % 500));
+        return new DCGEdge(allVertices.get(0), allVertices.get(1), Math.abs(random.nextInt() % 500));
     }
 }

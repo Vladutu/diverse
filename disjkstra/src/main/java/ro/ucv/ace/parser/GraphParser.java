@@ -1,4 +1,4 @@
-package ro.ucv.ace;
+package ro.ucv.ace.parser;
 
 import ro.ucv.ace.graph.Edge;
 import ro.ucv.ace.graph.Graph;
@@ -15,10 +15,7 @@ import java.util.Scanner;
  */
 public class GraphParser {
 
-    public Graph readGraph() {
-        ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(classLoader.getResource("dag.txt").getFile());
-
+    public Graph readGraph(File file) {
         List<Vertex> vertices = new ArrayList<>();
         List<Edge> edges = new ArrayList<>();
 

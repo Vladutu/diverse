@@ -1,6 +1,6 @@
 package ro.ucv.ace.dijkstra.parallel;
 
-import ro.ucv.ace.LinkedPriorityQueue;
+import ro.ucv.ace.dijkstra.LinkedPriorityQueue;
 import ro.ucv.ace.graph.Edge;
 import ro.ucv.ace.graph.Vertex;
 

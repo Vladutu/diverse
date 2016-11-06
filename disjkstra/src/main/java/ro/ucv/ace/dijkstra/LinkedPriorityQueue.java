@@ -1,4 +1,4 @@
-package ro.ucv.ace;
+package ro.ucv.ace.dijkstra;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -8,7 +8,7 @@ import java.util.List;
  */
 public class LinkedPriorityQueue<T extends Comparable<T>> {
 
-    List<T> list = new LinkedList<T>();
+    private List<T> list = new LinkedList<T>();
 
     public void add(T newItem) {
         int index = 0;
