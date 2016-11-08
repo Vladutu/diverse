@@ -13,7 +13,7 @@ import java.util.concurrent.locks.Lock;
 /**
  * Created by Geo on 05.11.2016.
  */
-public class ParallelDijkstraAlgorithm extends AbstractDijkstraAlgorithm implements DijkstraAlgorithm {
+public class HTParallelDijkstraAlgorithm extends AbstractDijkstraAlgorithm implements DijkstraAlgorithm {
 
     private volatile Boolean done;
 
@@ -21,7 +21,7 @@ public class ParallelDijkstraAlgorithm extends AbstractDijkstraAlgorithm impleme
 
     private final static int NO_THREADS = 3;
 
-    public ParallelDijkstraAlgorithm(Graph graph, Boolean done, Lock lock) {
+    public HTParallelDijkstraAlgorithm(Graph graph, Boolean done, Lock lock) {
         super(graph);
         this.done = done;
         this.lock = lock;
