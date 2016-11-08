@@ -1,11 +1,5 @@
 package ro.ucv.ace;
 
-import ro.ucv.ace.joke.Comparator;
-import ro.ucv.ace.joke.Joke;
-import ro.ucv.ace.joke.JokeParser;
-import ro.ucv.ace.joke.JokeRepository;
-import ro.ucv.ace.joke.impl.*;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +9,7 @@ import java.util.List;
  */
 public class App {
     public static void main(String[] args) {
-        JokeParser jokeParser = new JokeParseImpl(new JokeBuilderImpl(new CosineAlgorithm()));
+        JokeParser jokeParser = new JokeParser(new JokeBuilder(new CosineSimilarityAlgorithm()));
         List<Joke> jokes = new ArrayList<>();
 
         String folderName = "jokes/";
@@ -28,9 +22,8 @@ public class App {
             jokes.add(joke);
         }
 
-        JokeRepository jokeRepository = new JokeRepositoryImpl(jokes);
-        Comparator cosineComparator = new CosineComparator(jokes.get(0));
+        JokeRepository jokeRepository = new JokeRepository(jokes);
 
-        jokeRepository.findSimilarJokes(cosineComparator).forEach(System.out::println);
+        jokeRepository.findSimilarJokes(jokes.get(1)).forEach(System.out::println);
     }
 }

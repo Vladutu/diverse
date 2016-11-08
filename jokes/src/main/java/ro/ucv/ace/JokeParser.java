@@ -1,35 +1,31 @@
-package ro.ucv.ace.joke.impl;
-
-import ro.ucv.ace.joke.Joke;
-import ro.ucv.ace.joke.JokeBuilder;
-import ro.ucv.ace.joke.JokeParser;
+package ro.ucv.ace;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
 /**
- * Created by Geo on 01.11.2016.
+ * Created by Geo on 08.11.2016.
  */
-public class JokeParseImpl implements JokeParser {
-
-    private static final String FOLDER_NAME = "jokes/";
+public class JokeParser {
 
     private JokeBuilder jokeBuilder;
 
-    public JokeParseImpl(JokeBuilder jokeBuilder) {
+    private static final String BEGIN_JOKE = "<!--begin of joke -->";
+
+    private static final String END_JOKE = "<!--end of joke -->";
+
+    public JokeParser(JokeBuilder jokeBuilder) {
         this.jokeBuilder = jokeBuilder;
     }
 
     public Joke parse(File file) {
         String text = readFile(file);
-        String jokeText = text.substring(text.indexOf("<!--begin of joke -->") + 22, text.indexOf("<!--end of joke -->"));
+        String jokeText = text.substring(text.indexOf(BEGIN_JOKE) + 22, text.indexOf(END_JOKE));
         jokeText = jokeText.replaceAll("<P>", "").replaceAll("<p>", "");
-
 
         return jokeBuilder.build(jokeText);
     }
-
 
     private String readFile(File file) {
         StringBuilder result = new StringBuilder("");
