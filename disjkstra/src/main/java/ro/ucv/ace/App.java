@@ -1,7 +1,7 @@
 package ro.ucv.ace;
 
 import ro.ucv.ace.dijkstra.DijkstraAlgorithm;
-import ro.ucv.ace.dijkstra.parallel.HTParallelDijkstraAlgorithm;
+import ro.ucv.ace.dijkstra.parallelv2.BasicDijkstraAlgorithm;
 import ro.ucv.ace.graph.Graph;
 import ro.ucv.ace.parser.GraphParser;
 
@@ -24,8 +24,9 @@ public class App {
         Boolean done = true;
         Lock lock = new ReentrantLock();
 
-        //DijkstraAlgorithm dijkstraAlgorithm = new SequentialDijkstraAlgorithm(graph);
-        DijkstraAlgorithm dijkstraAlgorithm = new HTParallelDijkstraAlgorithm(graph, done, lock);
+         //DijkstraAlgorithm dijkstraAlgorithm = new SequentialDijkstraAlgorithm(graph);
+        //DijkstraAlgorithm dijkstraAlgorithm = new HTParallelDijkstraAlgorithm(graph, done, lock);
+        DijkstraAlgorithm dijkstraAlgorithm = new BasicDijkstraAlgorithm(graph);
 
         dijkstraAlgorithm.execute(graph.getVertices().get(0));
 
