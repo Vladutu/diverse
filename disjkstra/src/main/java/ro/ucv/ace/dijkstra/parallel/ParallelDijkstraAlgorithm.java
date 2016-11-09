@@ -1,19 +1,20 @@
-package ro.ucv.ace.dijkstra.parallelv2;
+package ro.ucv.ace.dijkstra.parallel;
 
 import ro.ucv.ace.dijkstra.DijkstraAlgorithm;
 import ro.ucv.ace.graph.Edge;
 import ro.ucv.ace.graph.Graph;
 import ro.ucv.ace.graph.Vertex;
+import ro.ucv.ace.minheap.SynchronizedMinHeap;
+import ro.ucv.ace.minheap.VertexMinHeap;
 
 import java.util.*;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
  * Created by Geo on 09.11.2016.
  */
-public class BasicDijkstraAlgorithm implements DijkstraAlgorithm {
+public class ParallelDijkstraAlgorithm implements DijkstraAlgorithm {
 
     private volatile Map<Vertex, Vertex> predecessors;
 
@@ -23,17 +24,15 @@ public class BasicDijkstraAlgorithm implements DijkstraAlgorithm {
 
     private Map<Vertex, Set<Vertex>> adjacentVerticesMap;
 
-    private volatile PriorityQueue<Vertex> weightMinQueue;
+    private volatile VertexMinHeap weightMinQueue;
 
-    private volatile Condition done;
-
-    private volatile Lock lock;
+    private volatile AtomicBoolean done;
 
     private volatile SyncQueue<Edge> shared;
 
     private static final int NO_THREADS = 4;
 
-    public BasicDijkstraAlgorithm(Graph graph) {
+    public ParallelDijkstraAlgorithm(Graph graph) {
         this.vertices = graph.getVertices();
         this.edges = graph.getEdges();
     }
@@ -45,7 +44,11 @@ public class BasicDijkstraAlgorithm implements DijkstraAlgorithm {
         long start = System.currentTimeMillis();
         executeAlgorithm();
         long end = System.currentTimeMillis();
-        System.out.println(end - start);
+        long total = end - start;
+
+        System.out.println("----------------------------");
+        System.out.println("Run time : " + total + " ms");
+        System.out.println("----------------------------");
     }
 
     @Override
@@ -69,9 +72,7 @@ public class BasicDijkstraAlgorithm implements DijkstraAlgorithm {
     private void executeAlgorithm() {
         synchronized (shared) {
             while (!weightMinQueue.isEmpty()) {
-                lock.lock();
                 Vertex u = weightMinQueue.poll();
-                lock.unlock();
                 Set<Vertex> adjacentVertices = adjacentVerticesMap.get(u);
 
                 adjacentVertices.forEach(v -> {
@@ -89,17 +90,16 @@ public class BasicDijkstraAlgorithm implements DijkstraAlgorithm {
 
             }
 
-            done.setFlag(true);
+            done.set(true);
             shared.notifyAll();
         }
     }
 
     private void initialize(Vertex source) {
-        this.weightMinQueue = new PriorityQueue<>((v1, v2) -> v1.getDistanceToSource().compareTo(v2.getDistanceToSource()));
+        this.weightMinQueue = new SynchronizedMinHeap();
         this.predecessors = new HashMap<>();
-        this.done = new Condition(false);
-        this.lock = new ReentrantLock();
-        this.shared = new SyncQueue<>(done);
+        this.done = new AtomicBoolean(false);
+        this.shared = new SyncQueue<>(done, NO_THREADS);
         this.adjacentVerticesMap = new HashMap<>();
 
         vertices.forEach(v -> adjacentVerticesMap.put(v, findAdjacentVertices(v)));
@@ -110,16 +110,14 @@ public class BasicDijkstraAlgorithm implements DijkstraAlgorithm {
             weightMinQueue.add(v);
         });
 
-        weightMinQueue.remove(source);
-        source.setDistanceToSource(0.0);
-        weightMinQueue.add(source);
+        weightMinQueue.updateDistance(source, 0.0);
 
         createThreads();
     }
 
     private void createThreads() {
         for (int i = 0; i < NO_THREADS; i++) {
-            DijkstraThread dijkstraThread = new DijkstraThread(lock, shared, done, predecessors, edges, weightMinQueue);
+            DijkstraThread dijkstraThread = new DijkstraThread(shared, done, predecessors, edges, weightMinQueue);
             (new Thread(dijkstraThread)).start();
         }
     }

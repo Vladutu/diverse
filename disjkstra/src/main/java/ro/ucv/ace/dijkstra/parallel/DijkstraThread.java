@@ -1,34 +1,30 @@
-package ro.ucv.ace.dijkstra.parallelv2;
+package ro.ucv.ace.dijkstra.parallel;
 
 import ro.ucv.ace.graph.Edge;
 import ro.ucv.ace.graph.Vertex;
+import ro.ucv.ace.minheap.VertexMinHeap;
 
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.concurrent.locks.Lock;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by Geo on 09.11.2016.
  */
 public class DijkstraThread implements Runnable {
 
-
-    private volatile Lock lock;
-
     private volatile SyncQueue<Edge> shared;
 
-    private volatile Condition done;
+    private volatile AtomicBoolean done;
 
     private volatile Map<Vertex, Vertex> predecessors;
 
     private List<Edge> edges;
 
-    private volatile PriorityQueue<Vertex> weightMinQueue;
+    private volatile VertexMinHeap weightMinQueue;
 
-    public DijkstraThread(Lock lock, SyncQueue<Edge> shared, Condition done,
-                          Map<Vertex, Vertex> predecessors, List<Edge> edges, PriorityQueue<Vertex> weightMinQueue) {
-        this.lock = lock;
+    public DijkstraThread(SyncQueue<Edge> shared, AtomicBoolean done,
+                          Map<Vertex, Vertex> predecessors, List<Edge> edges, VertexMinHeap weightMinQueue) {
         this.shared = shared;
         this.done = done;
         this.predecessors = predecessors;
@@ -38,7 +34,7 @@ public class DijkstraThread implements Runnable {
 
     @Override
     public void run() {
-        while (!done.isFlag()) {
+        while (!done.get()) {
             Edge e = shared.poll();
             if (e == null) {
                 break;
@@ -48,13 +44,7 @@ public class DijkstraThread implements Runnable {
 
             Double sum = u.getDistanceToSource() + distance(u, v);
             if (v.getDistanceToSource() > sum) {
-
-                lock.lock();
-                weightMinQueue.remove(v);
-                v.setDistanceToSource(sum);
-                weightMinQueue.add(v);
-                lock.unlock();
-
+                weightMinQueue.updateDistance(v, sum);
                 predecessors.replace(v, u);
             }
         }
