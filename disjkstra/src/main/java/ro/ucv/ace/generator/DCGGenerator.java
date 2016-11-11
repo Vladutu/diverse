@@ -57,6 +57,12 @@ public class DCGGenerator {
     private void generateDAG() {
         int total = 0;
 
+        for (int i = 0; i < noVertices - 1; i++) {
+            edges.add(new DCGEdge(i, i + 1, Math.abs(random.nextInt() % 500)));
+            edges.add(new DCGEdge(i + 1, i, Math.abs(random.nextInt() % 500)));
+            total += 2;
+        }
+
         while (total < noEdges) {
             DCGEdge DCGEdge = generateEdge();
             if (!edges.contains(DCGEdge)) {
@@ -64,6 +70,7 @@ public class DCGGenerator {
                 total++;
             }
         }
+
     }
 
     private DCGEdge generateEdge() {

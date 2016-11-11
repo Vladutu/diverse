@@ -65,4 +65,13 @@ public class DCGEdge {
         result = 31 * result + destination;
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "DCGEdge{" +
+                "source=" + source +
+                ", destination=" + destination +
+                ", cost=" + cost +
+                '}';
+    }
 }

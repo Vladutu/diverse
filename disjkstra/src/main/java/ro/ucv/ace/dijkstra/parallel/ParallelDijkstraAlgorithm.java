@@ -17,13 +17,13 @@ public class ParallelDijkstraAlgorithm implements DijkstraAlgorithm {
 
     private Graph graph;
 
-    private volatile Map<Vertex, Vertex> predecessors;
+    private Map<Vertex, Vertex> predecessors;
 
-    private volatile VertexMinHeap weightMinQueue;
+    private VertexMinHeap weightMinQueue;
 
-    private volatile AtomicBoolean done;
+    private AtomicBoolean done;
 
-    private volatile SyncQueue<Edge> shared;
+    private SyncQueue<Edge> shared;
 
     private static final int NO_THREADS = 4;
 
@@ -69,9 +69,7 @@ public class ParallelDijkstraAlgorithm implements DijkstraAlgorithm {
                 Vertex u = weightMinQueue.poll();
                 Set<Vertex> adjacentVertices = graph.getAdjacentVertices(u);
 
-                adjacentVertices.forEach(v -> {
-                    shared.add(new Edge(u, v, 0.0));
-                });
+                adjacentVertices.forEach(v -> shared.add(new Edge(u, v, 0.0)));
 
                 while (!shared.isEmpty()) {
                     try {
