@@ -46,12 +46,12 @@ public class Graph {
     }
 
     public Double distanceBetween(Vertex u, Vertex v) {
-        return edges.stream()
-                .filter(e -> e.getSource().equals(u) && e.getDestination().equals(v))
-                .findFirst()
-                .get()
-                .getWeight();
-//        return distances.get(u, v);
+//        return edges.stream()
+//                .filter(e -> e.getSource().equals(u) && e.getDestination().equals(v))
+//                .findFirst()
+//                .get()
+//                .getWeight();
+        return distances.get(u, v);
     }
 
     public List<Vertex> getVertices() {
