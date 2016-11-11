@@ -9,20 +9,15 @@ import ro.ucv.ace.minheap.VertexMinHeap;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 /**
  * Created by Geo on 09.11.2016.
  */
 public class ParallelDijkstraAlgorithm implements DijkstraAlgorithm {
 
+    private Graph graph;
+
     private volatile Map<Vertex, Vertex> predecessors;
-
-    private List<Vertex> vertices;
-
-    private List<Edge> edges;
-
-    private Map<Vertex, Set<Vertex>> adjacentVerticesMap;
 
     private volatile VertexMinHeap weightMinQueue;
 
@@ -33,8 +28,7 @@ public class ParallelDijkstraAlgorithm implements DijkstraAlgorithm {
     private static final int NO_THREADS = 4;
 
     public ParallelDijkstraAlgorithm(Graph graph) {
-        this.vertices = graph.getVertices();
-        this.edges = graph.getEdges();
+        this.graph = graph;
     }
 
     @Override
@@ -53,7 +47,7 @@ public class ParallelDijkstraAlgorithm implements DijkstraAlgorithm {
 
     @Override
     public List<Vertex> findShortestPath(Vertex destination) {
-        LinkedList<Vertex> path = new LinkedList<Vertex>();
+        List<Vertex> path = new ArrayList<>();
         Vertex step = destination;
 
         if (predecessors.get(step) == null) {
@@ -73,12 +67,11 @@ public class ParallelDijkstraAlgorithm implements DijkstraAlgorithm {
         synchronized (shared) {
             while (!weightMinQueue.isEmpty()) {
                 Vertex u = weightMinQueue.poll();
-                Set<Vertex> adjacentVertices = adjacentVerticesMap.get(u);
+                Set<Vertex> adjacentVertices = graph.getAdjacentVertices(u);
 
                 adjacentVertices.forEach(v -> {
                     shared.add(new Edge(u, v, 0.0));
                 });
-
 
                 while (!shared.isEmpty()) {
                     try {
@@ -100,11 +93,8 @@ public class ParallelDijkstraAlgorithm implements DijkstraAlgorithm {
         this.predecessors = new HashMap<>();
         this.done = new AtomicBoolean(false);
         this.shared = new SyncQueue<>(done, NO_THREADS);
-        this.adjacentVerticesMap = new HashMap<>();
 
-        vertices.forEach(v -> adjacentVerticesMap.put(v, findAdjacentVertices(v)));
-
-        vertices.forEach(v -> {
+        graph.getVertices().forEach(v -> {
             predecessors.put(v, null);
             v.setDistanceToSource(Double.POSITIVE_INFINITY);
             weightMinQueue.add(v);
@@ -117,16 +107,8 @@ public class ParallelDijkstraAlgorithm implements DijkstraAlgorithm {
 
     private void createThreads() {
         for (int i = 0; i < NO_THREADS; i++) {
-            DijkstraThread dijkstraThread = new DijkstraThread(shared, done, predecessors, edges, weightMinQueue);
+            DijkstraThread dijkstraThread = new DijkstraThread(graph, shared, done, predecessors, weightMinQueue);
             (new Thread(dijkstraThread)).start();
         }
     }
-
-    private Set<Vertex> findAdjacentVertices(Vertex vertex) {
-        return edges.stream()
-                .filter(e -> e.getSource().equals(vertex))
-                .map(Edge::getDestination)
-                .collect(Collectors.toSet());
-    }
-
 }

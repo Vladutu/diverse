@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class App {
     public static void main(String[] args) {
-        JokeParser jokeParser = new JokeParser(new JokeBuilder(new CosineSimilarityAlgorithm()));
+        JokeParser jokeParser = new JokeParser(new JokeBuilder(new PearsonSimilarityAlgorithm()));
         List<Joke> jokes = new ArrayList<>();
 
         String folderName = "jokes/";
@@ -24,6 +24,6 @@ public class App {
 
         JokeRepository jokeRepository = new JokeRepository(jokes);
 
-        jokeRepository.findSimilarJokes(jokes.get(1)).forEach(System.out::println);
+        jokeRepository.findSimilarJokes(jokes.get(0)).forEach(System.out::println);
     }
 }

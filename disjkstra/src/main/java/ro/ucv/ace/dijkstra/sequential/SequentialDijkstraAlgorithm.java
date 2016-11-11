@@ -1,14 +1,12 @@
 package ro.ucv.ace.dijkstra.sequential;
 
 import ro.ucv.ace.dijkstra.DijkstraAlgorithm;
-import ro.ucv.ace.graph.Edge;
 import ro.ucv.ace.graph.Graph;
 import ro.ucv.ace.graph.Vertex;
 import ro.ucv.ace.minheap.NormalMinHeap;
 import ro.ucv.ace.minheap.VertexMinHeap;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by Geo on 05.11.2016.
@@ -19,15 +17,10 @@ public class SequentialDijkstraAlgorithm implements DijkstraAlgorithm {
 
     private Map<Vertex, Vertex> predecessors;
 
-    private List<Vertex> vertices;
-
-    private List<Edge> edges;
-
-    private Map<Vertex, Set<Vertex>> adjacentVerticesMap;
+    private Graph graph;
 
     public SequentialDijkstraAlgorithm(Graph graph) {
-        this.vertices = graph.getVertices();
-        this.edges = graph.getEdges();
+        this.graph = graph;
     }
 
     @Override
@@ -47,7 +40,7 @@ public class SequentialDijkstraAlgorithm implements DijkstraAlgorithm {
 
     @Override
     public List<Vertex> findShortestPath(Vertex destination) {
-        LinkedList<Vertex> path = new LinkedList<>();
+        List<Vertex> path = new ArrayList<>();
         Vertex step = destination;
 
         if (predecessors.get(step) == null) {
@@ -63,28 +56,13 @@ public class SequentialDijkstraAlgorithm implements DijkstraAlgorithm {
         return path;
     }
 
-    private Double distance(Vertex u, Vertex v) {
-        return edges.stream()
-                .filter(e -> e.getSource().equals(u) && e.getDestination().equals(v))
-                .findFirst()
-                .get()
-                .getWeight();
-    }
-
-    private Set<Vertex> findAdjacentVertices(Vertex vertex) {
-        return edges.stream()
-                .filter(e -> e.getSource().equals(vertex))
-                .map(Edge::getDestination)
-                .collect(Collectors.toSet());
-    }
-
     private void executeAlgorithm() {
         while (!weightMinQueue.isEmpty()) {
             Vertex u = weightMinQueue.poll();
-            Set<Vertex> adjacentVertices = adjacentVerticesMap.get(u);
+            Set<Vertex> adjacentVertices = graph.getAdjacentVertices(u);
 
             adjacentVertices.forEach(v -> {
-                Double sum = u.getDistanceToSource() + distance(u, v);
+                Double sum = u.getDistanceToSource() + graph.distanceBetween(u, v);
                 if (v.getDistanceToSource() > sum) {
                     weightMinQueue.updateDistance(v, sum);
                     predecessors.replace(v, u);
@@ -96,11 +74,8 @@ public class SequentialDijkstraAlgorithm implements DijkstraAlgorithm {
     private void initialize(Vertex source) {
         this.weightMinQueue = new NormalMinHeap();
         this.predecessors = new HashMap<>();
-        adjacentVerticesMap = new HashMap<>();
 
-        vertices.forEach(v -> adjacentVerticesMap.put(v, findAdjacentVertices(v)));
-
-        vertices.forEach(v -> {
+        graph.getVertices().forEach(v -> {
             predecessors.put(v, null);
             v.setDistanceToSource(Double.POSITIVE_INFINITY);
             weightMinQueue.add(v);

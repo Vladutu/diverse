@@ -1,10 +1,10 @@
 package ro.ucv.ace.dijkstra.parallel;
 
 import ro.ucv.ace.graph.Edge;
+import ro.ucv.ace.graph.Graph;
 import ro.ucv.ace.graph.Vertex;
 import ro.ucv.ace.minheap.VertexMinHeap;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -13,23 +13,23 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class DijkstraThread implements Runnable {
 
-    private volatile SyncQueue<Edge> shared;
+    private SyncQueue<Edge> shared;
 
-    private volatile AtomicBoolean done;
+    private AtomicBoolean done;
 
-    private volatile Map<Vertex, Vertex> predecessors;
+    private Map<Vertex, Vertex> predecessors;
 
-    private List<Edge> edges;
+    private Graph graph;
 
-    private volatile VertexMinHeap weightMinQueue;
+    private VertexMinHeap weightMinQueue;
 
-    public DijkstraThread(SyncQueue<Edge> shared, AtomicBoolean done,
-                          Map<Vertex, Vertex> predecessors, List<Edge> edges, VertexMinHeap weightMinQueue) {
+    public DijkstraThread(Graph graph, SyncQueue<Edge> shared, AtomicBoolean done,
+                          Map<Vertex, Vertex> predecessors, VertexMinHeap weightMinQueue) {
         this.shared = shared;
         this.done = done;
         this.predecessors = predecessors;
-        this.edges = edges;
         this.weightMinQueue = weightMinQueue;
+        this.graph = graph;
     }
 
     @Override
@@ -42,22 +42,12 @@ public class DijkstraThread implements Runnable {
             Vertex u = e.getSource();
             Vertex v = e.getDestination();
 
-            Double sum = u.getDistanceToSource() + distance(u, v);
+            Double sum = u.getDistanceToSource() + graph.distanceBetween(u, v);
             if (v.getDistanceToSource() > sum) {
                 weightMinQueue.updateDistance(v, sum);
                 predecessors.replace(v, u);
             }
         }
     }
-
-
-    private Double distance(Vertex u, Vertex v) {
-        return edges.stream()
-                .filter(e -> e.getSource().equals(u) && e.getDestination().equals(v))
-                .findFirst()
-                .get()
-                .getWeight();
-    }
-
 
 }
