@@ -36,7 +36,7 @@ public class JokeImpl implements Joke {
 
     @Override
     public Double compare(Joke joke) {
-        return similarityAlgorithm.compare(frequency, joke.getFrequency());
+        return similarityAlgorithm.compare(this, joke);
     }
 
     @Override

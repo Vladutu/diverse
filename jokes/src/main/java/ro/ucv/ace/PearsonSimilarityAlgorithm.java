@@ -8,7 +8,10 @@ import java.util.Map;
 public class PearsonSimilarityAlgorithm implements SimilarityAlgorithm {
 
     @Override
-    public Double compare(Map<String, Integer> oneFrequency, Map<String, Integer> otherFrequency) {
+    public Double compare(Joke one, Joke other) {
+        Map<String, Integer> oneFrequency = one.getFrequency();
+        Map<String, Integer> otherFrequency = other.getFrequency();
+
         double xySum = 0;
         double xSquare = 0;
         double ySquare = 0;

@@ -1,5 +1,6 @@
 package ro.ucv.ace;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,7 @@ public class JokeRepository {
     private List<Map.Entry<Joke, Double>> selectMostSimilarJokes(Map<Joke, Double> similarityScores) {
         return similarityScores.entrySet()
                 .stream()
-                .sorted(Map.Entry.comparingByValue())
+                .sorted(Map.Entry.comparingByValue(Collections.reverseOrder()))
                 .collect(Collectors.toList())
                 .subList(1, 4);
     }

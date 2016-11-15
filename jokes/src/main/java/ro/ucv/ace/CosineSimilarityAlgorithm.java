@@ -8,7 +8,10 @@ import java.util.Map;
 public class CosineSimilarityAlgorithm implements SimilarityAlgorithm {
 
     @Override
-    public Double compare(Map<String, Integer> oneFrequency, Map<String, Integer> otherFrequency) {
+    public Double compare(Joke one, Joke other) {
+        Map<String, Integer> oneFrequency = one.getFrequency();
+        Map<String, Integer> otherFrequency = other.getFrequency();
+
         double abSum = 0;
         double aSquare = 0;
         double bSquare = 0;
@@ -25,6 +28,6 @@ public class CosineSimilarityAlgorithm implements SimilarityAlgorithm {
             bSquare += entry.getValue() * entry.getValue();
         }
 
-        return Math.acos(abSum / (Math.sqrt(aSquare) * Math.sqrt(bSquare)));
+        return abSum / (Math.sqrt(aSquare) * Math.sqrt(bSquare));
     }
 }
