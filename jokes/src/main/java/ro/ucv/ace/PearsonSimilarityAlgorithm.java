@@ -55,6 +55,10 @@ public class PearsonSimilarityAlgorithm implements SimilarityAlgorithm {
         }
         yMean /= n;
 
-        return (xySum - n * xMean * yMean) / (Math.sqrt(xSquare - n * xMean * xMean) * Math.sqrt(ySquare - n * yMean * yMean));
+        double pRes1 = (xySum - n * xMean * yMean);
+        double pRes2 = Math.sqrt(xSquare - n * xMean * xMean);
+        double pRes3 = Math.sqrt(ySquare - n * yMean * yMean);
+
+        return pRes1 / (pRes2 * pRes3);
     }
 }

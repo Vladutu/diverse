@@ -1,0 +1,122 @@
+[
+  {
+    "name": "Microsoft",
+    "advertisement": {
+      "content": "Advertisement for Microsoft"
+    },
+    "bidingOptions": {
+      "budget": 50,
+      "participationProbability": 40,
+      "maxStep": 5,
+      "limitPerAuction": 10
+    }
+  },
+  {
+    "name": "Google",
+    "advertisement": {
+      "content": "Advertisement for Google"
+    },
+    "bidingOptions": {
+      "budget": 80,
+      "participationProbability": 70,
+      "maxStep": 3,
+      "limitPerAuction": 15
+    }
+  },
+  {
+    "name": "IBM",
+    "advertisement": {
+      "content": "Advertisement for IBM"
+    },
+    "bidingOptions": {
+      "budget": 50,
+      "participationProbability": 40,
+      "maxStep": 5,
+      "limitPerAuction": 10
+    }
+  },
+  {
+    "name": "Amazon",
+    "advertisement": {
+      "content": "Advertisement for Amazon"
+    },
+    "bidingOptions": {
+      "budget": 50,
+      "participationProbability": 40,
+      "maxStep": 5,
+      "limitPerAuction": 10
+    }
+  },
+  {
+    "name": "EMC",
+    "advertisement": {
+      "content": "Advertisement for EMC"
+    },
+    "bidingOptions": {
+      "budget": 50,
+      "participationProbability": 40,
+      "maxStep": 5,
+      "limitPerAuction": 10
+    }
+  },
+  {
+    "name": "Paypal",
+    "advertisement": {
+      "content": "Advertisement for Paypal"
+    },
+    "bidingOptions": {
+      "budget": 50,
+      "participationProbability": 40,
+      "maxStep": 5,
+      "limitPerAuction": 10
+    }
+  },
+  {
+    "name": "Oracle",
+    "advertisement": {
+      "content": "Advertisement for Oracle"
+    },
+    "bidingOptions": {
+      "budget": 50,
+      "participationProbability": 40,
+      "maxStep": 5,
+      "limitPerAuction": 10
+    }
+  },
+  {
+    "name": "VMWare",
+    "advertisement": {
+      "content": "Advertisement for VMWare"
+    },
+    "bidingOptions": {
+      "budget": 50,
+      "participationProbability": 40,
+      "maxStep": 5,
+      "limitPerAuction": 10
+    }
+  },
+  {
+    "name": "Adobe",
+    "advertisement": {
+      "content": "Advertisement for Adobe"
+    },
+    "bidingOptions": {
+      "budget": 50,
+      "participationProbability": 40,
+      "maxStep": 5,
+      "limitPerAuction": 10
+    }
+  },
+  {
+    "name": "GitHub",
+    "advertisement": {
+      "content": "Advertisement for GitHub"
+    },
+    "bidingOptions": {
+      "budget": 50,
+      "participationProbability": 40,
+      "maxStep": 5,
+      "limitPerAuction": 10
+    }
+  }
+]
