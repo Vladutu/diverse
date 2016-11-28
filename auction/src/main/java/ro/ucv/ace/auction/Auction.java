@@ -1,5 +1,6 @@
 package ro.ucv.ace.auction;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -11,19 +12,35 @@ public class Auction {
 
     private List<Company> companies;
 
+    private boolean hasBid;
+
+    private Company lastBidder;
+
     public Auction(List<Company> participants, int startingPrice) {
         this.companies = participants;
         this.currentBid = startingPrice;
+        this.hasBid = false;
     }
 
 
-    public Company begin() {
-        companies.forEach(company->{
-            if(company.canBid(currentBid)){
-                currentBid += company.bid();
-            }
-        });
+    public void start() {
+        do {
+            hasBid = false;
+            companies.stream()
+                    .filter(company -> company.canBid(currentBid))
+                    .forEach(company -> {
+                        currentBid += company.bid(currentBid);
+                        hasBid = true;
+                        lastBidder = company;
+                    });
+            Collections.shuffle(companies);
+        }
+        while (hasBid);
+    }
 
-        return null;
+    public Company getWinner() {
+        lastBidder.substractFromBudget(currentBid);
+
+        return lastBidder;
     }
 }

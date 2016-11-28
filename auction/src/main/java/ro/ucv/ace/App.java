@@ -2,6 +2,7 @@ package ro.ucv.ace;
 
 import ro.ucv.ace.auction.Company;
 import ro.ucv.ace.auction.CompanyParser;
+import ro.ucv.ace.auction.WebsiteOwner;
 
 import java.io.File;
 import java.util.List;
@@ -15,6 +16,13 @@ public class App {
         CompanyParser companyParser = new CompanyParser();
 
         List<Company> companies = companyParser.parse(file);
-        companies.forEach(System.out::println);
+
+        WebsiteOwner websiteOwner = new WebsiteOwner(companies, 2);
+        websiteOwner.beginAuction();
+        System.out.println("================================");
+        websiteOwner.beginAuction();
+        System.out.println("================================");
+        websiteOwner.beginAuction();
+        System.out.println("================================");
     }
 }

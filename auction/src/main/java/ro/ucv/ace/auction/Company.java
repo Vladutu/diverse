@@ -18,6 +18,7 @@ public class Company {
         this.name = name;
         this.advertisement = advertisement;
         this.bidingOptions = bidingOptions;
+
     }
 
     @Override
@@ -41,7 +42,11 @@ public class Company {
         return bidingOptions.canBid(currentBid);
     }
 
-    public int bid() {
-        return bidingOptions.bid();
+    public int bid(int currentBid) {
+        return bidingOptions.bid(currentBid);
+    }
+
+    public void substractFromBudget(int currentBid) {
+        bidingOptions.substractFromBudget(currentBid);
     }
 }

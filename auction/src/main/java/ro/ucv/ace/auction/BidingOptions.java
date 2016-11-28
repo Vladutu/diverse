@@ -43,16 +43,19 @@ public class BidingOptions {
     }
 
     public boolean canBid(int currentBid) {
-        return currentBid < limitPerAuction;
+        return currentBid < limitPerAuction && currentBid < budget;
     }
 
-    public int bid() {
-        int bid = random.nextInt() % maxStep + 1;
+    public int bid(int currentBid) {
+        int bid = random.nextInt() % Math.min(maxStep, limitPerAuction - currentBid) + 1;
         if (bid > budget) {
             bid = budget;
         }
-        budget -= bid;
 
         return bid;
+    }
+
+    public void substractFromBudget(int currentBid) {
+        budget -= currentBid;
     }
 }
