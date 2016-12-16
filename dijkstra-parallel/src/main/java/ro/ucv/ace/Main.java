@@ -21,17 +21,26 @@ public class Main {
         int me = MPI.COMM_WORLD.Rank();
         int size = MPI.COMM_WORLD.Size();
 
-        // Create graph
-        File file = new File(App.class.getClassLoader().getResource("dag_small.txt").getFile());
-        GraphParser graphParser = new GraphParser();
-        Graph graph = graphParser.readGraph(file);
-
         if (me == 0) {
+            // Create graph
+            System.out.println("Starting reading graph");
+            File file = new File(App.class.getClassLoader().getResource("dag.txt").getFile());
+            GraphParser graphParser = new GraphParser();
+            Graph graph = graphParser.readGraph(file);
+            System.out.println("Graph loaded");
+
+            long start = System.currentTimeMillis();
             executeMaster(graph, size);
+            long end = System.currentTimeMillis();
+            long total = end - start;
+
+            System.out.println("----------------------------");
+            System.out.println("Run time : " + total + " ms");
+            System.out.println("----------------------------");
         }
 
         if (me != 0) {
-            executeSlave(graph, size, me);
+            executeSlave(size, me);
         }
 
         MPI.Finalize();
@@ -52,8 +61,14 @@ public class Main {
         });
         weightMinQueue.updateDistance(source, 0.0);
 
+        //send graph to slaves
+        System.out.println("Seding graph to slaves");
+        for (int i = 1; i < size; i++) {
+            MPI.COMM_WORLD.Send(new Object[]{graph}, 0, 1, MPI.OBJECT, i, 0);
+        }
+        System.out.println("Graph sent");
+
         while (!weightMinQueue.isEmpty()) {
-            System.out.println(weightMinQueue.size());
             Vertex u = weightMinQueue.poll();
             List<Vertex> adjacentVertices = graph.getAdjacentVertices(u).stream().collect(Collectors.toList());
 
@@ -80,7 +95,11 @@ public class Main {
         System.out.println(findShortestPath(predecessors, graph.getVertices().get(1)));
     }
 
-    private static void executeSlave(Graph graph, int size, int me) {
+    private static void executeSlave(int size, int me) {
+        Object[] g = new Object[1];
+        MPI.COMM_WORLD.Recv(g, 0, 1, MPI.OBJECT, 0, MPI.ANY_TAG);
+        Graph graph = (Graph) g[0];
+
         while (true) {
             Object[] message = new Object[2];
             MPI.COMM_WORLD.Recv(message, 0, 2, MPI.OBJECT, 0, MPI.ANY_TAG);

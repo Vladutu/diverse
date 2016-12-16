@@ -3,6 +3,7 @@ package ro.ucv.ace.graph.model;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +13,7 @@ import java.util.stream.Collectors;
 /**
  * Created by Geo on 12.11.2016.
  */
-public class Graph {
+public class Graph implements Serializable {
 
     private List<Vertex> vertices;
 

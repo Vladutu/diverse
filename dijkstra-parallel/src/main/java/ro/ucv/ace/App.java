@@ -16,7 +16,7 @@ public class App {
 //        graphGenerator.generate(new File("D:\\dag.txt"));
 
         System.out.println("Starting graph parsing...");
-        File file = new File(App.class.getClassLoader().getResource("dag_small.txt").getFile());
+        File file = new File(App.class.getClassLoader().getResource("dag.txt").getFile());
         GraphParser graphParser = new GraphParser();
         Graph graph = graphParser.readGraph(file);
 
