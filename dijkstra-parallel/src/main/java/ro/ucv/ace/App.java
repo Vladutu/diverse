@@ -1,7 +1,7 @@
 package ro.ucv.ace;
 
 import ro.ucv.ace.dijkstra.DijkstraAlgorithm;
-import ro.ucv.ace.dijkstra.parallel.ParallelDijkstraAlgorithm;
+import ro.ucv.ace.dijkstra.sequential.SequentialDijkstraAlgorithm;
 import ro.ucv.ace.graph.model.Graph;
 import ro.ucv.ace.graph.parser.GraphParser;
 
@@ -16,17 +16,17 @@ public class App {
 //        graphGenerator.generate(new File("D:\\dag.txt"));
 
         System.out.println("Starting graph parsing...");
-        File file = new File(App.class.getClassLoader().getResource("dag.txt").getFile());
+        File file = new File(App.class.getClassLoader().getResource("dag_small.txt").getFile());
         GraphParser graphParser = new GraphParser();
         Graph graph = graphParser.readGraph(file);
 
         System.out.println("Finished parsing graph.\nStarting dijkstra algorithm...");
 
-        //DijkstraAlgorithm dijkstraAlgorithm = new SequentialDijkstraAlgorithm(graph);
-        DijkstraAlgorithm dijkstraAlgorithm = new ParallelDijkstraAlgorithm(graph);
+        DijkstraAlgorithm dijkstraAlgorithm = new SequentialDijkstraAlgorithm(graph);
+//        DijkstraAlgorithm dijkstraAlgorithm = new ParallelDijkstraAlgorithm(graph);
 
         dijkstraAlgorithm.execute(graph.getVertices().get(0));
 
-        System.out.println(dijkstraAlgorithm.findShortestPath(graph.getVertices().get(5000)));
+        System.out.println(dijkstraAlgorithm.findShortestPath(graph.getVertices().get(1)));
     }
 }

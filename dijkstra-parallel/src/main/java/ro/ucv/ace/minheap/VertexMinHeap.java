@@ -15,4 +15,6 @@ public interface VertexMinHeap {
     boolean isEmpty();
 
     void updateDistance(Vertex vertex, Double value);
+
+    int size();
 }

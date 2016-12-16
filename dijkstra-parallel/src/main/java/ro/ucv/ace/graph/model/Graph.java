@@ -43,9 +43,10 @@ public class Graph {
     public Double distanceBetween(Vertex u, Vertex v) {
         if (distances.get(u, v) != null) {
             return distances.get(u, v);
+        } else if (distances.get(v, u) != null) {
+            return distances.get(v, u);
         }
-
-        return distances.get(v, u);
+        throw new RuntimeException();
     }
 
     public List<Vertex> getVertices() {

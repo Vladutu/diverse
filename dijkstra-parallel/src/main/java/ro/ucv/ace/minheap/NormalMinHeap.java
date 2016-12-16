@@ -34,8 +34,29 @@ public class NormalMinHeap implements VertexMinHeap {
 
     @Override
     public void updateDistance(Vertex vertex, Double value) {
-        priorityQueue.remove(vertex);
-        vertex.setDistanceToSource(value);
-        priorityQueue.add(vertex);
+        Vertex theOne = priorityQueue.stream()
+                .filter(v -> v.equals(vertex))
+                .findFirst()
+                .get();
+
+        priorityQueue.remove(theOne);
+        theOne.setDistanceToSource(value);
+        priorityQueue.add(theOne);
+    }
+
+    @Override
+    public int size() {
+        return priorityQueue.size();
+    }
+
+    public boolean contains(Vertex vertex) {
+        return priorityQueue.contains(vertex);
+    }
+
+    @Override
+    public String toString() {
+        return "NormalMinHeap{" +
+                "priorityQueue=" + priorityQueue +
+                '}';
     }
 }

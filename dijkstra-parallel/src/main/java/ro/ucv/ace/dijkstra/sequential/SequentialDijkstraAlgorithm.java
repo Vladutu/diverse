@@ -2,10 +2,10 @@ package ro.ucv.ace.dijkstra.sequential;
 
 
 import ro.ucv.ace.dijkstra.DijkstraAlgorithm;
-import ro.ucv.ace.minheap.NormalMinHeap;
-import ro.ucv.ace.minheap.VertexMinHeap;
 import ro.ucv.ace.graph.model.Graph;
 import ro.ucv.ace.graph.model.Vertex;
+import ro.ucv.ace.minheap.NormalMinHeap;
+import ro.ucv.ace.minheap.VertexMinHeap;
 
 import java.util.*;
 

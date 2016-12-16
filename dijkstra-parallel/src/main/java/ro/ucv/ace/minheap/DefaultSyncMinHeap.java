@@ -35,4 +35,9 @@ public class DefaultSyncMinHeap implements VertexMinHeap {
         vertex.setDistanceToSource(value);
         add(vertex);
     }
+
+    @Override
+    public int size() {
+        return queue.size();
+    }
 }

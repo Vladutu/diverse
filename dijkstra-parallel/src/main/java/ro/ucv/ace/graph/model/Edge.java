@@ -40,4 +40,35 @@ public class Edge {
     public void setWeight(double weight) {
         this.weight = weight;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Edge edge = (Edge) o;
+
+        if (Double.compare(edge.weight, weight) != 0) {
+            return false;
+        }
+        if (vertex1 != null ? !vertex1.equals(edge.vertex1) : edge.vertex1 != null) {
+            return false;
+        }
+        return vertex2 != null ? vertex2.equals(edge.vertex2) : edge.vertex2 == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        result = vertex1 != null ? vertex1.hashCode() : 0;
+        result = 31 * result + (vertex2 != null ? vertex2.hashCode() : 0);
+        temp = Double.doubleToLongBits(weight);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
 }

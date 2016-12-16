@@ -1,9 +1,11 @@
 package ro.ucv.ace.graph.model;
 
+import java.io.Serializable;
+
 /**
  * Created by Geo on 12.11.2016.
  */
-public class Vertex {
+public class Vertex implements Serializable {
 
     private int id;
 

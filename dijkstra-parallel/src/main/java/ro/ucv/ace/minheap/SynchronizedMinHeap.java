@@ -62,4 +62,14 @@ public class SynchronizedMinHeap implements VertexMinHeap {
             lock.unlock();
         }
     }
+
+    @Override
+    public int size() {
+        lock.lock();
+        try {
+            return priorityQueue.size();
+        } finally {
+            lock.unlock();
+        }
+    }
 }
