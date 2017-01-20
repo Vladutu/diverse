@@ -1,7 +1,7 @@
-package ro.ucv.ace;
+package ro.ucv.ace.dijkstra.mpi;
 
 import mpi.MPI;
-import ro.ucv.ace.dijkstra.mpi.RelaxationResult;
+import ro.ucv.ace.App;
 import ro.ucv.ace.graph.model.Graph;
 import ro.ucv.ace.graph.model.Vertex;
 import ro.ucv.ace.graph.parser.GraphParser;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 /**
  * Created by Geo on 14.12.2016.
  */
-public class Main {
+public class Mpi {
 
     public static void main(String[] args) {
         MPI.Init(args);
@@ -24,7 +24,7 @@ public class Main {
         if (me == 0) {
             // Create graph
             System.out.println("Starting reading graph");
-            File file = new File(App.class.getClassLoader().getResource("dag.txt").getFile());
+            File file = new File(App.class.getClassLoader().getResource("data3.txt").getFile());
             GraphParser graphParser = new GraphParser();
             Graph graph = graphParser.readGraph(file);
             System.out.println("Graph loaded");

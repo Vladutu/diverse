@@ -12,11 +12,11 @@ import java.io.File;
  */
 public class App {
     public static void main(String[] args) {
-//        GraphGenerator graphGenerator = new GraphGenerator(10000, 1000000);
+//        GraphGenerator graphGenerator = new GraphGenerator(1000, 100000);
 //        graphGenerator.generate(new File("D:\\dag.txt"));
 
         System.out.println("Starting graph parsing...");
-        File file = new File(App.class.getClassLoader().getResource("dag.txt").getFile());
+        File file = new File(App.class.getClassLoader().getResource("data2.txt").getFile());
         GraphParser graphParser = new GraphParser();
         Graph graph = graphParser.readGraph(file);
 
@@ -26,7 +26,7 @@ public class App {
 //        DijkstraAlgorithm dijkstraAlgorithm = new ParallelDijkstraAlgorithm(graph);
 
         dijkstraAlgorithm.execute(graph.getVertices().get(0));
-
+//
         System.out.println(dijkstraAlgorithm.findShortestPath(graph.getVertices().get(1)));
     }
 }
