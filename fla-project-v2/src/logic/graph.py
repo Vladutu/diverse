@@ -62,8 +62,11 @@ class Graph:
         else:
             transition = Transition(fromState, toState, value)
 
-        if self.FindTransitionFromStates(fromState, toState) is not None:
-            return None
+        existingTransition = self.FindTransitionFromStates(fromState, toState)
+
+        if existingTransition is not None:
+            existingTransition.SetLabel(value)
+            return existingTransition
 
         self.AddTransition(transition)
 

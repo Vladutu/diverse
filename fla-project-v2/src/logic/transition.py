@@ -21,3 +21,10 @@ class Transition:
         if self.fromState == transition.fromState and len(intersection) > 0:
             return True
         return False
+
+    def SetLabel(self, value):
+        symb = unichr(955)
+        if value == '':
+            self.label = symb
+        else:
+            self.label = value
