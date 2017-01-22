@@ -35,21 +35,38 @@ class InputRunWindow(wx.Frame):
         self.panel.SetSizerAndFit(self.border)
         self.SetSizerAndFit(self.windowSizer)
 
+        if not self.graph.HasStartState():
+            self.runButton.Disable()
+            self.input.Disable()
+            self.resultLabel.SetLabel('No Start State')
+        else:
+            self.runButton.Disable()
+            self.resultLabel.SetLabel('No input')
+
     def BindEvents(self):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.runButton.Bind(wx.EVT_BUTTON, self.OnRun)
+        self.input.Bind(wx.EVT_CHAR, self.OnInputChange)
+
+    def OnInputChange(self, event):
+        kc = chr(event.GetKeyCode())
+        label = self.input.GetValue()
+
+        if kc == '\b':
+            label = label[:-1]
+        else:
+            label = label + kc
+
+        if label == '':
+            self.runButton.Disable()
+            self.resultLabel.SetLabel('No input')
+        else:
+            self.runButton.Enable()
+            self.resultLabel.SetLabel('')
+        event.Skip()
 
     def OnRun(self, event):
         input = self.input.GetValue()
-
-        if input == '':
-            self.resultLabel.SetLabel('No input')
-            return
-
-        if not self.graph.HasStartState():
-            self.resultLabel.SetLabel('No Start State')
-            return
-
         result = self.graph.TestInput(input)
 
         if result:
