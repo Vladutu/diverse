@@ -1,9 +1,0 @@
-digraph finite_state_machine {
-rankdir=LR
-size="8,5"
-	q0 [shape=doublecircle style=filled]
-	node [shape=none]
-		"" -> q0
-	node [shape=circle]
-	q1 [shape=doublecircle]
-}
