@@ -58,7 +58,7 @@ class Window(wx.Frame):
         self.runFItem.SetBitmap(wx.Bitmap('../resources/Run-icon.png'))
         toolsMenu.AppendItem(self.runFItem)
 
-        self.checkMenu = wx.MenuItem(toolsMenu, 452, '&Check automata')
+        self.checkMenu = wx.MenuItem(toolsMenu, 452, '&Check automaton')
         self.checkMenu.SetBitmap(wx.Bitmap('../resources/Help-icon.png'))
         toolsMenu.AppendItem(self.checkMenu)
 
@@ -85,8 +85,8 @@ class Window(wx.Frame):
         self.fromCBox = wx.ComboBox(self.btnPanel, choices=self.names, style=wx.CB_READONLY, size=(50, 40))
         self.toCBox = wx.ComboBox(self.btnPanel, choices=self.names, style=wx.CB_READONLY, size=(50, 40))
         self.valueInput = wx.TextCtrl(self.btnPanel, -1, size=(40, 25))
-        self.drawTransitionButton = wx.Button(self.btnPanel, label='Draw Transition')
-        self.deleteTransitionButton = wx.Button(self.btnPanel, label='Delete Transition')
+        self.drawTransitionButton = wx.Button(self.btnPanel, label='Draw transition')
+        self.deleteTransitionButton = wx.Button(self.btnPanel, label='Delete transition')
 
         self.stateEditComboBox = wx.ComboBox(self.btnPanel, choices=self.names, style=wx.CB_READONLY, size=(50, 40))
         self.startCheckBox = wx.CheckBox(self.btnPanel, label='Start state', size=(72, 25))
@@ -246,6 +246,7 @@ class Window(wx.Frame):
         toValue = self.toCBox.GetValue()
         value = self.valueInput.GetValue()
         self.graph.AddTransitionFromNames(fromValue, toValue, value)
+        self.valueInput.SetLabel('')
         self.Refresh()
 
     def OnDeleteState(self, event):
