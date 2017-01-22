@@ -171,6 +171,8 @@ class Window(wx.Frame):
     def OnNew(self, event):
         self.graph = Graph()
         self.UncheckCheckButtons()
+        self.stateIndex = 0
+        self.reusableIndexes = []
         self.Refresh()
 
     def UncheckCheckButtons(self):
@@ -187,7 +189,7 @@ class Window(wx.Frame):
         if state is None:
             return
 
-        if startState is not None:
+        if startState is not None and start is True:
             startState.RemoveStartType()
 
         state.SetType(start, end)

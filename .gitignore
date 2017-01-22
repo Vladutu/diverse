@@ -6,3 +6,5 @@
 *.iml
 *.pyc
 node_modules
+/resources/fsm
+/resources/fsm.png
