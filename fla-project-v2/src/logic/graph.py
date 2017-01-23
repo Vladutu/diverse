@@ -1,4 +1,5 @@
-from src.logic.state import State, StateType
+from src.logic.graphvizGenerator import GraphvizGenerator
+from src.logic.state import State, StateType, StateColor
 from src.logic.transition import Transition
 
 
@@ -6,6 +7,7 @@ class Graph:
     def __init__(self):
         self.states = []
         self.transitions = []
+        self.generator = GraphvizGenerator()
 
     def AddState(self, state):
         self.states.append(state)
@@ -137,3 +139,17 @@ class Graph:
                     return True
 
         return False
+
+    def FindNextState(self, currentState, value):
+        for transition in self.transitions:
+            if transition.HasSameSourceAndValue(currentState, value):
+                return transition.toState
+        return None
+
+    def GenerateImage(self):
+        diGraph = self.generator.GenerateGraphviz(self)
+        diGraph.render('../resources/fsm')
+
+    def SetDefaultColor(self):
+        for state in self.states:
+            state.SetColor(StateColor.NORMAL)

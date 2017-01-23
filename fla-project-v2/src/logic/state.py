@@ -8,11 +8,19 @@ class StateType(Enum):
     START_END = 3
 
 
+class StateColor(Enum):
+    NORMAL = 0
+    CURRENT = 1
+    VALID = 2
+    INVALID = 3
+
+
 class State:
-    def __init__(self, label, index, type=StateType.NORMAL):
+    def __init__(self, label, index, type=StateType.NORMAL, color=StateColor.NORMAL):
         self.index = index
         self.type = type
         self.label = label
+        self.color = color
 
     def __str__(self):
         return "State(" + self.label + ")"
@@ -38,3 +46,6 @@ class State:
             self.type = StateType.NORMAL
         elif self.type == StateType.START_END:
             self.type = StateType.END
+
+    def SetColor(self, color):
+        self.color = color

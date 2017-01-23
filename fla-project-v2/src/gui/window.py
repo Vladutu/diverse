@@ -2,9 +2,8 @@ import pickle
 
 import wx
 
-from src.gui.inputRun import InputRunWindow
+from src.gui.inputRunWindow import InputRunWindow
 from src.logic.graph import Graph
-from src.logic.graphvizGenerator import GraphvizGenerator
 from src.logic.state import StateType
 
 
@@ -15,8 +14,7 @@ class Window(wx.Frame):
         self.InitUI()
 
     def CreateInitialImage(self):
-        diGraph = self.generator.GenerateGraphviz(self.graph)
-        diGraph.render('../resources/fsm')
+        self.graph.GenerateImage()
         image = wx.Image('../resources/fsm.png', wx.BITMAP_TYPE_ANY)
         self.graphImage = wx.StaticBitmap(self.imgPanel, wx.ID_ANY, wx.BitmapFromImage(image))
 
@@ -24,7 +22,6 @@ class Window(wx.Frame):
         self.graph = Graph()
         self.stateIndex = 0
         self.reusableIndexes = []
-        self.generator = GraphvizGenerator()
         self.names = []
         self.currentStateName = ''
 
@@ -214,8 +211,7 @@ class Window(wx.Frame):
             self.endCheckBox.SetValue(True)
 
     def OnRepaint(self, event):
-        digraph = self.generator.GenerateGraphviz(self.graph)
-        digraph.render('../resources/fsm')
+        self.graph.GenerateImage()
         image = wx.Image('../resources/fsm.png', wx.BITMAP_TYPE_ANY)
         self.graphImage.Destroy()
         self.graphImage = wx.StaticBitmap(self.imgPanel, wx.ID_ANY, wx.BitmapFromImage(image))

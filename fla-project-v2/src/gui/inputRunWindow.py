@@ -1,5 +1,7 @@
 from wx import wx
 
+from src.gui.simulationWindow import SimulationWindow
+
 
 class InputRunWindow(wx.Frame):
     def __init__(self, graph, controller, parent=None):
@@ -18,6 +20,7 @@ class InputRunWindow(wx.Frame):
         self.runButton = wx.Button(self.panel, label="Run")
         self.runLabel = wx.StaticText(self.panel, label="Input:")
         self.resultLabel = wx.StaticText(self.panel)
+        self.simulationButton = wx.Button(self.panel, label="Step by step simulation")
         self.input = wx.TextCtrl(self.panel, size=(140, -1))
 
         self.windowSizer = wx.BoxSizer()
@@ -28,6 +31,7 @@ class InputRunWindow(wx.Frame):
         self.sizer.Add(self.input, (0, 1))
         self.sizer.Add(self.resultLabel, (1, 0))
         self.sizer.Add(self.runButton, (2, 0))
+        self.sizer.Add(self.simulationButton, (2, 1))
 
         self.border = wx.BoxSizer()
         self.border.Add(self.sizer, 1, wx.ALL | wx.EXPAND, 5)
@@ -38,15 +42,21 @@ class InputRunWindow(wx.Frame):
         if not self.graph.HasStartState():
             self.runButton.Disable()
             self.input.Disable()
+            self.simulationButton.Disable()
             self.resultLabel.SetLabel('No Start State')
         else:
             self.runButton.Disable()
+            self.simulationButton.Disable()
             self.resultLabel.SetLabel('No input')
 
     def BindEvents(self):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.runButton.Bind(wx.EVT_BUTTON, self.OnRun)
         self.input.Bind(wx.EVT_CHAR, self.OnInputChange)
+        self.simulationButton.Bind(wx.EVT_BUTTON, self.OnSimulation)
+
+    def OnSimulation(self, event):
+        simulationWindow = SimulationWindow(self, self.graph, self.input.GetValue())
 
     def OnInputChange(self, event):
         kc = chr(event.GetKeyCode())
@@ -59,9 +69,11 @@ class InputRunWindow(wx.Frame):
 
         if label == '':
             self.runButton.Disable()
+            self.simulationButton.Disable()
             self.resultLabel.SetLabel('No input')
         else:
             self.runButton.Enable()
+            self.simulationButton.Enable()
             self.resultLabel.SetLabel('')
         event.Skip()
 
@@ -77,3 +89,13 @@ class InputRunWindow(wx.Frame):
     def OnClose(self, event):
         self.controller.Enable()
         self.Destroy()
+
+    def DisableWidgets(self):
+        self.runButton.Disable()
+        self.simulationButton.Disable()
+        self.input.Disable()
+
+    def EnableWidgets(self):
+        self.runButton.Enable()
+        self.simulationButton.Enable()
+        self.input.Enable()

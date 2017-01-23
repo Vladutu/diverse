@@ -22,6 +22,13 @@ class Transition:
             return True
         return False
 
+    def HasSameSourceAndValue(self, source, value):
+        values = self.label.split(',')
+        if source == self.fromState and value in values:
+            return True
+
+        return False
+
     def SetLabel(self, value):
         symb = unichr(955)
         if value == '':
