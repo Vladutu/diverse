@@ -41,7 +41,7 @@ public class ProductParserImpl implements InitializingBean, DisposableBean, Prod
     @Override
     public List<String> parseCategoryPage(String url) {
         List<String> productLinks = new ArrayList<>();
-
+        System.out.println("Starting category...");
         try {
             Document page = downloadPage(url);
             int noProductPages = findNoProductPages(page);
@@ -49,7 +49,7 @@ public class ProductParserImpl implements InitializingBean, DisposableBean, Prod
             List<Callable<List<String>>> callables = new ArrayList<>();
 
             //TODO: replace 1 with noProductPages
-            for (int i = 1; i <= 1; i++) {
+            for (int i = 1; i <= noProductPages; i++) {
                 String pagedUrl = url + "&page=" + i;
                 callables.add(new ProductLinksCallable(pagedUrl, USER_AGENT, TIMEOUT));
             }
@@ -67,7 +67,7 @@ public class ProductParserImpl implements InitializingBean, DisposableBean, Prod
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
-
+        System.out.println("Category finished.");
         return productLinks;
     }
 

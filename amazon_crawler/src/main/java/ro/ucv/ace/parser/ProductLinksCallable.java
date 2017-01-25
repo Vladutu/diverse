@@ -35,10 +35,12 @@ public class ProductLinksCallable implements Callable<List<String>> {
         List<String> result = new ArrayList<>();
         for (Element link : links) {
             String productUrl = link.attr("href");
-            if (productUrl.startsWith("https")) {
-                result.add(productUrl);
-                //   break;
+            if (!productUrl.startsWith("https")) {
+                productUrl = "https://www.amazon.com" + productUrl;
             }
+            System.out.println(productUrl);
+            result.add(productUrl);
+
         }
 
 
