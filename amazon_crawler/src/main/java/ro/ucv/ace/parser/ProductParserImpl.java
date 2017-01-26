@@ -5,8 +5,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import ro.ucv.ace.entity.Product;
 
 import java.io.IOException;
@@ -17,15 +15,12 @@ import java.util.concurrent.*;
 /**
  * Created by Geo on 27.12.2016.
  */
-@Component
 public class ProductParserImpl implements InitializingBean, DisposableBean, ProductParser {
 
     private ExecutorService executorService;
 
-    @Value("${crawler.userAgent}")
     private String USER_AGENT;
 
-    @Value("${crawler.timeout}")
     private int TIMEOUT;
 
     @Override

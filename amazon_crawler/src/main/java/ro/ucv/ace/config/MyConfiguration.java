@@ -5,7 +5,6 @@ import org.neo4j.ogm.session.SessionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.neo4j.config.Neo4jConfiguration;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -14,7 +13,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableNeo4jRepositories(basePackages = "ro.ucv.ace.repository")
 @EnableTransactionManagement
 @ComponentScan("ro.ucv.ace")
-@PropertySource(value = {"classpath:crawler.properties"})
 public class MyConfiguration extends Neo4jConfiguration {
 
     @Bean
