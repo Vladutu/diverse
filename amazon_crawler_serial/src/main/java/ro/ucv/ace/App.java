@@ -49,7 +49,7 @@ public class App {
     }
 
     private void getProductReviews() {
-        amazonCrawler.crawlAndSaveProductsReviews(1, 1);
+        amazonCrawler.crawlAndSaveProductsReviews(2, 1);
     }
 
     private void testSelenium() {

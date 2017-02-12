@@ -55,6 +55,19 @@ public class Review {
     public Review() {
     }
 
+    public Review(Double productRating, String title, String body, String author, String authorUrl, String date,
+                  boolean verifiedPurchase, Integer helpfulVotes, List<Replay> replays) {
+        this.productRating = productRating;
+        this.title = title;
+        this.body = body;
+        this.author = author;
+        this.authorUrl = authorUrl;
+        this.date = date;
+        this.verifiedPurchase = verifiedPurchase;
+        this.helpfulVotes = helpfulVotes;
+        this.replays = replays;
+    }
+
     public Integer getId() {
         return id;
     }

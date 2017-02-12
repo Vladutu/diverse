@@ -39,6 +39,13 @@ public class Replay {
     public Replay() {
     }
 
+    public Replay(String author, String authorUrl, String body, String date) {
+        this.author = author;
+        this.authorUrl = authorUrl;
+        this.body = body;
+        this.date = date;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -85,5 +92,13 @@ public class Replay {
 
     public void setReplays(List<Replay> replays) {
         this.replays = replays;
+    }
+
+    public boolean hasAuthorAndBody(String name, String body) {
+        return this.author.equals(name) && this.body.equals(body);
+    }
+
+    public void addReplay(Replay child) {
+        replays.add(child);
     }
 }
