@@ -4,9 +4,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -108,11 +111,13 @@ public class AmazonCrawlerImpl implements AmazonCrawler, DisposableBean {
             sleep(500);
         }
 
+        // Click on button to see review replays
         List<WebElement> elements = driver.findElements(By.cssSelector("a[class='a-expander-header a-declarative a-expander-inline-header a-link-expander']"));
         for (WebElement element : elements) {
-            if (!element.getText().equals("Replay")) {
+            if (!element.getText().equals("Comment")) {
                 element.click();
-                sleep(400);
+                sleep(100);
+                waitForJSandJQueryToLoad();
             }
         }
         sleep(400);
@@ -123,8 +128,10 @@ public class AmazonCrawlerImpl implements AmazonCrawler, DisposableBean {
             size = moreCommentsElements.size();
             moreCommentsElements.forEach(e -> {
                 e.click();
-                sleep(400);
+                sleep(100);
+                waitForJSandJQueryToLoad();
             });
+            waitForJSandJQueryToLoad();
             sleep(1000);
 
         } while (size > 0);
@@ -132,16 +139,27 @@ public class AmazonCrawlerImpl implements AmazonCrawler, DisposableBean {
         List<WebElement> replays = driver.findElements(By.xpath("//span[@class='a-declarative']/a[text()='an earlier post']"));
         WebElement totalReviewCount = driver.findElement(By.cssSelector("span[class='a-size-medium totalReviewCount']"));
 
+        //click all "an earlier post"
         replays.forEach(replay -> {
-            try {
-                replay.click();
-            } catch (Exception e) {
-                sleep(1000);
-                replay.click();
-            }
+            int count = 0;
+            boolean exception = false;
+            do {
+                exception = false;
+                try {
+                    replay.click();
+                } catch (Exception e) {
+                    sleep(1000);
+                    exception = true;
+                    count++;
+                }
+                if (count == 100) {
+                    System.exit(-1);
+                }
+            } while (exception);
+            waitForJSandJQueryToLoad();
             sleep(150);
             totalReviewCount.click();
-            sleep(250);
+            sleep(150);
         });
 
 
@@ -163,6 +181,35 @@ public class AmazonCrawlerImpl implements AmazonCrawler, DisposableBean {
         }
 
         return Integer.parseInt(last.text());
+    }
+
+    public boolean waitForJSandJQueryToLoad() {
+
+        WebDriverWait wait = new WebDriverWait(driver, 30);
+
+        // wait for jQuery to load
+        ExpectedCondition<Boolean> jQueryLoad = new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(WebDriver driver) {
+                try {
+                    return ((Long) ((JavascriptExecutor) driver).executeScript("return jQuery.active") == 0);
+                } catch (Exception e) {
+                    // no jQuery present
+                    return true;
+                }
+            }
+        };
+
+        // wait for Javascript to load
+        ExpectedCondition<Boolean> jsLoad = new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(WebDriver driver) {
+                return ((JavascriptExecutor) driver).executeScript("return document.readyState")
+                        .toString().equals("complete");
+            }
+        };
+
+        return wait.until(jQueryLoad) && wait.until(jsLoad);
     }
 
 
