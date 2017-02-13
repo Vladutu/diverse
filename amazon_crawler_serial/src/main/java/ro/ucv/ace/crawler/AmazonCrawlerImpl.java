@@ -91,11 +91,16 @@ public class AmazonCrawlerImpl implements AmazonCrawler, DisposableBean {
         while (productIds.get(index) != fromId) {
             index++;
         }
+        boolean firstTime = true;
 
         for (int i = index; i < productIds.size(); i++) {
             Product product = productService.getProduct(productIds.get(i));
             String primaryReviewUrl = product.getPrimaryReviewUrl();
             int noReviewPages = findReviewPagesNumber(primaryReviewUrl);
+
+            if (!firstTime) {
+                fromPage = 1;
+            }
 
             for (int pageNo = fromPage; pageNo <= noReviewPages; pageNo++) {
                 logger.info("Crawling reviews for product with id " + product.getId() + ". Currently at page " + pageNo + "/" + noReviewPages + " of all reviews");
@@ -105,6 +110,8 @@ public class AmazonCrawlerImpl implements AmazonCrawler, DisposableBean {
                 logger.info("Saving reviews for product with id " + product.getId() + ". Currently at page " + pageNo + " of all reviews");
                 productService.saveReviewsAndOverallRating(product.getId(), reviews, productOverallRating);
             }
+
+            firstTime = false;
         }
 
     }
