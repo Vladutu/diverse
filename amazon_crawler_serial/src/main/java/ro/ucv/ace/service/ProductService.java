@@ -1,6 +1,7 @@
 package ro.ucv.ace.service;
 
 import ro.ucv.ace.entity.Product;
+import ro.ucv.ace.entity.Review;
 
 import java.util.List;
 
@@ -18,4 +19,6 @@ public interface ProductService {
     List<Integer> getProductsIds();
 
     Product getProduct(int id);
+
+    void saveReviewsAndOverallRating(Integer id, List<Review> reviews, Double productOverallRating);
 }

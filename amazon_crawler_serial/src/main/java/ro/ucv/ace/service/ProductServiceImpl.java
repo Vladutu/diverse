@@ -5,8 +5,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.SAXException;
 import ro.ucv.ace.crawler.AmazonCrawler;
+import ro.ucv.ace.entity.Author;
 import ro.ucv.ace.entity.Product;
+import ro.ucv.ace.entity.Replay;
+import ro.ucv.ace.entity.Review;
 import ro.ucv.ace.parser.ProductDataParser;
+import ro.ucv.ace.repository.AuthorRepository;
 import ro.ucv.ace.repository.ProductRepository;
 
 import java.io.IOException;
@@ -27,6 +31,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private AmazonCrawler amazonCrawler;
+
+    @Autowired
+    private AuthorRepository authorRepository;
 
     @Override
     public Product save(Product product) {
@@ -69,6 +76,36 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product getProduct(int id) {
         return productRepository.findOne(id);
+    }
+
+    @Override
+    public void saveReviewsAndOverallRating(Integer id, List<Review> reviews, Double productOverallRating) {
+        Product product = productRepository.findOne(id);
+
+        for (Review review : reviews) {
+            Author author = authorRepository.findByAmazonId(review.getAuthor().getAmazonId());
+            if (author == null) {
+                author = authorRepository.save(review.getAuthor());
+            }
+            review.setAuthor(author);
+
+            checkAuthorsForReplays(review.getReplays());
+        }
+
+        product.addReviews(reviews);
+        product.updateRating(productOverallRating);
+    }
+
+    private void checkAuthorsForReplays(List<Replay> replays) {
+        for (Replay replay : replays) {
+            Author author = authorRepository.findByAmazonId(replay.getAuthor().getAmazonId());
+            if (author == null) {
+                author = authorRepository.save(replay.getAuthor());
+            }
+            replay.setAuthor(author);
+
+            checkAuthorsForReplays(replay.getReplays());
+        }
     }
 
 

@@ -46,10 +46,11 @@ public class App {
         //app.parseProducts();
         //app.testSelenium();
         app.getProductReviews();
+
     }
 
     private void getProductReviews() {
-        amazonCrawler.crawlAndSaveProductsReviews(2, 1);
+        amazonCrawler.crawlAndSaveProductsReviews(12, 226);
     }
 
     private void testSelenium() {

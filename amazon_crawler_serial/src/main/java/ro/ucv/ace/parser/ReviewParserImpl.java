@@ -4,12 +4,15 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import ro.ucv.ace.entity.Replay;
 import ro.ucv.ace.entity.Review;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Geo on 12.02.2017.
@@ -17,12 +20,14 @@ import java.util.List;
 @Component
 public class ReviewParserImpl implements ReviewParser {
 
+    private final static Logger logger = LoggerFactory.getLogger(ReviewParserImpl.class);
+
     private class ReplayDto {
         String childId;
         String name;
         String body;
 
-        public ReplayDto(String childId, String name, String body) {
+        ReplayDto(String childId, String name, String body) {
             this.childId = childId;
             this.name = name;
             this.body = body;
@@ -34,10 +39,13 @@ public class ReviewParserImpl implements ReviewParser {
         List<Review> reviews = new ArrayList<>();
         Document document = Jsoup.parse(source);
         Elements reviewElems = document.select("div.a-section.review");
+        Elements hiddenReplays = document.select("div.a-popover-content");
+
+        List<ReplayDto> replayDtos = getReplayDtos(hiddenReplays);
 
         for (Element reviewElem : reviewElems) {
             Review review = parse(reviewElem);
-            List<Replay> goodReplays = splitReplays(document, review.getReplays());
+            List<Replay> goodReplays = splitReplays(document, review.getReplays(), replayDtos);
             review.setReplays(goodReplays);
             reviews.add(review);
         }
@@ -45,17 +53,35 @@ public class ReviewParserImpl implements ReviewParser {
         return reviews;
     }
 
-    private List<Replay> splitReplays(Document document, List<Replay> replays) {
-        Elements hiddenReplays = document.select("div.a-popover-content");
-        List<Replay> goodReplays = new ArrayList<>();
-        List<ReplayDto> replayDtos = getReplayDtos(hiddenReplays);
+    @Override
+    public Double getProductOverallRating(String source) {
+        Document document = Jsoup.parse(source);
+        return getProductOverallRating(document);
+    }
 
+    private Double getProductOverallRating(Document document) {
+        try {
+            return Double.valueOf(document.select("div.averageStarRatingNumerical").first().text().split(" ")[0]);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private List<Replay> splitReplays(Document document, List<Replay> replays, List<ReplayDto> replayDtos) {
+        List<Replay> goodReplays = new ArrayList<>();
         List<Replay> toBeRemoved = new ArrayList<>();
+
         for (ReplayDto replayDto : replayDtos) {
-            Replay parent = replays.stream().filter(r -> r.hasAuthorAndBody(replayDto.name, replayDto.body)).findAny().get();
-            Replay child = getChildReplay(document, replayDto.childId, replays);
-            parent.addReplay(child);
-            toBeRemoved.add(child);
+            Optional<Replay> parentOpt = getParentReplay(replays, replayDto);
+            Optional<Replay> childOpt = getChildReplay(document, replayDto.childId, replays);
+
+            if (parentOpt.isPresent() && childOpt.isPresent()) {
+                Replay parent = parentOpt.get();
+                Replay child = childOpt.get();
+
+                parent.addReplay(child);
+                toBeRemoved.add(child);
+            }
         }
         for (Replay replay : replays) {
             if (!toBeRemoved.contains(replay)) {
@@ -66,12 +92,32 @@ public class ReviewParserImpl implements ReviewParser {
         return goodReplays;
     }
 
-    private Replay getChildReplay(Document document, String childId, List<Replay> replays) {
+    private Optional<Replay> getParentReplay(List<Replay> replays, ReplayDto replayDto) {
+        String noWhiteSpaceBody = replayDto.body.replaceAll("\\s+", "");
+
+        for (Replay replay : replays) {
+            String noWhiteSpaceReplayBody = replay.getBody().replaceAll("\\s+", "");
+            if (replayDto.name.equals(replay.getAuthor().getName()) && noWhiteSpaceBody.equals(noWhiteSpaceReplayBody)) {
+                return Optional.of(replay);
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    private Optional<Replay> getChildReplay(Document document, String childId, List<Replay> replays) {
         Element select = document.select("div#" + childId).first();
         String author = getReplayAuthor(select);
         String body = getReplayBody(select);
 
-        return replays.stream().filter(r -> r.hasAuthorAndBody(author, body)).findAny().get();
+        for (Replay replay : replays) {
+            String noWhiteSpaceReplayBody = replay.getBody().replaceAll("\\s+", "");
+            if (author.equals(replay.getAuthor().getName()) && body.equals(replay.getBody())) {
+                return Optional.of(replay);
+            }
+        }
+
+        return Optional.empty();
     }
 
     private List<ReplayDto> getReplayDtos(Elements hiddenReplays) {
@@ -89,8 +135,7 @@ public class ReviewParserImpl implements ReviewParser {
                 replayDtos.add(replayDto);
             } catch (Exception e) {
                 //error on parsing -> skip
-                //TODO log this with logger
-                e.printStackTrace();
+                logger.warn("A hidden replay could not be parsed. Error: " + e.getMessage());
             }
         }
         return replayDtos;
@@ -102,12 +147,20 @@ public class ReviewParserImpl implements ReviewParser {
         String body = getReviewBody(reviewElem);
         String author = getReviewAuthor(reviewElem);
         String authorUrl = getReviewAuthorUrl(reviewElem);
+        String amazonId = getAuthorAmazonId(authorUrl);
         String date = getReviewDate(reviewElem);
         boolean verifiedPurchase = isVerifiedPurchase(reviewElem);
         Integer helpfulVotes = getHelpfulVotes(reviewElem);
         List<Replay> replays = getReplays(reviewElem);
 
-        return new Review(productRating, title, body, author, authorUrl, date, verifiedPurchase, helpfulVotes, replays);
+        return new Review(productRating, title, body, author, amazonId, authorUrl, date, verifiedPurchase, helpfulVotes, replays);
+    }
+
+    private String getAuthorAmazonId(String authorUrl) {
+        String idBegining = authorUrl.substring(authorUrl.indexOf("/profile/") + 9);
+        int slashPos = idBegining.indexOf("/");
+
+        return idBegining.substring(0, slashPos);
     }
 
     private List<Replay> getReplays(Element reviewElem) {
@@ -125,19 +178,10 @@ public class ReviewParserImpl implements ReviewParser {
     private Replay getReplay(Element replayDiv) {
         String author = getReplayAuthor(replayDiv);
         String authorUrl = getReplayAuthorUrl(replayDiv);
+        String amazonId = getAuthorAmazonId(authorUrl);
         String body = getReplayBody(replayDiv);
-        String date = getReplayDate(replayDiv);
 
-        return new Replay(author, authorUrl, body, date);
-    }
-
-    private String getReplayDate(Element replayDiv) {
-        Element select = replayDiv.select("span.comment-time-stamp").first();
-        if (select != null) {
-            return select.text();
-        }
-
-        return null;
+        return new Replay(author, authorUrl, amazonId, body);
     }
 
     private String getReplayBody(Element replayDiv) {

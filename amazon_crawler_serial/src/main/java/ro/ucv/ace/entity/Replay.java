@@ -16,34 +16,25 @@ public class Replay {
     @Column(name = "ID")
     private Integer id;
 
-    @Basic
-    @Column(name = "AUTHOR")
-    private String author;
-
-    @Basic
-    @Column(name = "AUTHOR_URL", length = 700)
-    private String authorUrl;
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(name = "AUTHOR_ID", referencedColumnName = "ID")
+    private Author author;
 
     @Basic
     @Column(name = "BODY", columnDefinition = "MEDIUMTEXT")
     private String body;
 
-    @Basic
-    @Column(name = "DATE")
-    private String date;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "REPLAY_ID", referencedColumnName = "ID")
-    List<Replay> replays = new ArrayList<>();
+    private List<Replay> replays = new ArrayList<>();
 
     public Replay() {
     }
 
-    public Replay(String author, String authorUrl, String body, String date) {
-        this.author = author;
-        this.authorUrl = authorUrl;
+    public Replay(String author, String authorUrl, String amazonId, String body) {
+        this.author = new Author(author, amazonId, authorUrl);
         this.body = body;
-        this.date = date;
     }
 
     public Integer getId() {
@@ -54,20 +45,12 @@ public class Replay {
         this.id = id;
     }
 
-    public String getAuthor() {
+    public Author getAuthor() {
         return author;
     }
 
-    public void setAuthor(String author) {
+    public void setAuthor(Author author) {
         this.author = author;
-    }
-
-    public String getAuthorUrl() {
-        return authorUrl;
-    }
-
-    public void setAuthorUrl(String authorUrl) {
-        this.authorUrl = authorUrl;
     }
 
     public String getBody() {
@@ -78,24 +61,12 @@ public class Replay {
         this.body = body;
     }
 
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
-
     public List<Replay> getReplays() {
         return replays;
     }
 
     public void setReplays(List<Replay> replays) {
         this.replays = replays;
-    }
-
-    public boolean hasAuthorAndBody(String name, String body) {
-        return this.author.equals(name) && this.body.equals(body);
     }
 
     public void addReplay(Replay child) {

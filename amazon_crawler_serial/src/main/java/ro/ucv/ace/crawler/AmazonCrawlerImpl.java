@@ -25,6 +25,7 @@ import ro.ucv.ace.parser.ReviewParser;
 import ro.ucv.ace.service.CategoryService;
 import ro.ucv.ace.service.ProductService;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -84,6 +85,7 @@ public class AmazonCrawlerImpl implements AmazonCrawler, DisposableBean {
 
     @Override
     public void crawlAndSaveProductsReviews(int fromId, int fromPage) {
+        logger.info("Starting to crawl reviews from product with id " + fromId + " and review page with no: " + fromPage);
         List<Integer> productIds = productService.getProductsIds();
         int index = 0;
         while (productIds.get(index) != fromId) {
@@ -96,7 +98,12 @@ public class AmazonCrawlerImpl implements AmazonCrawler, DisposableBean {
             int noReviewPages = findReviewPagesNumber(primaryReviewUrl);
 
             for (int pageNo = fromPage; pageNo <= noReviewPages; pageNo++) {
+                logger.info("Crawling reviews for product with id " + product.getId() + ". Currently at page " + pageNo + "/" + noReviewPages + " of all reviews");
                 List<Review> reviews = findReviewsOnPage(product.getId(), primaryReviewUrl, pageNo);
+                Double productOverallRating = reviewParser.getProductOverallRating(driver.getPageSource());
+
+                logger.info("Saving reviews for product with id " + product.getId() + ". Currently at page " + pageNo + " of all reviews");
+                productService.saveReviewsAndOverallRating(product.getId(), reviews, productOverallRating);
             }
         }
 
@@ -106,9 +113,21 @@ public class AmazonCrawlerImpl implements AmazonCrawler, DisposableBean {
         String url = primaryReviewUrl + pageNo;
 
         driver.get(url);
+        int captchaCount = 0;
         while (driver.getPageSource().contains("Sorry, we just need to make sure you're not a robot.")) {
             driver.navigate().refresh();
+            captchaCount++;
             sleep(500);
+
+            if (captchaCount == 5) {
+                captchaCount = 0;
+                try {
+                    System.out.println("Please enter a character to continue:");
+                    System.in.read();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         // Click on button to see review replays
@@ -116,11 +135,11 @@ public class AmazonCrawlerImpl implements AmazonCrawler, DisposableBean {
         for (WebElement element : elements) {
             if (!element.getText().equals("Comment")) {
                 element.click();
-                sleep(100);
+                sleep(500);
                 waitForJSandJQueryToLoad();
             }
         }
-        sleep(400);
+        sleep(500);
 
         int size = 0;
         do {
@@ -128,7 +147,7 @@ public class AmazonCrawlerImpl implements AmazonCrawler, DisposableBean {
             size = moreCommentsElements.size();
             moreCommentsElements.forEach(e -> {
                 e.click();
-                sleep(100);
+                sleep(300);
                 waitForJSandJQueryToLoad();
             });
             waitForJSandJQueryToLoad();
@@ -153,6 +172,7 @@ public class AmazonCrawlerImpl implements AmazonCrawler, DisposableBean {
                     count++;
                 }
                 if (count == 100) {
+                    logger.error("Could not click an earlier post (exiting)");
                     System.exit(-1);
                 }
             } while (exception);
@@ -169,18 +189,24 @@ public class AmazonCrawlerImpl implements AmazonCrawler, DisposableBean {
 
     private int findReviewPagesNumber(String primaryReviewUrl) {
         String firstPage = primaryReviewUrl + "1";
-        Document document = jsoupDownloader.download(firstPage);
-        sleep(2000);
-        Element pagination = document.select("div#cm_cr-pagination_bar").first();
-        if (pagination == null) {
-            return 1;
-        }
-        Element last = pagination.select("li.page-button").last();
-        if (last == null) {
-            return 1;
+
+        driver.get(firstPage);
+        while (driver.getPageSource().contains("Sorry, we just need to make sure you're not a robot.")) {
+            driver.navigate().refresh();
+            sleep(500);
         }
 
-        return Integer.parseInt(last.text());
+        try {
+            WebElement pagination = driver.findElement(By.id("cm_cr-pagination_bar"));
+            List<WebElement> pages = pagination.findElements(By.cssSelector("li[class='page-button']"));
+            if (pages.isEmpty()) {
+                return 1;
+            }
+
+            return Integer.parseInt(pages.get(pages.size() - 1).getText());
+        } catch (org.openqa.selenium.NoSuchElementException e) {
+            return 1;
+        }
     }
 
     public boolean waitForJSandJQueryToLoad() {

@@ -181,4 +181,14 @@ public class Product {
     public void setReviews(List<Review> reviews) {
         this.reviews = reviews;
     }
+
+    public void addReviews(List<Review> reviews) {
+        this.reviews.addAll(reviews);
+    }
+
+    public void updateRating(Double productOverallRating) {
+        if (productOverallRating != null) {
+            rating = productOverallRating;
+        }
+    }
 }

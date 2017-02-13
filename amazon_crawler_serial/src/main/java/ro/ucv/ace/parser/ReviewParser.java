@@ -10,4 +10,6 @@ import java.util.List;
 public interface ReviewParser {
 
     List<Review> parse(String source);
+
+    Double getProductOverallRating(String source);
 }

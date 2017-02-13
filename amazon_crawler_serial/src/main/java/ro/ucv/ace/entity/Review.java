@@ -28,13 +28,9 @@ public class Review {
     @Column(name = "BODY", columnDefinition = "MEDIUMTEXT")
     private String body;
 
-    @Basic
-    @Column(name = "AUTHOR")
-    private String author;
-
-    @Basic
-    @Column(name = "AUTHOR_URL", length = 700)
-    private String authorUrl;
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(name = "AUTHOR_ID", referencedColumnName = "ID")
+    private Author author;
 
     @Basic
     @Column(name = "DATE")
@@ -55,13 +51,12 @@ public class Review {
     public Review() {
     }
 
-    public Review(Double productRating, String title, String body, String author, String authorUrl, String date,
+    public Review(Double productRating, String title, String body, String author, String amazonId, String authorUrl, String date,
                   boolean verifiedPurchase, Integer helpfulVotes, List<Replay> replays) {
         this.productRating = productRating;
         this.title = title;
         this.body = body;
-        this.author = author;
-        this.authorUrl = authorUrl;
+        this.author = new Author(author, amazonId, authorUrl);
         this.date = date;
         this.verifiedPurchase = verifiedPurchase;
         this.helpfulVotes = helpfulVotes;
@@ -100,22 +95,6 @@ public class Review {
         this.body = body;
     }
 
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getAuthorUrl() {
-        return authorUrl;
-    }
-
-    public void setAuthorUrl(String authorUrl) {
-        this.authorUrl = authorUrl;
-    }
-
     public String getDate() {
         return date;
     }
@@ -146,5 +125,13 @@ public class Review {
 
     public void setReplays(List<Replay> replays) {
         this.replays = replays;
+    }
+
+    public Author getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(Author author) {
+        this.author = author;
     }
 }
