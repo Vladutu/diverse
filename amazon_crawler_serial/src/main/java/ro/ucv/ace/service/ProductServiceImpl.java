@@ -50,6 +50,7 @@ public class ProductServiceImpl implements ProductService {
 
             try {
                 product.parse(productDataParser);
+                System.out.println("Successfully parsed raw data for product with id:" + product.getId());
             } catch (IOException | SAXException e) {
                 e.printStackTrace();
             }

@@ -5,7 +5,7 @@ package ro.ucv.ace.crawler;
  */
 public interface AmazonCrawler {
 
-    void crawlAndSaveProducts(String categoryUrl, int fromPage, int toPage, String categoryName);
+    void crawlAndSaveProducts(String categoryUrl, int fromPage, int toPage, String categoryName, int maxProducts);
 
     void crawlAndSaveProductsReviews(int fromId, int fromPage);
 }

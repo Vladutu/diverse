@@ -218,6 +218,7 @@ public class ReviewParserImpl implements ReviewParser {
             if (votes.equals("One")) {
                 return 1;
             }
+            votes = votes.replaceAll(",", "").replaceAll("\\.", "");
             return Integer.valueOf(votes);
         }
 

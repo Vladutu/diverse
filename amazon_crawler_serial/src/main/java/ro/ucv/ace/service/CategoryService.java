@@ -11,5 +11,7 @@ public interface CategoryService {
 
     Category findByName(String name);
 
-    void addTraditionalLaptops();
+    void addCategory();
+
+    Integer getProductsNumber(String categoryName);
 }

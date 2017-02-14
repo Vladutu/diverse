@@ -3,11 +3,7 @@ package ro.ucv.ace.crawler;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -21,6 +17,7 @@ import ro.ucv.ace.downloader.JsoupDownloader;
 import ro.ucv.ace.entity.Category;
 import ro.ucv.ace.entity.Product;
 import ro.ucv.ace.entity.Review;
+import ro.ucv.ace.exception.InvalidClickException;
 import ro.ucv.ace.parser.ReviewParser;
 import ro.ucv.ace.service.CategoryService;
 import ro.ucv.ace.service.ProductService;
@@ -54,11 +51,11 @@ public class AmazonCrawlerImpl implements AmazonCrawler, DisposableBean {
     private final static Logger logger = LoggerFactory.getLogger(AmazonCrawlerImpl.class);
 
     public AmazonCrawlerImpl() {
-        driver = new ChromeDriver();
+        //driver = new ChromeDriver();
     }
 
     @Override
-    public void crawlAndSaveProducts(String categoryUrl, int fromPage, int toPage, String categoryName) {
+    public void crawlAndSaveProducts(String categoryUrl, int fromPage, int toPage, String categoryName, int maxProducts) {
         logger.info("Stating category page: " + categoryUrl);
 
         for (int i = fromPage; i <= toPage; i++) {
@@ -68,6 +65,11 @@ public class AmazonCrawlerImpl implements AmazonCrawler, DisposableBean {
             Elements productPanels = document.select("div.s-item-container");
 
             for (Element productPanel : productPanels) {
+                int productCount = categoryService.getProductsNumber(categoryName);
+                if (productCount >= maxProducts) {
+                    return;
+                }
+
                 String url = getUrl(productPanel);
                 if (url.contains("/slredirect/")) {
                     continue;
@@ -107,7 +109,7 @@ public class AmazonCrawlerImpl implements AmazonCrawler, DisposableBean {
                 List<Review> reviews = findReviewsOnPage(product.getId(), primaryReviewUrl, pageNo);
                 Double productOverallRating = reviewParser.getProductOverallRating(driver.getPageSource());
 
-                logger.info("Saving reviews for product with id " + product.getId() + ". Currently at page " + pageNo + " of all reviews");
+                logger.info("Saving reviews for product with id " + product.getId() + ". Currently at page " + pageNo + "/" + noReviewPages + " of all reviews");
                 productService.saveReviewsAndOverallRating(product.getId(), reviews, productOverallRating);
             }
 
@@ -118,7 +120,22 @@ public class AmazonCrawlerImpl implements AmazonCrawler, DisposableBean {
 
     private List<Review> findReviewsOnPage(Integer id, String primaryReviewUrl, int pageNo) {
         String url = primaryReviewUrl + pageNo;
+        boolean success = false;
 
+        do {
+            try {
+                findReviewsOnPage(url);
+                success = true;
+            } catch (Exception e) {
+                logger.info("Refreshing page...");
+                driver.navigate().refresh();
+            }
+        } while (!success);
+
+        return reviewParser.parse(driver.getPageSource());
+    }
+
+    private void findReviewsOnPage(String url) {
         driver.get(url);
         int captchaCount = 0;
         while (driver.getPageSource().contains("Sorry, we just need to make sure you're not a robot.")) {
@@ -141,7 +158,7 @@ public class AmazonCrawlerImpl implements AmazonCrawler, DisposableBean {
         List<WebElement> elements = driver.findElements(By.cssSelector("a[class='a-expander-header a-declarative a-expander-inline-header a-link-expander']"));
         for (WebElement element : elements) {
             if (!element.getText().equals("Comment")) {
-                element.click();
+                clickElement(element);
                 sleep(500);
                 waitForJSandJQueryToLoad();
             }
@@ -153,7 +170,7 @@ public class AmazonCrawlerImpl implements AmazonCrawler, DisposableBean {
             List<WebElement> moreCommentsElements = driver.findElements(By.cssSelector("span[class='a-button a-button-small more-comments-button']"));
             size = moreCommentsElements.size();
             moreCommentsElements.forEach(e -> {
-                e.click();
+                clickElement(e);
                 sleep(300);
                 waitForJSandJQueryToLoad();
             });
@@ -174,13 +191,14 @@ public class AmazonCrawlerImpl implements AmazonCrawler, DisposableBean {
                 try {
                     replay.click();
                 } catch (Exception e) {
-                    sleep(1000);
+                    sleep(500);
+                    totalReviewCount.click();
                     exception = true;
                     count++;
                 }
-                if (count == 100) {
-                    logger.error("Could not click an earlier post (exiting)");
-                    System.exit(-1);
+                if (count == 20) {
+                    logger.error("Could not click an earlier post");
+                    throw new InvalidClickException("Could not click an earlier post (exiting)");
                 }
             } while (exception);
             waitForJSandJQueryToLoad();
@@ -188,9 +206,24 @@ public class AmazonCrawlerImpl implements AmazonCrawler, DisposableBean {
             totalReviewCount.click();
             sleep(150);
         });
+    }
 
-
-        return reviewParser.parse(driver.getPageSource());
+    private void clickElement(WebElement e) {
+        boolean successClick = false;
+        int clickCount = 0;
+        do {
+            try {
+                e.click();
+                successClick = true;
+            } catch (WebDriverException ex) {
+                clickCount++;
+                sleep(300);
+                if (clickCount == 10) {
+                    logger.warn("Could not see the element needed to click.");
+                    throw new InvalidClickException("Could not see the element needed to click.");
+                }
+            }
+        } while (!successClick);
     }
 
 

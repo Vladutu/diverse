@@ -28,12 +28,15 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void addTraditionalLaptops() {
-        Category compAndAcc = categoryRepository.findByName("Computers & Accessories");
-        Category compAndTabl = new Category("Computers & Tablets", compAndAcc);
-        Category laptops = new Category("Laptops", compAndTabl);
-        Category tradLaptops = new Category("Traditional Laptops", laptops);
+    public void addCategory() {
+        Category laptops = categoryRepository.findByName("Laptops");
+        Category twoInOne = new Category("2 in 1 Laptops", laptops);
 
-        categoryRepository.save(tradLaptops);
+        categoryRepository.save(twoInOne);
+    }
+
+    @Override
+    public Integer getProductsNumber(String categoryName) {
+        return categoryRepository.countProductsNumber(categoryName);
     }
 }
