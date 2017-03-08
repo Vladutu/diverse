@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.SAXException;
-import ro.ucv.ace.crawler.AmazonCrawler;
 import ro.ucv.ace.entity.Author;
 import ro.ucv.ace.entity.Product;
 import ro.ucv.ace.entity.Replay;
@@ -28,9 +27,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ProductDataParser productDataParser;
-
-    @Autowired
-    private AmazonCrawler amazonCrawler;
 
     @Autowired
     private AuthorRepository authorRepository;

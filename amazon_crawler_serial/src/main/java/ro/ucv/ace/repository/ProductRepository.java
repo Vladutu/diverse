@@ -15,6 +15,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query("SELECT p FROM Product p")
     Stream<Product> findAllAndStream();
 
-    @Query("SELECT p.id FROM Product p")
+    @Query("SELECT p.id FROM Product p ORDER BY p.id ASC")
     List<Integer> findAllIds();
 }

@@ -4,23 +4,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
-import ro.ucv.ace.api.AmazonApi;
 import ro.ucv.ace.config.SpringConfiguration;
 import ro.ucv.ace.crawler.AmazonCrawler;
-import ro.ucv.ace.service.CategoryService;
 import ro.ucv.ace.service.ProductService;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Hello world!
  */
 @Component
 public class App {
-
-    @Autowired
-    private AmazonApi amazonApi;
-
-    @Autowired
-    private CategoryService categoryService;
 
     @Autowired
     private AmazonCrawler amazonCrawler;
@@ -34,13 +29,15 @@ public class App {
         App app = ctx.getBean(App.class);
 
         //app.getProductReviews();
+        app.amazonCrawler.testSent();
         //app.crawlProducts();
         //app.categoryService.addCategory();
-        app.productService.parseRawData(5322, 6161);
+        //app.productService.parseRawData(6162, 6223);
     }
 
     private void getProductReviews() {
-        amazonCrawler.crawlAndSaveProductsReviews(163, 1);
+        List<Integer> excludes = Arrays.asList(5623, 5624, 5625, 5626, 5627);
+        amazonCrawler.crawlAndSaveProductsReviews(5909, 25, excludes);
     }
 
 

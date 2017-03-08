@@ -4,6 +4,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -19,11 +20,15 @@ import ro.ucv.ace.entity.Product;
 import ro.ucv.ace.entity.Review;
 import ro.ucv.ace.exception.InvalidClickException;
 import ro.ucv.ace.parser.ReviewParser;
+import ro.ucv.ace.service.AuthorService;
 import ro.ucv.ace.service.CategoryService;
 import ro.ucv.ace.service.ProductService;
+import ro.ucv.ace.service.ReviewService;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Geo on 11.02.2017.
@@ -46,12 +51,18 @@ public class AmazonCrawlerImpl implements AmazonCrawler, DisposableBean {
     @Autowired
     private ReviewParser reviewParser;
 
+    @Autowired
+    private AuthorService authorService;
+
+    @Autowired
+    private ReviewService reviewService;
+
     private WebDriver driver;
 
     private final static Logger logger = LoggerFactory.getLogger(AmazonCrawlerImpl.class);
 
     public AmazonCrawlerImpl() {
-        //driver = new ChromeDriver();
+        driver = new ChromeDriver();
     }
 
     @Override
@@ -86,17 +97,17 @@ public class AmazonCrawlerImpl implements AmazonCrawler, DisposableBean {
     }
 
     @Override
-    public void crawlAndSaveProductsReviews(int fromId, int fromPage) {
+    public void crawlAndSaveProductsReviews(int fromId, int fromPage, List<Integer> excludes) {
         logger.info("Starting to crawl reviews from product with id " + fromId + " and review page with no: " + fromPage);
-        List<Integer> productIds = productService.getProductsIds();
-        int index = 0;
-        while (productIds.get(index) != fromId) {
-            index++;
-        }
+        List<Integer> allProductIds = productService.getProductsIds();
         boolean firstTime = true;
 
-        for (int i = index; i < productIds.size(); i++) {
-            Product product = productService.getProduct(productIds.get(i));
+        List<Integer> goodIds = allProductIds.stream().filter(id -> id >= fromId && !excludes.contains(id)).collect(Collectors.toList());
+        Collections.sort(goodIds);
+
+
+        for (Integer id : goodIds) {
+            Product product = productService.getProduct(id);
             String primaryReviewUrl = product.getPrimaryReviewUrl();
             int noReviewPages = findReviewPagesNumber(primaryReviewUrl);
 
@@ -118,6 +129,22 @@ public class AmazonCrawlerImpl implements AmazonCrawler, DisposableBean {
 
     }
 
+    @Override
+    public void testSent() {
+        driver.get("http://www.paralleldots.com/sentiment-analysis");
+        WebElement input = driver.findElement(By.id("se1"));
+        WebElement button = driver.findElement(By.id("btn-sen"));
+
+        for (int i = 1; i <= 10; i++) {
+            Review byId = reviewService.getById(i);
+
+            input.clear();
+            input.sendKeys(byId.getBody());
+            button.click();
+            sleep(2000);
+        }
+    }
+
     private List<Review> findReviewsOnPage(Integer id, String primaryReviewUrl, int pageNo) {
         String url = primaryReviewUrl + pageNo;
         boolean success = false;
@@ -137,22 +164,7 @@ public class AmazonCrawlerImpl implements AmazonCrawler, DisposableBean {
 
     private void findReviewsOnPage(String url) {
         driver.get(url);
-        int captchaCount = 0;
-        while (driver.getPageSource().contains("Sorry, we just need to make sure you're not a robot.")) {
-            driver.navigate().refresh();
-            captchaCount++;
-            sleep(500);
-
-            if (captchaCount == 5) {
-                captchaCount = 0;
-                try {
-                    System.out.println("Please enter a character to continue:");
-                    System.in.read();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        resolveCaptchaPage();
 
         // Click on button to see review replays
         List<WebElement> elements = driver.findElements(By.cssSelector("a[class='a-expander-header a-declarative a-expander-inline-header a-link-expander']"));
@@ -208,6 +220,25 @@ public class AmazonCrawlerImpl implements AmazonCrawler, DisposableBean {
         });
     }
 
+    private void resolveCaptchaPage() {
+        int captchaCount = 0;
+        while (driver.getPageSource().contains("Sorry, we just need to make sure you're not a robot.")) {
+            driver.navigate().refresh();
+            captchaCount++;
+            sleep(700);
+
+            if (captchaCount == 5) {
+                captchaCount = 0;
+                try {
+                    System.out.println("Please enter a character to continue:");
+                    System.in.read();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     private void clickElement(WebElement e) {
         boolean successClick = false;
         int clickCount = 0;
@@ -231,10 +262,7 @@ public class AmazonCrawlerImpl implements AmazonCrawler, DisposableBean {
         String firstPage = primaryReviewUrl + "1";
 
         driver.get(firstPage);
-        while (driver.getPageSource().contains("Sorry, we just need to make sure you're not a robot.")) {
-            driver.navigate().refresh();
-            sleep(500);
-        }
+        resolveCaptchaPage();
 
         try {
             WebElement pagination = driver.findElement(By.id("cm_cr-pagination_bar"));
@@ -242,8 +270,9 @@ public class AmazonCrawlerImpl implements AmazonCrawler, DisposableBean {
             if (pages.isEmpty()) {
                 return 1;
             }
-
-            return Integer.parseInt(pages.get(pages.size() - 1).getText());
+            String no = pages.get(pages.size() - 1).getText();
+            no = no.replaceAll(",", "").replaceAll("\\.", "");
+            return Integer.parseInt(no);
         } catch (org.openqa.selenium.NoSuchElementException e) {
             return 1;
         }

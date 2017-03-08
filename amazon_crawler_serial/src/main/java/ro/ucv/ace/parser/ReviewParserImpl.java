@@ -44,7 +44,12 @@ public class ReviewParserImpl implements ReviewParser {
         List<ReplayDto> replayDtos = getReplayDtos(hiddenReplays);
 
         for (Element reviewElem : reviewElems) {
-            Review review = parse(reviewElem);
+            Review review = null;
+            try {
+                review = parse(reviewElem);
+            } catch (Exception e) {
+                continue;
+            }
             List<Replay> goodReplays = splitReplays(document, review.getReplays(), replayDtos);
             review.setReplays(goodReplays);
             reviews.add(review);
@@ -147,6 +152,9 @@ public class ReviewParserImpl implements ReviewParser {
         String body = getReviewBody(reviewElem);
         String author = getReviewAuthor(reviewElem);
         String authorUrl = getReviewAuthorUrl(reviewElem);
+        if (authorUrl == null) {
+            int x = 3;
+        }
         String amazonId = getAuthorAmazonId(authorUrl);
         String date = getReviewDate(reviewElem);
         boolean verifiedPurchase = isVerifiedPurchase(reviewElem);
@@ -178,6 +186,9 @@ public class ReviewParserImpl implements ReviewParser {
     private Replay getReplay(Element replayDiv) {
         String author = getReplayAuthor(replayDiv);
         String authorUrl = getReplayAuthorUrl(replayDiv);
+        if (authorUrl == null) {
+            int x = 3;
+        }
         String amazonId = getAuthorAmazonId(authorUrl);
         String body = getReplayBody(replayDiv);
 
