@@ -3,9 +3,9 @@
 )
 
 (defrule sort
-  ?adr <- (sir_numere $?h ?x ?y $?t)
+  ?adr <- (sir_numere $?h ?x $?m ?y $?t)
   (test (> ?x ?y))
 =>
-  (assert (sir_numere $?h ?y ?x $?t))
+  (assert (sir_numere $?h ?y $?m ?x $?t))
   (retract ?adr)
 )
