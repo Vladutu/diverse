@@ -1,5 +1,4 @@
 (defrule init
-  (not (coordonate $?))
 =>
   (open "triunghi_date.txt" date "r")
   (bind ?line (readline date))
@@ -17,9 +16,31 @@
   (assert (not_numeric))
 )
 
-(defrule is_triangle
+(defrule calculate_length
   (coordonate ?x1 ?y1 ?x2 ?y2 ?x3 ?y3)
-
+  (not (not_numeric))
 =>
+  (bind ?a (** (+ (** (- ?x2 ?x1) 2) (** (- ?y2 ?y1) 2)) 0.5))
+  (bind ?b (** (+ (** (- ?x3 ?x1) 2) (** (- ?y3 ?y1) 2)) 0.5))
+  (bind ?c (** (+ (** (- ?x2 ?x3) 2) (** (- ?y2 ?y3) 2)) 0.5))
+  (assert (a ?a) (b ?b) (c ?c))
+)
 
+(defrule is_triangle
+  (a ?a) (b ?b) (c ?c)
+  (or (test (>= ?a (+ ?b ?c))) (test (>= ?b (+ ?a ?c))) (test (>= ?c (+ ?a ?b))))
+=>
+  (printout t "Coordonatele nu reprezinta un triunghi" crlf)
+  (assert (not_triangle))
+)
+
+(defrule aria
+  (not (not_triangle))
+  (not (not_numeric))
+  (a ?a) (b ?b) (c ?c)
+=>
+  (bind ?p (/ (+ (+ ?a ?b) ?c) 2))
+  (bind ?aria (** (* (* (* ?p (- ?p ?a)) (- ?p ?b)) (- ?p ?c)) 0.5))
+  (assert (aria ?aria))
+  (printout t "Aria este " ?aria crlf)
 )
