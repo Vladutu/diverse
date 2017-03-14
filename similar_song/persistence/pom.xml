@@ -75,11 +75,6 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.microsoft.sqlserver/sqljdbc4 -->
-        <dependency>
-            <groupId>com.microsoft.sqlserver</groupId>
-            <artifactId>sqljdbc4</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>javax.validation</groupId>
