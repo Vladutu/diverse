@@ -6,7 +6,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.stereotype.Component;
 import ro.ucv.ace.config.SpringConfiguration;
 import ro.ucv.ace.readability.Readability;
-import ro.ucv.ace.readability.ReadabilityResult;
+import ro.ucv.ace.service.ProductService;
 import ro.ucv.ace.statistics.ObjectFileWriter;
 import ro.ucv.ace.statistics.ReplayStatistics;
 import ro.ucv.ace.statistics.ReviewStatistics;
@@ -33,15 +33,37 @@ public class App {
     @Autowired
     private Readability readability;
 
+    @Autowired
+    private ProductService productService;
+
     public static void main(String[] args) {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(SpringConfiguration.class);
         App app = ctx.getBean(App.class);
-        ReadabilityResult readabilityResult = app.readability.computeReadability("Great Monitor! I was little hesitant at first because it's specs seemed a little lower than others, such as contrast ratio and response time. I'm an avid gamer who needed a new monitor right before college that wouldn't burn a hole in my pocket. Very happy with what I got. I also thought 21.5 was a little small for gaming, but it's pretty big in person and it'll definitely satisfy anyone who wants to watch movies or play games often. After about a months use, I've encountered no problem, and only see quality!");
-        System.out.println(readabilityResult);
-
+        app.readabilityReviewStatistics();
     }
 
-    void reviewStatistics() {
+    void readabilityReviewStatistics() {
+        Map<String, Map<String, List<Double>>> map = reviewStatistics.computeLizabilityTestsGroupedByCategory();
+
+        try {
+            objectFileWriter.writeObjectToFile("D:\\statistics\\review_readability_per_category.json", map);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    void readabilityReplayStatistics() {
+        Map<String, Map<String, List<Double>>> map = replayStatistics.computeLizabilityTestsGroupedByCategory();
+
+        try {
+            objectFileWriter.writeObjectToFile("D:\\statistics\\replay_readability_per_category.json", map);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void wordReviewStatistics() {
         Map<String, List<Integer>> wordCounter = reviewStatistics.countWordsInReviewsGroupedByCategory();
 
         try {
@@ -51,7 +73,7 @@ public class App {
         }
     }
 
-    void replayStatistics() {
+    void wordReplayStatistics() {
         Map<String, List<Integer>> wordCounter = replayStatistics.countWordsInReplaysGroupedByCategory();
 
         try {

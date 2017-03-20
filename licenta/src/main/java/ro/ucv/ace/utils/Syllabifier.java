@@ -1,11 +1,8 @@
-package ro.ucv.ace.readability;
-
-import org.springframework.stereotype.Component;
+package ro.ucv.ace.utils;
 
 /**
  * Created by Geo on 19.03.2017.
  */
-@Component
 public class Syllabifier {
     private final String[] SubSyl = {"cial", "tia", "cius", "cious", "giu", "ion", "iou", "sia$", ".ely$"};
 
