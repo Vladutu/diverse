@@ -1,0 +1,18 @@
+@relation buys_computer
+
+@attribute age numeric
+@attribute income {M, H , L}
+@attribute student {yes, no}
+@attribute credit_rating {fair, average, excellent, good}
+@attribute buys_computer {yes, no}
+
+@data
+35, M, yes, fair, yes
+30, H, no, average, no
+40, L, yes, good, no
+35, M, no, fair, yes
+45, L, no, fair, yes
+35, H, no, excellent, yes
+25, L, no, good, no
+28, H, no, average, no
+35, M, yes, average, yes
