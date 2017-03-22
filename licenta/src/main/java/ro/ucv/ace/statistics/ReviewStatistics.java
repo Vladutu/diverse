@@ -50,19 +50,21 @@ public class ReviewStatistics {
             String category = review.getProduct().getCategory().getName();
             map.computeIfAbsent(category, k -> {
                 Map<String, List<Double>> value = new HashMap<>();
-                value.put("Gunning fog Index", new ArrayList<>());
+                value.put("Gunning Fog Index", new ArrayList<>());
                 value.put("Automated Readability Index", new ArrayList<>());
-                value.put("Flesch reading ease", new ArrayList<>());
-                value.put("Flesch-Kincaid grade level", new ArrayList<>());
+                value.put("Flesch Reading Ease", new ArrayList<>());
+                value.put("Flesch-Kincaid Grade Level", new ArrayList<>());
+                value.put("Coleman Liau Index", new ArrayList<>());
 
                 return value;
             });
 
             ReadabilityResult readabilityResult = readability.computeReadability(review.getBody());
-            map.get(category).get("Gunning fog Index").add(readabilityResult.getGunningFogIndex());
+            map.get(category).get("Gunning Fog Index").add(readabilityResult.getGunningFogIndex());
             map.get(category).get("Automated Readability Index").add(readabilityResult.getAutomatedReadabilityIndex());
-            map.get(category).get("Flesch reading ease").add(readabilityResult.getFleschReadingEase());
-            map.get(category).get("Flesch-Kincaid grade level").add(readabilityResult.getFleschKincaidGradeLevel());
+            map.get(category).get("Flesch Reading Ease").add(readabilityResult.getFleschReadingEase());
+            map.get(category).get("Flesch-Kincaid Grade Level").add(readabilityResult.getFleschKincaidGradeLevel());
+            map.get(category).get("Coleman Liau Index").add(readabilityResult.getColemanLiauIndex());
 
         });
 

@@ -39,7 +39,7 @@ public class App {
     public static void main(String[] args) {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(SpringConfiguration.class);
         App app = ctx.getBean(App.class);
-        app.readabilityReviewStatistics();
+        app.readabilityReplayStatistics();
     }
 
     void readabilityReviewStatistics() {
