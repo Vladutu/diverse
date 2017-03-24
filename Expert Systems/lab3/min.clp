@@ -3,6 +3,7 @@
 )
 
 (defrule min
+  (declare (salience 5))
   (sir $? ?e $?)
   (not (sir $? ?x&:(> ?e ?x) $?))
   =>

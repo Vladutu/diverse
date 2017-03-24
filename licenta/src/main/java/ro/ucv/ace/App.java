@@ -8,6 +8,7 @@ import ro.ucv.ace.config.SpringConfiguration;
 import ro.ucv.ace.readability.Readability;
 import ro.ucv.ace.service.ProductService;
 import ro.ucv.ace.statistics.ObjectFileWriter;
+import ro.ucv.ace.statistics.ProductStatistics;
 import ro.ucv.ace.statistics.ReplayStatistics;
 import ro.ucv.ace.statistics.ReviewStatistics;
 
@@ -31,6 +32,9 @@ public class App {
     private ReplayStatistics replayStatistics;
 
     @Autowired
+    private ProductStatistics productStatistics;
+
+    @Autowired
     private Readability readability;
 
     @Autowired
@@ -39,7 +43,18 @@ public class App {
     public static void main(String[] args) {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(SpringConfiguration.class);
         App app = ctx.getBean(App.class);
-        app.readabilityReplayStatistics();
+        app.productFeatures();
+    }
+
+
+    void productFeatures() {
+        Map<String, List<Integer>> map = productStatistics.countFeaturesInProductsGroupedByCategory();
+
+        try {
+            objectFileWriter.writeObjectToFile("D:\\statistics\\product_features_count.json", map);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     void readabilityReviewStatistics() {

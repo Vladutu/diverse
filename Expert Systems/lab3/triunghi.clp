@@ -1,4 +1,5 @@
 (defrule init
+  (declare (salience 5))
 =>
   (open "triunghi_date.txt" date "r")
   (bind ?line (readline date))
@@ -8,6 +9,7 @@
 )
 
 (defrule numeric_coordinates
+  (declare (salience 4))
   (not (not_numeric))
   (coordonate $? ?e $?)
   (test (not (numberp ?e)))
@@ -17,6 +19,7 @@
 )
 
 (defrule calculate_length
+  (declare (salience 3))
   (coordonate ?x1 ?y1 ?x2 ?y2 ?x3 ?y3)
   (not (not_numeric))
 =>
@@ -27,6 +30,7 @@
 )
 
 (defrule is_triangle
+  (declare (salience 2))
   (a ?a) (b ?b) (c ?c)
   (or (test (>= ?a (+ ?b ?c))) (test (>= ?b (+ ?a ?c))) (test (>= ?c (+ ?a ?b))))
 =>
@@ -35,6 +39,7 @@
 )
 
 (defrule aria
+  (declare (salience 1))
   (not (not_triangle))
   (not (not_numeric))
   (a ?a) (b ?b) (c ?c)
