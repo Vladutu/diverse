@@ -5,12 +5,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 import ro.ucv.ace.config.SpringConfiguration;
+import ro.ucv.ace.interaction.ExportAuthorGraph;
+import ro.ucv.ace.interaction.InteractionGraph;
 import ro.ucv.ace.readability.Readability;
 import ro.ucv.ace.service.ProductService;
-import ro.ucv.ace.statistics.ObjectFileWriter;
-import ro.ucv.ace.statistics.ProductStatistics;
-import ro.ucv.ace.statistics.ReplayStatistics;
-import ro.ucv.ace.statistics.ReviewStatistics;
+import ro.ucv.ace.statistics.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -40,12 +39,25 @@ public class App {
     @Autowired
     private ProductService productService;
 
+    @Autowired
+    private AuthorStatistics authorStatistics;
+
     public static void main(String[] args) {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(SpringConfiguration.class);
         App app = ctx.getBean(App.class);
-        app.productFeatures();
+        app.authorInteraction();
     }
 
+    void authorInteraction() {
+        InteractionGraph graph = authorStatistics.createUndirectedInteractionGraph();
+        ExportAuthorGraph exGraph = graph.createExportAuthorGraph();
+
+        try {
+            objectFileWriter.writeObjectToFile("D:\\statistics\\author_interaction.json", exGraph);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     void productFeatures() {
         Map<String, List<Integer>> map = productStatistics.countFeaturesInProductsGroupedByCategory();
