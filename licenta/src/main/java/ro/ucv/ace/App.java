@@ -12,6 +12,7 @@ import ro.ucv.ace.service.ProductService;
 import ro.ucv.ace.statistics.*;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +46,22 @@ public class App {
     public static void main(String[] args) {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(SpringConfiguration.class);
         App app = ctx.getBean(App.class);
-        app.authorInteraction();
+        app.authorInteractionCategorized();
+    }
+
+    void authorInteractionCategorized() {
+        Map<String, InteractionGraph> interactionGraphMap = authorStatistics.createUndirectedCategorizedInteractionGraphs();
+        Map<String, ExportAuthorGraph> resultMap = new HashMap<>();
+
+        interactionGraphMap.forEach((key, value) -> {
+            resultMap.put(key, value.createExportAuthorGraph());
+        });
+
+        try {
+            objectFileWriter.writeObjectToFile("D:\\statistics\\author_interaction_categorized.json", resultMap);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     void authorInteraction() {

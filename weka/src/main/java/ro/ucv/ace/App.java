@@ -5,7 +5,7 @@ package ro.ucv.ace;
  */
 public class App {
     public static void main(String[] args) throws Exception {
-        Classifier classifier = new Classifier();
-        classifier.classify();
+        DecisionTree decisionTree = new DecisionTree();
+        decisionTree.decisionTree();
     }
 }
