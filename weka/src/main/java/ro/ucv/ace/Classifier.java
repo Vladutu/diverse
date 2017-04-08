@@ -14,10 +14,10 @@ import java.util.Random;
 public class Classifier {
 
     public void classify() throws Exception {
-        String path = getClass().getClassLoader().getResource("data.arff").getPath();
+        String path = getClass().getClassLoader().getResource("train.arff").getPath();
         ConverterUtils.DataSource dataSource = new ConverterUtils.DataSource(path);
         Instances data = dataSource.getDataSet();
-        data.setClassIndex(4);
+        data.setClassIndex(data.numAttributes() - 1);
         NaiveBayes naiveBayes = new NaiveBayes();
         naiveBayes.buildClassifier(data);
         Evaluation evaluation = new Evaluation(data);

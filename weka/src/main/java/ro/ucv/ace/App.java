@@ -5,7 +5,7 @@ package ro.ucv.ace;
  */
 public class App {
     public static void main(String[] args) throws Exception {
-        DecisionTree decisionTree = new DecisionTree();
-        decisionTree.decisionTree();
+        Clusterer clusterer = new Clusterer();
+        clusterer.cluster();
     }
 }

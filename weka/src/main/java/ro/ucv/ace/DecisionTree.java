@@ -17,10 +17,10 @@ import java.util.Random;
 public class DecisionTree {
 
     public void decisionTree() throws Exception {
-        String path = getClass().getClassLoader().getResource("data.arff").getPath();
+        String path = getClass().getClassLoader().getResource("train.arff").getPath();
         ConverterUtils.DataSource dataSource = new ConverterUtils.DataSource(path);
         Instances data = dataSource.getDataSet();
-        data.setClassIndex(9);
+        data.setClassIndex(data.numAttributes() - 1);
 
         J48 j48 = new J48();
         j48.buildClassifier(data);
