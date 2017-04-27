@@ -5,7 +5,7 @@ package ro.ucv.ace;
  */
 public class App {
     public static void main(String[] args) throws Exception {
-        Clusterer clusterer = new Clusterer();
-        clusterer.cluster();
+        Apriori apriori = new Apriori();
+        apriori.apriori();
     }
 }

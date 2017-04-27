@@ -37,7 +37,7 @@ public class DecisionTree {
         System.out.println("Root mean square error: " + evaluation.rootMeanSquaredError());
         System.out.println("Unclassified " + evaluation.unclassified());
         System.out.println("Pct unclassified: " + evaluation.pctUnclassified());
-        //System.out.println("Graph:\n" + j48.graph());
+        System.out.println("Graph:\n" + j48.graph());
         // display classifier
         final javax.swing.JFrame jf = new javax.swing.JFrame("Weka Classifier Tree Visualizer: J48");
         jf.setSize(1920, 1080);

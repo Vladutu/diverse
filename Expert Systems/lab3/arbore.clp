@@ -15,7 +15,7 @@
   (declare (salience 5))
   ?s <- (start)
 =>
-  (retract ?s)
+  (retract ?s)tom
   (printout t "Numele cautat este = ")
   (bind ?raspuns (read))
   (assert (nume_cautat ?raspuns))
