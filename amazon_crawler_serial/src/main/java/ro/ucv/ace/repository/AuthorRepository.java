@@ -18,4 +18,6 @@ public interface AuthorRepository extends JpaRepository<Author, Integer> {
 
     @Query("SELECT a.id FROM Author a ORDER BY a.id ASC")
     List<Integer> findAllIds();
+
+    List<Author> findByNameStartingWith(String startsWith);
 }

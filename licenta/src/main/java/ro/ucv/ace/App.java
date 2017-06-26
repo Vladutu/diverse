@@ -8,6 +8,7 @@ import ro.ucv.ace.config.SpringConfiguration;
 import ro.ucv.ace.interaction.ExportAuthorGraph;
 import ro.ucv.ace.interaction.InteractionGraph;
 import ro.ucv.ace.readability.Readability;
+import ro.ucv.ace.sentiment_analysis.sentiwordnet.SentiWordNet;
 import ro.ucv.ace.service.ProductService;
 import ro.ucv.ace.statistics.*;
 
@@ -43,10 +44,49 @@ public class App {
     @Autowired
     private AuthorStatistics authorStatistics;
 
+    @Autowired
+    private SentiWordNet sentiWordNet;
+
     public static void main(String[] args) {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(SpringConfiguration.class);
         App app = ctx.getBean(App.class);
-        app.authorInteractionCategorized();
+        app.testSentiWordNet();
+    }
+
+
+    void testSentiWordNet() {
+        System.out.println("fgresgrdg#a " + sentiWordNet.extract("fgresgrdg", "a"));
+        System.out.println("very#a " + sentiWordNet.extract("very", "a"));
+        System.out.println("bad#a " + sentiWordNet.extract("bad", "a"));
+        System.out.println("blue#a " + sentiWordNet.extract("blue", "a"));
+        System.out.println("blue#n " + sentiWordNet.extract("blue", "n"));
+    }
+
+    void priceAndLength() {
+        Map<String, List<Double>> map = productStatistics.averageReviewLengthAndProductPrice();
+        try {
+            objectFileWriter.writeObjectToFile("D:\\statistics\\price_and_length.json", map);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void helpfulVotesAndAIR() {
+        Map<String, List<Double>> map = reviewStatistics.helpfulVotesAndAIR();
+        try {
+            objectFileWriter.writeObjectToFile("D:\\statistics\\helpful_votes_and_air.json", map);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void wordsAndHelpfulVotes() {
+        Map<String, List<Integer>> map = reviewStatistics.countWordsAndUsefulness();
+        try {
+            objectFileWriter.writeObjectToFile("D:\\statistics\\words_and_helpful_votes.json", map);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     void authorInteractionCategorized() {

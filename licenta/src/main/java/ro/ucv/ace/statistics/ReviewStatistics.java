@@ -70,4 +70,41 @@ public class ReviewStatistics {
 
         return map;
     }
+
+    public Map<String, List<Integer>> countWordsAndUsefulness() {
+        Map<String, List<Integer>> map = new HashMap<>();
+        map.put("words", new ArrayList<>());
+        map.put("helpful_votes", new ArrayList<>());
+
+        reviewRepository.getAll().forEach(review -> {
+            System.out.println("Computing review with id " + review.getId());
+            TextProcessor textProcessor = new BasicTextProcessor(review.getBody());
+            int words = textProcessor.numberOfWords();
+            int helpfulVotes = review.getHelpfulVotes();
+
+            map.get("words").add(words);
+            map.get("helpful_votes").add(helpfulVotes);
+        });
+
+        return map;
+    }
+
+
+    public Map<String, List<Double>> helpfulVotesAndAIR() {
+        Map<String, List<Double>> map = new HashMap<>();
+        map.put("helpful_votes", new ArrayList<>());
+        map.put("air", new ArrayList<>());
+
+        reviewRepository.getAll().forEach(review -> {
+            System.out.println("Computing review with id " + review.getId());
+            ReadabilityResult readabilityResult = readability.computeReadability(review.getBody());
+            double helpfulVotes = review.getHelpfulVotes();
+            double air = readabilityResult.getAutomatedReadabilityIndex();
+
+            map.get("helpful_votes").add(helpfulVotes);
+            map.get("air").add(air);
+        });
+
+        return map;
+    }
 }
