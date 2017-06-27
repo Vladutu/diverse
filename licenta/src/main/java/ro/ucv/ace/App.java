@@ -50,7 +50,16 @@ public class App {
     public static void main(String[] args) {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(SpringConfiguration.class);
         App app = ctx.getBean(App.class);
-        app.testSentiWordNet();
+        app.ratingAndSentimentAnalysis();
+    }
+
+    private void ratingAndSentimentAnalysis() {
+        Map<Integer, List<Double>> map = reviewStatistics.ratingAndSentimentAnalysis();
+        try {
+            objectFileWriter.writeObjectToFile("D:\\statistics\\rating_and_sentiment_analysis.json", map);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 

@@ -8,7 +8,7 @@ import ro.ucv.ace.sentiment_analysis.SentimentAnalyzer;
 public class App2 {
 
     public static void main(String[] args) {
-        String text = "I am extremely satisfied with your performance";
+        String text = "Great Item";
         SentimentAnalyzer sentimentAnalyzer = new SentimentAnalyzer();
         sentimentAnalyzer.computePolarity(text);
     }

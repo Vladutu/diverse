@@ -45,4 +45,28 @@ public class Word {
                 ", pos='" + pos + '\'' +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Word word = (Word) o;
+
+        if (index != word.index) {
+            return false;
+        }
+        return value != null ? value.equals(word.value) : word.value == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = index;
+        result = 31 * result + (value != null ? value.hashCode() : 0);
+        return result;
+    }
 }

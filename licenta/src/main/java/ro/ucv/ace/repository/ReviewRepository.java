@@ -15,4 +15,5 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
 
     @Query("SELECT r FROM Review r")
     Stream<Review> getAll();
+
 }
