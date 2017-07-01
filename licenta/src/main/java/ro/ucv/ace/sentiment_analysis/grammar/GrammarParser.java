@@ -8,6 +8,7 @@ import edu.stanford.nlp.semgraph.SemanticGraph;
 import edu.stanford.nlp.semgraph.SemanticGraphCoreAnnotations;
 import edu.stanford.nlp.trees.TypedDependency;
 import edu.stanford.nlp.util.CoreMap;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,7 +18,7 @@ import java.util.Properties;
 /**
  * Created by Geo on 26.06.2017.
  */
-//@Component
+@Component
 public class GrammarParser {
 
     private StanfordCoreNLP pipeline;
@@ -43,6 +44,16 @@ public class GrammarParser {
                 Word word = new Word(coreLabel.index(), coreLabel.word(), coreLabel.lemma(), coreLabel.tag());
                 words.add(word);
             }
+            for (int i = 0; i < words.size(); i++) {
+                Word current = words.get(i);
+                if (i > 0) {
+                    current.setPrevious(words.get(i - 1));
+                }
+                if (i < words.size() - 1) {
+                    current.setNext(words.get(i + 1));
+                }
+            }
+
 
             SemanticGraph semanticGraph = s.get(SemanticGraphCoreAnnotations.BasicDependenciesAnnotation.class);
             Collection<TypedDependency> typedDependencies = semanticGraph.typedDependencies();

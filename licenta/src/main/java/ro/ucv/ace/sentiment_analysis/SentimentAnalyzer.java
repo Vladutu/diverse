@@ -1,5 +1,7 @@
 package ro.ucv.ace.sentiment_analysis;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ro.ucv.ace.sentiment_analysis.grammar.*;
 import ro.ucv.ace.sentiment_analysis.sentiwordnet.SentiWordNet;
 
@@ -12,15 +14,15 @@ import java.util.stream.Stream;
 /**
  * Created by Geo on 26.06.2017.
  */
-//@Component
+@Component
 public class SentimentAnalyzer {
 
     private List<Intensifier> intensifiers;
 
-    //    @Autowired
+    @Autowired
     private GrammarParser grammarParser = new GrammarParser();
 
-    //    @Autowired
+    @Autowired
     private SentiWordNet sentiWordNet = new SentiWordNet();
 
     private List<String> acceptedPos;
@@ -76,9 +78,49 @@ public class SentimentAnalyzer {
         }
     }
 
+//    public double computePolarity(String review) {
+//        double polarity = 0;
+//
+//        Document document = grammarParser.parse(review.toLowerCase());
+//        for (Sentence sentence : document.getSentences()) {
+//            List<Word> negations = determineNegations(sentence.getDependencies());
+//            List<Word> intensifiers = determineIntensifiers(sentence.getWords());
+//            List<Word> excludes = Stream.of(negations, intensifiers).flatMap(List::stream).collect(Collectors.toList());
+//
+//            for (Word word : sentence.getWords()) {
+//                if (excludes.contains(word) || !acceptedPos.contains(word.getPos())) {
+//                    continue;
+//                }
+//
+//                int neg = computeNegation(word, sentence.getDependencies());
+//                int intensifier = computeIntensifier(word, sentence.getDependencies());
+//                double wordPolarity = computeWordPolarity(word);
+//                int inverse = 0;
+//                if (neg == 0) {
+//                    inverse = computePrevWordsDependencyInversion(word, sentence.getDependencies());
+//                }
+//
+//                double finalWordPolarity = ((double) intensifier / 100 * wordPolarity + wordPolarity)
+//                        * Math.pow(-1, neg) * Math.pow(-1, inverse);
+//
+//                polarity += finalWordPolarity;
+//            }
+//        }
+//
+//        if (polarity > 1) {
+//            polarity = 1;
+//        }
+//        if (polarity < -1) {
+//            polarity = -1;
+//        }
+//
+//        return polarity;
+//    }
+
     public double computePolarity(String review) {
         double polarity = 0;
-        int sentWordCount = 0;
+        List<Double> maxPol = new ArrayList<>();
+        List<Double> minPol = new ArrayList<>();
 
         Document document = grammarParser.parse(review.toLowerCase());
         for (Sentence sentence : document.getSentences()) {
@@ -86,31 +128,67 @@ public class SentimentAnalyzer {
             List<Word> intensifiers = determineIntensifiers(sentence.getWords());
             List<Word> excludes = Stream.of(negations, intensifiers).flatMap(List::stream).collect(Collectors.toList());
 
+            double maxPolWord = -5;
+            double minPolWord = 5;
+
             for (Word word : sentence.getWords()) {
                 if (excludes.contains(word) || !acceptedPos.contains(word.getPos())) {
                     continue;
                 }
 
-                sentWordCount++;
-                int k = computeNegation(word, sentence.getDependencies());
+                int neg = computeNegation(word, sentence.getDependencies());
                 int intensifier = computeIntensifier(word, sentence.getDependencies());
                 double wordPolarity = computeWordPolarity(word);
-                double finalWordPolarity = ((double) intensifier / 100 * wordPolarity + wordPolarity) * Math.pow(-1, k);
+                int inverse = 0;
+                if (neg == 0) {
+                    inverse = computePrevWordsDependencyInversion(word, sentence.getDependencies());
+                }
+                double finalWordPolarity = ((double) intensifier / 100 * wordPolarity + wordPolarity)
+                        * Math.pow(-1, neg) * Math.pow(-1, inverse);
 
-                polarity += finalWordPolarity;
+                if (finalWordPolarity > maxPolWord) {
+                    maxPolWord = finalWordPolarity;
+                }
+                if (finalWordPolarity < minPolWord) {
+                    minPolWord = finalWordPolarity;
+                }
+            }
+            maxPol.add(maxPolWord);
+            minPol.add(minPolWord);
+        }
+        double maxPolAvg = maxPol.stream().mapToDouble(d -> d).sum() / document.getSentences().size();
+        double minPolAvg = minPol.stream().mapToDouble(d -> d).sum() / document.getSentences().size();
+
+        if (maxPolAvg >= 0 && minPolAvg >= 0) {
+            polarity = maxPolAvg;
+        } else if (maxPolAvg < 0 && minPolAvg < 0) {
+            polarity = minPolAvg;
+        } else if (maxPolAvg > 0 && minPolAvg < 0) {
+            polarity = maxPolAvg - Math.abs(minPolAvg);
+        } else {
+            polarity = minPolAvg - Math.abs(maxPolAvg);
+        }
+
+
+        return polarity;
+    }
+
+
+    private int computePrevWordsDependencyInversion(Word word, List<Dependency> dependencies) {
+        for (Dependency dependency : dependencies) {
+            Word other = null;
+            if (dependency.getGovernor().equals(word)) {
+                other = dependency.getDependent();
+
+            } else if (dependency.getDependent().equals(word)) {
+                other = dependency.getGovernor();
+            }
+            if (other != null && other.getHasNegation() && other.getIndex() < word.getIndex()) {
+                return 1;
             }
         }
 
-
-//        polarity = polarity / sentWordCount;
-        if (polarity > 1) {
-            polarity = 1;
-        }
-        if (polarity < -1) {
-            polarity = -1;
-        }
-
-        return polarity;
+        return 0;
     }
 
     private double computeWordPolarity(Word word) {
@@ -179,6 +257,7 @@ public class SentimentAnalyzer {
         for (Dependency dependency : dependencies) {
             if (dependency.getRelation().equals(NEGATION)) {
                 negations.add(dependency.getDependent());
+                dependency.getGovernor().setHasNegation(true);
             }
         }
 

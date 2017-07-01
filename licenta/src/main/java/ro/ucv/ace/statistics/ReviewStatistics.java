@@ -1,11 +1,8 @@
 package ro.ucv.ace.statistics;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import ro.ucv.ace.entity.Review;
 import ro.ucv.ace.readability.Readability;
 import ro.ucv.ace.readability.ReadabilityResult;
 import ro.ucv.ace.repository.ReviewRepository;
@@ -13,7 +10,9 @@ import ro.ucv.ace.sentiment_analysis.SentimentAnalyzer;
 import ro.ucv.ace.utils.BasicTextProcessor;
 import ro.ucv.ace.utils.TextProcessor;
 
+import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Geo on 18.03.2017.
@@ -30,6 +29,9 @@ public class ReviewStatistics {
 
     @Autowired
     private SentimentAnalyzer sentimentAnalyzer;
+
+    @Autowired
+    private ObjectFileWriter objectFileWriter;
 
     public Map<String, List<Integer>> countWordsInReviewsGroupedByCategory() {
         Map<String, List<Integer>> wordCounter = new HashMap<>();
@@ -114,15 +116,25 @@ public class ReviewStatistics {
 
     public Map<Integer, List<Double>> ratingAndSentimentAnalysis() {
         Map<Integer, List<Double>> map = new HashMap<>();
+        AtomicInteger atomicInteger = new AtomicInteger(0);
 
-        Page<Review> reviews = reviewRepository.findAll
-                (new PageRequest(1, 1000));
-
-        for (Review review : reviews.getContent()) {
+        reviewRepository.getAll().filter(review -> {
+            return review.getId() > 68477;
+        }).forEach(review -> {
             System.out.println("Computing review with id " + review.getId());
             double polarity = sentimentAnalyzer.computePolarity(review.getBody());
             map.put(review.getId(), Arrays.asList(review.getProductRating(), polarity));
-        }
+
+            int index = atomicInteger.incrementAndGet();
+            if (index % 2000 == 0) {
+                try {
+                    objectFileWriter.writeObjectToFile("D:\\statistics\\sentiment\\rating_and_sentiment_analysis_from_50507_to_" +
+                            +review.getId() + ".json", map);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
         return map;
     }

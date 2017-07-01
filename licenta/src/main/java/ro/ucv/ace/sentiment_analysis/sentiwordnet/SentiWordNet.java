@@ -1,5 +1,7 @@
 package ro.ucv.ace.sentiment_analysis.sentiwordnet;
 
+import org.springframework.stereotype.Component;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -9,7 +11,7 @@ import java.util.Scanner;
 /**
  * Created by Geo on 25.06.2017.
  */
-//@Component
+@Component
 public class SentiWordNet {
 
     private Map<String, Double> dictionary;

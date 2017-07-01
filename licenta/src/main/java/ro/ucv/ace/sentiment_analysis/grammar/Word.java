@@ -13,6 +13,12 @@ public class Word {
 
     private String pos;
 
+    private boolean hasNegation = false;
+
+    private Word previous;
+
+    private Word next;
+
     public Word(int index, String value, String lemma, String pos) {
         this.index = index;
         this.value = value;
@@ -34,6 +40,30 @@ public class Word {
 
     public String getPos() {
         return pos;
+    }
+
+    public boolean getHasNegation() {
+        return hasNegation;
+    }
+
+    public void setHasNegation(boolean hasNegation) {
+        this.hasNegation = hasNegation;
+    }
+
+    public Word getPrevious() {
+        return previous;
+    }
+
+    public void setPrevious(Word previous) {
+        this.previous = previous;
+    }
+
+    public Word getNext() {
+        return next;
+    }
+
+    public void setNext(Word next) {
+        this.next = next;
     }
 
     @Override
