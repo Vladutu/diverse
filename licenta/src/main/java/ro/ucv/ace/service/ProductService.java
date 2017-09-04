@@ -27,7 +27,7 @@ public class ProductService {
             reviews.forEach(review -> {
                 if (review.getBody().trim().isEmpty()) {
                     toBeRemoved.add(review);
-                    System.out.println("Emtpy review with id " + review.getId());
+                    System.out.println("Empty review with id " + review.getId());
                 }
 
             });
