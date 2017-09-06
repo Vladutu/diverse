@@ -15,15 +15,13 @@ public class SimpleEventAggregator implements EventAggregator {
     private Class<Subscriber> subscriberClass = Subscriber.class;
 
     private Method method = subscriberClass.getDeclaredMethods()[0];
-    ;
 
     private Map<Type, List<WeakReference<? extends Subscriber>>> map = new HashMap<>();
 
     public SimpleEventAggregator() {
     }
 
-    public <S extends Subscriber> void subscribe(S subscriber) {
-
+    public synchronized  <S extends Subscriber> void subscribe(S subscriber) {
         Type[] interfaces = subscriber.getClass().getGenericInterfaces();
         Type subscriberType = subscriberClass;
 
@@ -32,23 +30,25 @@ public class SimpleEventAggregator implements EventAggregator {
             if (subscriberType.equals(parameterizedType.getRawType())) {
                 Type eventType = parameterizedType.getActualTypeArguments()[0];
                 System.out.println(eventType);
-
-                List<WeakReference<? extends Subscriber>> subscribers = map.get(eventType);
-
-                if (subscribers == null) {
-                    List<WeakReference<? extends Subscriber>> newList = new ArrayList<>();
-                    newList.add(new WeakReference<>(subscriber));
-                    map.put(eventType, newList);
-                } else {
-                    subscribers.add(new WeakReference<>(subscriber));
-                }
+                addSubscriber(subscriber, eventType);
                 break;
             }
         }
     }
 
-    public <E> void publish(E e) {
-        Type type = e.getClass();
+    private <S extends Subscriber> void addSubscriber(S subscriber, Type eventType) {
+        List<WeakReference<? extends Subscriber>> subscribers = map.get(eventType);
+        if (subscribers == null) {
+            List<WeakReference<? extends Subscriber>> newList = new ArrayList<>();
+            newList.add(new WeakReference<>(subscriber));
+            map.put(eventType, newList);
+        } else {
+            subscribers.add(new WeakReference<>(subscriber));
+        }
+    }
+
+    public synchronized  void publish(Object event) {
+        Type type = event.getClass();
         List<WeakReference<? extends Subscriber>> toRemove = new ArrayList<>();
         List<WeakReference<? extends  Subscriber>> weakReferences = map.get(type);
         if (weakReferences != null) {
@@ -56,7 +56,7 @@ public class SimpleEventAggregator implements EventAggregator {
                 Subscriber subscriber = weakReference.get();
                 if (subscriber != null) {
                     try {
-                        method.invoke(subscriber, e);
+                        method.invoke(subscriber, event);
                     } catch (IllegalAccessException | InvocationTargetException e1) {
                         e1.printStackTrace();
                     }
