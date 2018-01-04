@@ -18558,7 +18558,7 @@ CREATE TABLE `song_details` (
   `ALBUM_IMAGE_URL` varchar(200) NOT NULL,
   `ARTIST` varchar(255) NOT NULL,
   `NAME` varchar(255) NOT NULL,
-  `PREVIEW_URL` varchar(200) NOT NULL
+  `PREVIEW_URL` varchar(200)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --

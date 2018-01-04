@@ -114,7 +114,7 @@ public class SpotifyApi implements ISpotifyApi {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl + "/search")
                 .queryParam("q", "track:" + songName + " artist:" + artistName)
                 .queryParam("type", "track")
-                .queryParam("limit", "1");
+                .queryParam("limit", "10");
 
         return builder.build().toUri();
     }
@@ -128,11 +128,13 @@ public class SpotifyApi implements ISpotifyApi {
                 .getJSONObject(0)
                 .getString("id");
         currentId = id;
-        String previewUrl = json
+        Object previewUrlObj = json
                 .getJSONObject("tracks")
                 .getJSONArray("items")
                 .getJSONObject(0)
-                .getString("preview_url");
+                .get("preview_url");
+        String previewUrl = previewUrlObj == JSONObject.NULL ? null : (String) previewUrlObj;
+
         String albumImageLink = json
                 .getJSONObject("tracks")
                 .getJSONArray("items")
@@ -144,6 +146,7 @@ public class SpotifyApi implements ISpotifyApi {
 
         return songDetailsBuilder.build(id, previewUrl, albumImageLink, artistName, songName);
     }
+
 
     private IAudioFeatures parseAudioFeaturesResponseBody(String body) {
         JSONObject json = new JSONObject(body);

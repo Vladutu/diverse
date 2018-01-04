@@ -7,6 +7,7 @@ import ro.ucv.ace.exception.EntityNotFoundException;
 import ro.ucv.ace.model.ISong;
 import ro.ucv.ace.repository.ISongRepository;
 import ro.ucv.ace.service.ISongService;
+import ro.ucv.ace.service.YoutubeService;
 
 import java.util.List;
 
@@ -20,10 +21,18 @@ public class SongService implements ISongService {
     @Autowired
     private ISongRepository songRepository;
 
+    @Autowired
+    private YoutubeService youtubeService;
+
     @Override
     public List<ISong> findSongsSimilarTo(String artistName, String songName, int limit) throws EntityNotFoundException {
         ISong song = songRepository.findSong(artistName, songName);
 
-        return song.findSimilarSongs(limit);
+        List<ISong> similarSongs = song.findSimilarSongs(limit);
+        for (ISong similarSong : similarSongs) {
+            similarSong.setPreviewUrl(youtubeService.getEmbedYoutubeUrl(similarSong.getArtist(), similarSong.getName()));
+        }
+
+        return similarSongs;
     }
 }

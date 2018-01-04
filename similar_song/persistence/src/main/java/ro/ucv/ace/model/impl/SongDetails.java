@@ -60,4 +60,19 @@ public class SongDetails implements ISongDetails {
                 ", albumImageUrl='" + albumImageUrl + '\'' +
                 '}';
     }
+
+    @Override
+    public void setPreviewUrl(String url) {
+        this.previewUrl = url;
+    }
+
+    @Override
+    public String getArtist() {
+        return artist;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
 }

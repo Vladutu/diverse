@@ -8,4 +8,9 @@ import ro.ucv.ace.model.impl.SongDetails;
  */
 @JsonSubTypes({@JsonSubTypes.Type(value = SongDetails.class, name = "sd")})
 public interface ISongDetails {
+    void setPreviewUrl(String url);
+
+    String getArtist();
+
+    String getName();
 }

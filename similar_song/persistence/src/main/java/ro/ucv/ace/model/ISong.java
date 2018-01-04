@@ -12,4 +12,10 @@ import java.util.List;
 public interface ISong {
 
     List<ISong> findSimilarSongs(int limit);
+
+    void setPreviewUrl(String url);
+
+    String getArtist();
+
+    String getName();
 }

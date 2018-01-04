@@ -47,6 +47,21 @@ public class Song implements ISong {
     }
 
     @Override
+    public void setPreviewUrl(String url) {
+        songDetails.setPreviewUrl(url);
+    }
+
+    @Override
+    public String getArtist() {
+        return songDetails.getArtist();
+    }
+
+    @Override
+    public String getName() {
+        return songDetails.getName();
+    }
+
+    @Override
     public String toString() {
         return "Song{" +
                 "id=" + id +
