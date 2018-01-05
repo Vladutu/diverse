@@ -1,7 +1,8 @@
 import {Component, OnInit} from "@angular/core";
 import {Song} from "../model/song";
-import {FormGroup, FormControl, Validators} from "@angular/forms";
+import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {SongService} from "../service/song.service";
+import {LoadingService} from "../service/loading.service";
 
 @Component({
   selector: 'app-search',
@@ -14,7 +15,7 @@ export class SearchComponent implements OnInit {
   private myFrom: FormGroup;
   private error: boolean = false;
 
-  constructor(private songService: SongService) {
+  constructor(private songService: SongService, private loadingService: LoadingService) {
   }
 
   ngOnInit() {
@@ -27,7 +28,7 @@ export class SearchComponent implements OnInit {
 
   onSubmit() {
     let val = this.myFrom.value;
-
+    this.loadingService.actualize(true);
     this.songService
       .getSongs(val.artist, val.song, +val.limit)
       .subscribe(
@@ -36,11 +37,13 @@ export class SearchComponent implements OnInit {
           let similarSongs: Song[] = data.slice(1, data.length + 1);
           this.error = false;
           this.songService.actualizeSongs(similarSongs);
+          this.loadingService.actualize(false);
         },
         error => {
           this.error = true;
           this.song = null;
           this.songService.actualizeSongs([]);
+          this.loadingService.actualize(false);
         }
       );
   }

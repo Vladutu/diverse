@@ -1,1 +1,33 @@
-<app-song-item [song]="song" [index]="i + 1" *ngFor="let song of songs; let i = index"></app-song-item>
+<table class="table table-hover additionalMargin" *ngIf="songs.length != 0">
+  <thead>
+    <tr>
+      <th>Track</th>
+      <th>Artist</th>
+      <th>Album</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let song of songs">
+      <td>
+        <a href="#" class="btn btn-lg" (mouseenter)="song.hover = true" (mouseleave)="song.hover = false"
+           (click)="openModal(song)">
+          <span
+            class='glyphicon'
+            [ngClass]="{'glyphicon-play' : song.hover === true, 'glyphicon-music': song.hover === false}"></span>
+        </a>
+        {{song.songDetails.name}}
+      </td>
+      <td>{{song.songDetails.artist}}</td>
+      <td><img [src]="song.songDetails.albumImageUrl" width="60" height="60"></td>
+    </tr>
+  </tbody>
+</table>
+
+<bs-modal #modal [size]="lg" cssClass='modal-xl' (onDismiss)="pauseVideo($event)">
+  <bs-modal-body *ngIf="currentSong != null">
+    <div class="embed-responsive embed-responsive-4by3">
+      <iframe id='ytVideo' class="embed-responsive-item"
+              [src]="currentSong.songDetails.previewUrl + '?enablejsapi=1' | safe"></iframe>
+    </div>
+  </bs-modal-body>
+</bs-modal>

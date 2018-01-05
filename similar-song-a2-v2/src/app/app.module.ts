@@ -11,6 +11,9 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {HttpModule} from "@angular/http";
 import {SongService} from "./service/song.service";
 import {SafePipe} from "./pipe/SafePipe";
+import {LoadingOverlayComponent} from "./loading-overlay/loading-overlay.component";
+import {LoadingService} from "./service/loading.service";
+import {BsModalModule} from 'ng2-bs3-modal';
 
 
 @NgModule({
@@ -20,15 +23,17 @@ import {SafePipe} from "./pipe/SafePipe";
     SearchComponent,
     SongsResultComponent,
     SongItemComponent,
-    SafePipe
+    SafePipe,
+    LoadingOverlayComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    BsModalModule
   ],
-  providers: [SongService],
+  providers: [SongService, LoadingService],
   bootstrap: [AppComponent]
 })
 export class AppModule {
