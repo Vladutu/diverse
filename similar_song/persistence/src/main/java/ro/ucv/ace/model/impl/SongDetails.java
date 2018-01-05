@@ -30,7 +30,7 @@ public class SongDetails implements ISongDetails {
     private String artist;
 
     @Basic
-    @Column(name = "PREVIEW_URL", length = 200, nullable = false, unique = true)
+    @Column(name = "PREVIEW_URL", length = 200, unique = true)
     @JsonProperty
     private String previewUrl;
 

@@ -12,7 +12,7 @@
         <a href="#" class="btn btn-lg" (mouseenter)="song.hover = true" (mouseleave)="song.hover = false"
            (click)="openModal(song)">
           <span
-            class='glyphicon'
+            class='glyphicon blue'
             [ngClass]="{'glyphicon-play' : song.hover === true, 'glyphicon-music': song.hover === false}"></span>
         </a>
         {{song.songDetails.name}}
@@ -27,7 +27,7 @@
   <bs-modal-body *ngIf="currentSong != null">
     <div class="embed-responsive embed-responsive-4by3">
       <iframe id='ytVideo' class="embed-responsive-item"
-              [src]="currentSong.songDetails.previewUrl + '?enablejsapi=1' | safe"></iframe>
+              [src]="currentSong.songDetails.previewUrl + '?enablejsapi=1&autoplay=1' | safe"></iframe>
     </div>
   </bs-modal-body>
 </bs-modal>
