@@ -24,7 +24,7 @@ public class DirectNominalObjectRule implements Rule {
 
     @Override
     public void execute(Dependency dependency, Sentence sentence) {
-        int firstPersonMultiplier = sentenceIsFirstPerson(sentence.getWords()) ? -1 : 1;
+        int firstPersonMultiplier = 1; //sentenceIsFirstPerson(sentence.getWords()) ? -1 : 1;
 
         Dependency otherDependency = sentence.getDependencies().stream()
                 .filter(dep -> dependency.getDependent().equals(dep.getGovernor()))

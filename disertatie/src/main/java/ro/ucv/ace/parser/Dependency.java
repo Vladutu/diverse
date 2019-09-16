@@ -15,11 +15,18 @@ public class Dependency {
 
     private Word dependent;
 
-    private double polarity;
+    private Double polarity;
+
+    private boolean processable = true;
 
     public Dependency(String relation, Word governor, Word dependent) {
         this.relation = relation;
         this.governor = governor;
         this.dependent = dependent;
     }
+
+    public boolean isProcessed() {
+        return polarity != null;
+    }
+
 }

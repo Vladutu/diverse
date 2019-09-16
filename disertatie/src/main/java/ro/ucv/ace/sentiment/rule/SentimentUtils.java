@@ -9,7 +9,7 @@ public class SentimentUtils {
     }
 
     public static boolean pos(double polarity) {
-        return polarity > 0;
+        return polarity >= 0;
     }
 
     public static void setPolarity(Dependency dependency, double polarity) {

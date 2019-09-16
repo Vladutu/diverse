@@ -1,0 +1,1 @@
+[ROOT [S [NP [NNP Paul]] [VP [VBD saw] [NP [DT the] [NN movie]] [PP [IN in] [NP [NN 3D]]]]]]

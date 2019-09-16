@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ro.ucv.ace.parser.Word;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -50,8 +51,8 @@ public class SenticNetService {
     public double findWordPolarity(Word word) {
         String newWord = word.getValue().replaceAll(" ", "_");
         String newLemma = word.getLemma().replaceAll(" ", "_");
-        Double wordSenticPolarity = senticNetRepository.findById(newWord).map(SenticNet::getPolarityValue).orElse(null);
-        Double lemmaSenticPolarity = senticNetRepository.findById(newLemma).map(SenticNet::getPolarityValue).orElse(null);
+        Double wordSenticPolarity = findPolarity(newWord);
+        Double lemmaSenticPolarity = findPolarity(newLemma);
 
         if (wordSenticPolarity == null && lemmaSenticPolarity == null) {
             return 0;
@@ -69,13 +70,20 @@ public class SenticNetService {
         }
     }
 
+    private Double findPolarity(String word) {
+        return senticNetRepository
+                .findById(word)
+                .map(SenticNet::getPolarityValue)
+                .orElse(null);
+    }
+
     private Double getSenticFromConcepts(List<String> concepts) {
         return concepts.stream()
                 .map(senticNetRepository::findById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .map(SenticNet::getPolarityValue)
-                .findFirst()
+                .max(Comparator.comparingDouble(Math::abs))
                 .orElse(null);
     }
 
@@ -84,5 +92,4 @@ public class SenticNetService {
                 .map(word -> word.replaceAll(" ", "_"))
                 .collect(Collectors.joining("_"));
     }
-
 }

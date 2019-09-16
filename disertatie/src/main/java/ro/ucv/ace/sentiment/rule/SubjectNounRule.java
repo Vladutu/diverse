@@ -10,21 +10,17 @@ import java.util.List;
 
 import static ro.ucv.ace.sentiment.rule.SentimentUtils.*;
 
+public class SubjectNounRule extends RuleTemplate {
 
-public class SubjectNounRule implements Rule {
-
-    private static final String PASSIVE_VOICE_TOKEN = "nsubjpass";
-    private static final List<String> FIRST_PERSON_PRONOUNS = Arrays.asList("i", "we", "me", "us", "my", "our", "mine", "ours");
     private static final List<String> ACCEPTED_RELATIONS = Arrays.asList("nsubj", "nsubjpass");
+    private static final String PASSIVE_VOICE_TOKEN = ACCEPTED_RELATIONS.get(1);
 
-    private SenticNetService senticNetService;
-
-    public SubjectNounRule(SenticNetService senticNetService) {
-        this.senticNetService = senticNetService;
+    public SubjectNounRule(SenticNetService senticNetService, boolean addRules) {
+        super(senticNetService, addRules);
     }
 
     @Override
-    public void execute(Dependency dependency, Sentence sentence) {
+    public void executeRule(Dependency dependency, Sentence sentence) {
         Word head = dependency.getGovernor();
         Word dependent = dependency.getDependent();
 
@@ -34,10 +30,9 @@ public class SubjectNounRule implements Rule {
             return;
         }
 
-        double headPolarity = senticNetService.findWordPolarity(head);
-        double dependantPolarity = senticNetService.findWordPolarity(dependent);
+        double headPolarity = computeWordPolarity(head);
+        double dependantPolarity = computeWordPolarity(dependent);
         boolean passiveVoice = dependency.getRelation().equals(PASSIVE_VOICE_TOKEN);
-        boolean firstPerson = sentenceIsFirstPerson(sentence.getWords());
 
         if (neg(headPolarity) && neg(dependantPolarity)) {
             if (passiveVoice) {
@@ -46,13 +41,11 @@ public class SubjectNounRule implements Rule {
                 setPolarity(dependency, Math.min(headPolarity, dependantPolarity));
             }
         } else if (neg(headPolarity) && pos(dependantPolarity)) {
-            if (firstPerson) {
-                setPolarity(dependency, dependantPolarity);
-            } else {
-                setPolarity(dependency, headPolarity);
-            }
+            // We do not use the first person part because it's not correct
+            setPolarity(dependency, Math.min(headPolarity, -dependantPolarity));
         } else if (pos(headPolarity) && neg(dependantPolarity)) {
-            setPolarity(dependency, dependantPolarity);
+            // We changed to positive from the examples
+            setPolarity(dependency, Math.max(headPolarity, -dependantPolarity));
         } else if (pos(headPolarity) && pos(dependantPolarity)) {
             setPolarity(dependency, Math.max(headPolarity, dependantPolarity));
         }
@@ -60,13 +53,10 @@ public class SubjectNounRule implements Rule {
 
     @Override
     public boolean applies(Dependency dependency) {
-        String relation = dependency.getRelation();
-
-        return ACCEPTED_RELATIONS.contains(relation);
+        return ACCEPTED_RELATIONS.contains(dependency.getRelation());
     }
 
-    private boolean sentenceIsFirstPerson(List<Word> words) {
-        return words.stream()
-                .anyMatch(word -> FIRST_PERSON_PRONOUNS.stream().anyMatch(pronoun -> word.getValue().equalsIgnoreCase(pronoun)));
+    private double computeWordPolarity(Word word) {
+        return word.getPolarity() != 0 ? word.getPolarity() : senticNetService.findWordPolarity(word);
     }
 }

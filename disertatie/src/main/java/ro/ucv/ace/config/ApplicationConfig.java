@@ -3,6 +3,7 @@ package ro.ucv.ace.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import ro.ucv.ace.senticnet.SenticNetService;
+import ro.ucv.ace.sentiment.rule.AdjectivalAndAdverbialModifierRule;
 import ro.ucv.ace.sentiment.rule.DirectNominalObjectRule;
 import ro.ucv.ace.sentiment.rule.Rule;
 import ro.ucv.ace.sentiment.rule.SubjectNounRule;
@@ -16,7 +17,8 @@ public class ApplicationConfig {
     @Bean
     public List<Rule> rules(SenticNetService senticNetService) {
         List<Rule> rules = new ArrayList<>();
-        rules.add(new SubjectNounRule(senticNetService));
+        rules.add(new SubjectNounRule(senticNetService, true));
+        rules.add(new AdjectivalAndAdverbialModifierRule(senticNetService, true));
         rules.add(new DirectNominalObjectRule(senticNetService));
 
         return rules;

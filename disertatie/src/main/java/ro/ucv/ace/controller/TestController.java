@@ -6,30 +6,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import ro.ucv.ace.parser.GrammarParser;
 import ro.ucv.ace.parser.Sentence;
-import ro.ucv.ace.sentiment.rule.Rule;
-
-import java.util.List;
+import ro.ucv.ace.sentiment.SentimentalPolarityAlgorithm;
 
 @RestController
 public class TestController {
 
     @Autowired
-    private GrammarParser grammarParser;
-
-    @Autowired
-    private List<Rule> rules;
+    private SentimentalPolarityAlgorithm sentimentalPolarityAlgorithm;
 
     @PostMapping(name = "parseSentence", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<Sentence> parseSentence(@RequestBody String text) {
-        Sentence sentence = grammarParser.parse(text);
-        sentence.getDependencies().forEach(
-                dependency -> rules.stream()
-                        .filter(rule -> rule.applies(dependency))
-                        .forEach(rule -> rule.execute(dependency, sentence))
-        );
-
-        return ResponseEntity.ok(sentence);
+        return ResponseEntity.ok(sentimentalPolarityAlgorithm.execute(text));
     }
 }
