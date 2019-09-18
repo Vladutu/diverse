@@ -1,12 +1,17 @@
 package ro.ucv.ace.sentiment;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.context.WebApplicationContext;
 import ro.ucv.ace.parser.Dependency;
 import ro.ucv.ace.parser.GrammarParser;
 import ro.ucv.ace.parser.Sentence;
 import ro.ucv.ace.parser.Word;
+import ro.ucv.ace.sentiment.rule.ComplementClauseRule;
 import ro.ucv.ace.sentiment.rule.Rule;
 
 import java.util.ArrayList;
@@ -14,11 +19,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class SentimentalPolarityAlgorithm {
 
     private final GrammarParser grammarParser;
 
     private final List<Rule> rules;
+
+    private Dependency lastProcessed = null;
+
+    private ComplementClauseRule complementClauseRule = new ComplementClauseRule();
 
     @Autowired
     public SentimentalPolarityAlgorithm(GrammarParser grammarParser, List<Rule> rules) {
@@ -26,15 +36,23 @@ public class SentimentalPolarityAlgorithm {
         this.rules = rules;
     }
 
-    public Sentence execute(String text) {
+    public Pair<Dependency, Sentence> execute(String text) {
         Sentence sentence = grammarParser.parse(text);
+        if (!complementClauseRule.applies(sentence)) {
+            return executeAlgorithm(sentence);
+        }
+
+        return complementClauseRule.executeRule(sentence, this::executeAlgorithm);
+    }
+
+    private Pair<Dependency, Sentence> executeAlgorithm(Sentence sentence) {
         List<Dependency> dependencies = sentence.getDependencies();
 
         for (Dependency dependency : dependencies) {
             executeRules(dependency, sentence);
         }
 
-        return sentence;
+        return Pair.of(lastProcessed, sentence);
     }
 
     private void executeRules(Dependency dependency, Sentence sentence) {
@@ -53,6 +71,7 @@ public class SentimentalPolarityAlgorithm {
         activableRules
                 .forEach(rule -> {
                     rule.execute(dependency, sentence);
+                    lastProcessed = dependency;
                     List<Dependency> nextDependencies = findNextDependencies(dependency, sentence);
 
                     nextDependencies.forEach(nextDependency -> executeRules(nextDependency, sentence));

@@ -10,16 +10,16 @@ import java.util.List;
 
 import static ro.ucv.ace.sentiment.SentimentUtils.setPolarity;
 
-public class AdjectivalAndAdverbialModifierRule extends RuleTemplate {
+public class AdverbialClauseModifierRule extends RuleTemplate {
 
-    private static final List<String> ACCEPTED_RELATIONS = Arrays.asList("amod", "advmod");
+    private static final List<String> ACCEPTED_RELATIONS = Arrays.asList("advcl");
 
-    public AdjectivalAndAdverbialModifierRule(SenticNetService senticNetService, boolean addRules) {
+    public AdverbialClauseModifierRule(SenticNetService senticNetService, boolean addRules) {
         super(senticNetService, addRules);
     }
 
     @Override
-    public void executeRule(Dependency dependency, Sentence sentence) {
+    protected void executeRule(Dependency dependency, Sentence sentence) {
         Word head = dependency.getGovernor();
         Word dependent = dependency.getDependent();
 
@@ -39,21 +39,20 @@ public class AdjectivalAndAdverbialModifierRule extends RuleTemplate {
         return ACCEPTED_RELATIONS.contains(dependency.getRelation());
     }
 
-    private double computeDependencyPolarity(Dependency dependency) {
-        Word head = dependency.getGovernor();
-        Word dependent = dependency.getDependent();
-
-        double headPolarity = computeWordPolarity(head);
-        double dependantPolarity = computeWordPolarity(dependent);
-
-        if (dependantPolarity != 0) {
-            return dependantPolarity;
-        } else {
-            return headPolarity;
-        }
-    }
-
     private double computeWordPolarity(Word word) {
         return word.getPolarity() != 0 ? word.getPolarity() : senticNetService.findWordPolarity(word);
+    }
+
+    private double computeDependencyPolarity(Dependency dependency) {
+        Word dependent = dependency.getDependent();
+        Word governor = dependency.getGovernor();
+        double dependentPolarity = computeWordPolarity(dependent);
+        double governorPolarity = computeWordPolarity(governor);
+
+        if (dependentPolarity != 0) {
+            return dependentPolarity;
+        }
+
+        return governorPolarity;
     }
 }

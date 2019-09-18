@@ -1,1 +1,5 @@
 [ROOT [S [NP [NNP Paul]] [VP [VBD saw] [NP [DT the] [NN movie]] [PP [IN in] [NP [NN 3D]]]]]]
+[ROOT [S [NP [NNP Bob]] [VP [VBD hit] [NP [NNP Mary]] [PP [IN with] [NP [DT a] [NN hammer]]]] [. .]]]
+[ROOT [S [NP [NNP Paul]] [VP [VBD completed] [NP [PRP$ his] [NN work]] [PP [IN in] [NP [DT a] [JJ terrible] [NN way]]]]]]
+[ROOT [S [NP [DT This] [NN actor]] [VP [VBZ is] [NP [NP [DT the] [JJ only] [NN failure]] [PP [IN in] [NP [DT an] [ADJP [RB otherwise] [JJ brilliant]] [NN cast]]]]] [. .]]]
+[ROOT [S [SBAR [IN While] [S [NP [PRP I]] [VP [VBP 'm] [ADJP [JJ sure] [SBAR [S [NP [NP [DT the] [NN quality]] [PP [IN of] [NP [DT the] [NN product]]]] [VP [VBZ is] [ADJP [JJ fine]]]]]]]]] [, ,] [NP [DT the] [NN color]] [VP [VBZ is] [ADJP [RB very] [JJ different]]] [. .]]]

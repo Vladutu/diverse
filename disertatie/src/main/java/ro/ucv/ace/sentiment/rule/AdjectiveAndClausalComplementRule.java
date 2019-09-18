@@ -10,21 +10,22 @@ import java.util.List;
 
 import static ro.ucv.ace.sentiment.SentimentUtils.setPolarity;
 
-public class AdjectivalAndAdverbialModifierRule extends RuleTemplate {
+public class AdjectiveAndClausalComplementRule extends RuleTemplate {
 
-    private static final List<String> ACCEPTED_RELATIONS = Arrays.asList("amod", "advmod");
+    private static final List<String> ACCEPTED_RELATIONS = Arrays.asList("acomp", "ccomp");
 
-    public AdjectivalAndAdverbialModifierRule(SenticNetService senticNetService, boolean addRules) {
+    public AdjectiveAndClausalComplementRule(SenticNetService senticNetService, boolean addRules) {
         super(senticNetService, addRules);
     }
 
     @Override
-    public void executeRule(Dependency dependency, Sentence sentence) {
+    protected void executeRule(Dependency dependency, Sentence sentence) {
         Word head = dependency.getGovernor();
         Word dependent = dependency.getDependent();
 
         double dependencyPolarity = computeDependencyPolarity(dependency);
         Double conceptPolarity = senticNetService.findConceptPolarity(head, dependent);
+
         if (conceptPolarity != null) {
             int reversePolarity = dependencyPolarity * conceptPolarity < 0 ? -1 : 1;
             setPolarity(dependency, reversePolarity * conceptPolarity);
@@ -46,11 +47,11 @@ public class AdjectivalAndAdverbialModifierRule extends RuleTemplate {
         double headPolarity = computeWordPolarity(head);
         double dependantPolarity = computeWordPolarity(dependent);
 
-        if (dependantPolarity != 0) {
+        if (headPolarity != 0 && dependantPolarity != 0) {
             return dependantPolarity;
-        } else {
-            return headPolarity;
         }
+
+        return dependantPolarity;
     }
 
     private double computeWordPolarity(Word word) {

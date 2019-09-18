@@ -1,6 +1,7 @@
-package ro.ucv.ace.sentiment.rule;
+package ro.ucv.ace.sentiment;
 
 import ro.ucv.ace.parser.Dependency;
+import ro.ucv.ace.parser.Word;
 
 public class SentimentUtils {
 
@@ -13,8 +14,15 @@ public class SentimentUtils {
     }
 
     public static void setPolarity(Dependency dependency, double polarity) {
+        Word dependent = dependency.getDependent();
+        Word governor = dependency.getGovernor();
+
         dependency.setPolarity(polarity);
-        dependency.getGovernor().setPolarity(polarity);
-        dependency.getDependent().setPolarity(polarity);
+        if (governor.getPolarity() == 0) {
+            governor.setPolarity(polarity);
+        }
+        if (dependent.getPolarity() == 0) {
+            dependent.setPolarity(polarity);
+        }
     }
 }

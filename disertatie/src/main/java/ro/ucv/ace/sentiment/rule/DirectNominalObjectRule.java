@@ -8,53 +8,30 @@ import ro.ucv.ace.senticnet.SenticNetService;
 import java.util.Arrays;
 import java.util.List;
 
-import static ro.ucv.ace.sentiment.rule.SentimentUtils.setPolarity;
+import static ro.ucv.ace.sentiment.SentimentUtils.setPolarity;
 
-public class DirectNominalObjectRule implements Rule {
+public class DirectNominalObjectRule extends RuleTemplate {
 
-    private static final List<String> ACCEPTED_RELATIONS = Arrays.asList("dobj"); //TODO: test "ccomp"
+    private static final List<String> ACCEPTED_RELATIONS = Arrays.asList("dobj");
     private static final List<String> FIRST_PERSON_PRONOUNS = Arrays.asList("i", "we", "me", "us", "my", "our", "mine", "ours");
 
-
-    private SenticNetService senticNetService;
-
-    public DirectNominalObjectRule(SenticNetService senticNetService) {
-        this.senticNetService = senticNetService;
+    public DirectNominalObjectRule(SenticNetService senticNetService, boolean addRules) {
+        super(senticNetService, addRules);
     }
 
     @Override
-    public void execute(Dependency dependency, Sentence sentence) {
-        int firstPersonMultiplier = 1; //sentenceIsFirstPerson(sentence.getWords()) ? -1 : 1;
+    public void executeRule(Dependency dependency, Sentence sentence) {
+        int firstPersonSubjectMultiplier = subjectIsFirstPerson(sentence) ? -1 : 1;
+        double dependencyPolarity = computeDependencyPolarity(dependency, firstPersonSubjectMultiplier);
 
-        Dependency otherDependency = sentence.getDependencies().stream()
-                .filter(dep -> dependency.getDependent().equals(dep.getGovernor()))
-                .filter(dep -> !dep.getRelation().equalsIgnoreCase("det"))
-                .findFirst()
-                .orElse(null);
-
-        if (otherDependency != null) {
-            Double triConceptPolarity = senticNetService.findConceptPolarity(dependency.getGovernor(),
-                    dependency.getDependent(), otherDependency.getDependent());
-            if (triConceptPolarity != null) {
-                setPolarity(dependency, firstPersonMultiplier * triConceptPolarity);
-                return;
-            }
-
-            Double duoConceptPolarity = senticNetService.findConceptPolarity(dependency.getGovernor(), dependency.getDependent());
-            if (duoConceptPolarity != null) {
-                setPolarity(dependency, firstPersonMultiplier * duoConceptPolarity);
-                return;
-            }
+        Double conceptPolarity = senticNetService.findConceptPolarity(dependency.getGovernor(), dependency.getDependent());
+        if (conceptPolarity != null) {
+            int reversePolarity = dependencyPolarity * conceptPolarity < 0 ? -1 : 1;
+            setPolarity(dependency, firstPersonSubjectMultiplier * reversePolarity * conceptPolarity);
+            return;
         }
 
-        double governorPolarity = senticNetService.findWordPolarity(dependency.getGovernor());
-        double dependentPolarity = senticNetService.findWordPolarity(dependency.getDependent());
-
-        if (governorPolarity != 0) {
-            setPolarity(dependency, firstPersonMultiplier * governorPolarity);
-        } else if (dependentPolarity != 0) {
-            setPolarity(dependency, firstPersonMultiplier * dependentPolarity);
-        }
+        setPolarity(dependency, firstPersonSubjectMultiplier * dependencyPolarity);
     }
 
     @Override
@@ -64,8 +41,30 @@ public class DirectNominalObjectRule implements Rule {
         return ACCEPTED_RELATIONS.contains(relation);
     }
 
-    private boolean sentenceIsFirstPerson(List<Word> words) {
-        return words.stream()
-                .anyMatch(word -> FIRST_PERSON_PRONOUNS.stream().anyMatch(pronoun -> word.getValue().equalsIgnoreCase(pronoun)));
+    private double computeDependencyPolarity(Dependency dependency, int firstPersonSubjectMultiplier) {
+        double governorPolarity = computeWordPolarity(dependency.getGovernor());
+        double dependentPolarity = computeWordPolarity(dependency.getDependent());
+
+        if (governorPolarity != 0) {
+            return firstPersonSubjectMultiplier * governorPolarity;
+        } else {
+            return firstPersonSubjectMultiplier * dependentPolarity;
+        }
+    }
+
+    private boolean subjectIsFirstPerson(Sentence sentence) {
+        List<Dependency> dependencies = sentence.getDependencies();
+
+        return dependencies.stream()
+                .filter(dep -> dep.getRelation().matches(".*subj.*"))
+                .anyMatch(dep -> wordIsFirstPerson(dep.getGovernor()) || wordIsFirstPerson(dep.getDependent()));
+    }
+
+    private double computeWordPolarity(Word word) {
+        return word.getPolarity() != 0 ? word.getPolarity() : senticNetService.findWordPolarity(word);
+    }
+
+    private boolean wordIsFirstPerson(Word word) {
+        return FIRST_PERSON_PRONOUNS.stream().anyMatch(pronoun -> word.getValue().equalsIgnoreCase(pronoun));
     }
 }

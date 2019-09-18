@@ -11,8 +11,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static ro.ucv.ace.sentiment.rule.SentimentUtils.neg;
-import static ro.ucv.ace.sentiment.rule.SentimentUtils.pos;
+import static ro.ucv.ace.sentiment.SentimentUtils.neg;
+import static ro.ucv.ace.sentiment.SentimentUtils.pos;
 
 @Service
 public class SenticNetService {

@@ -26,6 +26,7 @@ public class GrammarParser {
     public GrammarParser() {
         Properties props = new Properties();
         props.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner, parse");
+        props.setProperty("parse.originalDependencies", "true");
         pipeline = new StanfordCoreNLP(props);
     }
 
