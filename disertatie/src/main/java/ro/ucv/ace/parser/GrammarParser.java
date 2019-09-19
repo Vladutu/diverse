@@ -10,6 +10,7 @@ import edu.stanford.nlp.trees.TypedDependency;
 import edu.stanford.nlp.util.CoreMap;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
@@ -23,7 +24,8 @@ public class GrammarParser {
 
     private StanfordCoreNLP pipeline;
 
-    public GrammarParser() {
+    @PostConstruct
+    private void init() {
         Properties props = new Properties();
         props.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner, parse");
         props.setProperty("parse.originalDependencies", "true");

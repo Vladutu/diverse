@@ -21,6 +21,8 @@ public class Word {
 
     private boolean negated;
 
+    private boolean negationProcessed;
+
     private double polarity;
 
     @ToString.Exclude

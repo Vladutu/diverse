@@ -39,9 +39,12 @@ public abstract class RuleTemplate implements Rule {
             return;
         }
 
-        //TODO: we try to see if removing the negation help with double inversal of polarity
-        dependent.setNegated(false);
-        governor.setNegated(false);
+        if (dependent.isNegationProcessed() || governor.isNegationProcessed()) {
+            return;
+        }
+
+        dependent.setNegationProcessed(true);
+        governor.setNegationProcessed(true);
         dependent.setPolarity(-1 * dependent.getPolarity());
         governor.setPolarity(-1 * governor.getPolarity());
         dependency.setPolarity(-1 * dependency.getPolarity());

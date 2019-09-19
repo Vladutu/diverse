@@ -14,6 +14,7 @@ public class OpenClausalComplementRule extends RuleTemplate {
 
     private static final List<String> ACCEPTED_RELATIONS = Arrays.asList("xcomp");
     private static final List<String> SECONDARY_RELATIONS = Arrays.asList("ccomp", "dobj");
+    private static final List<String> SECONDARY_RELATION_WITH_PREPOSITION = Arrays.asList("prep", "pobj");
 
     public OpenClausalComplementRule(SenticNetService senticNetService, boolean addRules) {
         super(senticNetService, addRules);
@@ -25,20 +26,29 @@ public class OpenClausalComplementRule extends RuleTemplate {
         Word dependent = dependency.getDependent();
         Dependency secondaryDependency = tryFindSecondaryDependency(dependent, sentence.getDependencies());
         if (secondaryDependency == null) {
-            setPolarity(dependency, 0);
+            double governorPolarity = computeWordPolarity(governor);
+            double dependentPolarity = computeWordPolarity(dependent);
+            if (governorPolarity < 0) {
+                setPolarity(dependency, governorPolarity);
+                return;
+            }
+
+            setPolarity(dependency, dependentPolarity);
             return;
         }
         Word secondaryDependent = secondaryDependency.getDependent();
         Double tripleConceptPolarity = senticNetService.findConceptPolarity(governor, dependent, secondaryDependent);
-        double dependencyPolarity = computeDependencyPolarity(dependency, secondaryDependent, sentence);
+        double dependencyPolarity = computeDependencyPolarity(dependency, secondaryDependent);
 
         if (tripleConceptPolarity != null) {
             int reversePolarity = dependencyPolarity * tripleConceptPolarity < 0 ? -1 : 1;
             setPolarity(dependency, reversePolarity * tripleConceptPolarity);
+            setPolarity(secondaryDependency, reversePolarity * tripleConceptPolarity);
             return;
         }
 
         setPolarity(dependency, dependencyPolarity);
+        setPolarity(secondaryDependency, dependencyPolarity);
     }
 
     @Override
@@ -46,7 +56,7 @@ public class OpenClausalComplementRule extends RuleTemplate {
         return ACCEPTED_RELATIONS.contains(dependency.getRelation());
     }
 
-    private double computeDependencyPolarity(Dependency dependency, Word secondaryDependent, Sentence sentence) {
+    private double computeDependencyPolarity(Dependency dependency, Word secondaryDependent) {
         Word dependent = dependency.getDependent();
         Word governor = dependency.getGovernor();
         Double conceptPolarity = senticNetService.findConceptPolarity(dependent, secondaryDependent);
@@ -55,6 +65,10 @@ public class OpenClausalComplementRule extends RuleTemplate {
         double secondaryDependentPolarity = computeWordPolarity(secondaryDependent);
 
         if (conceptPolarity != null && governorPolarity != 0) {
+            if (governorPolarity < 0) {
+                return -Math.abs(conceptPolarity);
+            }
+
             return conceptPolarity;
         }
 
@@ -102,9 +116,27 @@ public class OpenClausalComplementRule extends RuleTemplate {
     }
 
     private Dependency tryFindSecondaryDependency(Word dependent, List<Dependency> dependencies) {
-        return dependencies.stream()
+        Dependency dependency = dependencies.stream()
                 .filter(dep -> dep.getGovernor().equals(dependent))
                 .filter(dep -> SECONDARY_RELATIONS.contains(dep.getRelation()))
+                .findAny()
+                .orElse(null);
+        if (dependency != null) {
+            return dependency;
+        }
+
+        Dependency prepositionDependency = dependencies.stream()
+                .filter(dep -> dep.getGovernor().equals(dependent))
+                .filter(dep -> SECONDARY_RELATION_WITH_PREPOSITION.get(0).equals(dep.getRelation()))
+                .findAny()
+                .orElse(null);
+        if (prepositionDependency == null) {
+            return null;
+        }
+
+        return dependencies.stream()
+                .filter(dep -> dep.getGovernor().equals(prepositionDependency.getDependent()))
+                .filter(dep -> SECONDARY_RELATION_WITH_PREPOSITION.get(1).equals(dep.getRelation()))
                 .findAny()
                 .orElse(null);
     }
