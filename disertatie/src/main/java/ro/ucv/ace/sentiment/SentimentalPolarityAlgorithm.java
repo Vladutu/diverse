@@ -11,6 +11,7 @@ import ro.ucv.ace.parser.Dependency;
 import ro.ucv.ace.parser.GrammarParser;
 import ro.ucv.ace.parser.Sentence;
 import ro.ucv.ace.parser.Word;
+import ro.ucv.ace.senticnet.SenticNetService;
 import ro.ucv.ace.sentiment.rule.ComplementClauseRule;
 import ro.ucv.ace.sentiment.rule.Rule;
 
@@ -26,18 +27,23 @@ public class SentimentalPolarityAlgorithm {
 
     private final List<Rule> rules;
 
+    private SenticNetService senticNetService;
+
     private Dependency lastProcessed = null;
 
     private ComplementClauseRule complementClauseRule = new ComplementClauseRule();
 
     @Autowired
-    public SentimentalPolarityAlgorithm(GrammarParser grammarParser, List<Rule> rules) {
+    public SentimentalPolarityAlgorithm(GrammarParser grammarParser, List<Rule> rules, SenticNetService senticNetService) {
         this.grammarParser = grammarParser;
         this.rules = rules;
+        this.senticNetService = senticNetService;
     }
 
     public Pair<Dependency, Sentence> execute(String text) {
         Sentence sentence = grammarParser.parse(text);
+        sentence.getWords().forEach(word -> word.setPolarity(senticNetService.findWordPolarity(word)));
+
         if (!complementClauseRule.applies(sentence)) {
             return executeAlgorithm(sentence);
         }

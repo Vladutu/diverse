@@ -55,7 +55,7 @@ public class TestController {
                 Pair.of("John loves this boring movie.", true),
                 Pair.of("You have hurt the cute cat", true),
                 Pair.of("I love that you did not win the match.", false),
-                Pair.of("I do not know whether he is good", false),
+                Pair.of("I do not know whether he is good", true),
                 Pair.of("This meal smells bad.", true),
                 Pair.of("This is perfect to gain money.", false),
                 Pair.of("This is perfect to gain weight", true),

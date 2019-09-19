@@ -26,8 +26,8 @@ public class RelativeClauseRule extends RuleTemplate {
         double dependencyPolarity = computeDependencyPolarity(dependency);
         Double conceptPolarity = senticNetService.findConceptPolarity(head, dependent);
         if (conceptPolarity != null) {
-            int reversePolarity = dependencyPolarity * conceptPolarity < 0 ? -1 : 1;
-            setPolarity(dependency, reversePolarity * conceptPolarity);
+            int polarityFactor = dependencyPolarity * conceptPolarity < 0 ? -1 : 1;
+            setPolarity(dependency, polarityFactor * conceptPolarity);
             return;
         }
 
@@ -39,15 +39,11 @@ public class RelativeClauseRule extends RuleTemplate {
         return ACCEPTED_RELATIONS.contains(dependency.getRelation());
     }
 
-    private double computeWordPolarity(Word word) {
-        return word.getPolarity() != 0 ? word.getPolarity() : senticNetService.findWordPolarity(word);
-    }
-
     private double computeDependencyPolarity(Dependency dependency) {
         Word dependent = dependency.getDependent();
         Word governor = dependency.getGovernor();
-        double dependentPolarity = computeWordPolarity(dependent);
-        double governorPolarity = computeWordPolarity(governor);
+        double dependentPolarity = dependent.getPolarity();
+        double governorPolarity = governor.getPolarity();
 
         if (dependentPolarity != 0) {
             return dependentPolarity;

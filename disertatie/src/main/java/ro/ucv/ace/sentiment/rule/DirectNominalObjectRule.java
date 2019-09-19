@@ -26,8 +26,8 @@ public class DirectNominalObjectRule extends RuleTemplate {
 
         Double conceptPolarity = senticNetService.findConceptPolarity(dependency.getGovernor(), dependency.getDependent());
         if (conceptPolarity != null) {
-            int reversePolarity = dependencyPolarity * conceptPolarity < 0 ? -1 : 1;
-            setPolarity(dependency, firstPersonSubjectMultiplier * reversePolarity * conceptPolarity);
+            int reversePolarityFactor = dependencyPolarity * conceptPolarity < 0 ? -1 : 1;
+            setPolarity(dependency, firstPersonSubjectMultiplier * reversePolarityFactor * conceptPolarity);
             return;
         }
 
@@ -42,8 +42,8 @@ public class DirectNominalObjectRule extends RuleTemplate {
     }
 
     private double computeDependencyPolarity(Dependency dependency, int firstPersonSubjectMultiplier) {
-        double governorPolarity = computeWordPolarity(dependency.getGovernor());
-        double dependentPolarity = computeWordPolarity(dependency.getDependent());
+        double governorPolarity = dependency.getGovernor().getPolarity();
+        double dependentPolarity = dependency.getDependent().getPolarity();
 
         if (governorPolarity != 0) {
             return firstPersonSubjectMultiplier * governorPolarity;
@@ -58,10 +58,6 @@ public class DirectNominalObjectRule extends RuleTemplate {
         return dependencies.stream()
                 .filter(dep -> dep.getRelation().matches(".*subj.*"))
                 .anyMatch(dep -> wordIsFirstPerson(dep.getGovernor()) || wordIsFirstPerson(dep.getDependent()));
-    }
-
-    private double computeWordPolarity(Word word) {
-        return word.getPolarity() != 0 ? word.getPolarity() : senticNetService.findWordPolarity(word);
     }
 
     private boolean wordIsFirstPerson(Word word) {

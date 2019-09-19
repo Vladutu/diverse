@@ -27,8 +27,8 @@ public class AdjectiveAndClausalComplementRule extends RuleTemplate {
         Double conceptPolarity = senticNetService.findConceptPolarity(head, dependent);
 
         if (conceptPolarity != null) {
-            int reversePolarity = dependencyPolarity * conceptPolarity < 0 ? -1 : 1;
-            setPolarity(dependency, reversePolarity * conceptPolarity);
+            int reversePolarityFactor = dependencyPolarity * conceptPolarity < 0 ? -1 : 1;
+            setPolarity(dependency, reversePolarityFactor * conceptPolarity);
             return;
         }
 
@@ -44,17 +44,13 @@ public class AdjectiveAndClausalComplementRule extends RuleTemplate {
         Word head = dependency.getGovernor();
         Word dependent = dependency.getDependent();
 
-        double headPolarity = computeWordPolarity(head);
-        double dependantPolarity = computeWordPolarity(dependent);
+        double headPolarity = head.getPolarity();
+        double dependantPolarity = dependent.getPolarity();
 
         if (headPolarity != 0 && dependantPolarity != 0) {
             return dependantPolarity;
         }
 
         return dependantPolarity;
-    }
-
-    private double computeWordPolarity(Word word) {
-        return word.getPolarity() != 0 ? word.getPolarity() : senticNetService.findWordPolarity(word);
     }
 }

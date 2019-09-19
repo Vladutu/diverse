@@ -28,8 +28,8 @@ public class SubjectNounRule extends RuleTemplate {
         double dependencyPolarity = computeDependencyPolarity(dependency, sentence);
         Double conceptPolarity = senticNetService.findConceptPolarity(head, dependent);
         if (conceptPolarity != null) {
-            int reversePolarity = dependencyPolarity * conceptPolarity < 0 ? -1 : 1;
-            setPolarity(dependency, reversePolarity * conceptPolarity);
+            int polarityFactor = dependencyPolarity * conceptPolarity < 0 ? -1 : 1;
+            setPolarity(dependency, polarityFactor * conceptPolarity);
             return;
         }
 
@@ -45,8 +45,8 @@ public class SubjectNounRule extends RuleTemplate {
         Word head = dependency.getGovernor();
         Word dependent = dependency.getDependent();
 
-        double headPolarity = computeWordPolarity(head);
-        double dependantPolarity = computeWordPolarity(dependent);
+        double headPolarity = head.getPolarity();
+        double dependantPolarity = dependent.getPolarity();
         boolean passiveVoice = dependency.getRelation().equals(PASSIVE_VOICE_TOKEN);
         boolean firstPerson = sentenceIsFirstPerson(sentence.getWords());
 
@@ -67,10 +67,6 @@ public class SubjectNounRule extends RuleTemplate {
         }
 
         return Math.max(headPolarity, dependantPolarity); //case both positive
-    }
-
-    private double computeWordPolarity(Word word) {
-        return word.getPolarity() != 0 ? word.getPolarity() : senticNetService.findWordPolarity(word);
     }
 
     private boolean sentenceIsFirstPerson(List<Word> words) {

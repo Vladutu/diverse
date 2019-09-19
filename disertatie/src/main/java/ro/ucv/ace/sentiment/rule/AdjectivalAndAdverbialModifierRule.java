@@ -26,8 +26,8 @@ public class AdjectivalAndAdverbialModifierRule extends RuleTemplate {
         double dependencyPolarity = computeDependencyPolarity(dependency);
         Double conceptPolarity = senticNetService.findConceptPolarity(head, dependent);
         if (conceptPolarity != null) {
-            int reversePolarity = dependencyPolarity * conceptPolarity < 0 ? -1 : 1;
-            setPolarity(dependency, reversePolarity * conceptPolarity);
+            int reversePolarityFactor = dependencyPolarity * conceptPolarity < 0 ? -1 : 1;
+            setPolarity(dependency, reversePolarityFactor * conceptPolarity);
             return;
         }
 
@@ -43,17 +43,13 @@ public class AdjectivalAndAdverbialModifierRule extends RuleTemplate {
         Word head = dependency.getGovernor();
         Word dependent = dependency.getDependent();
 
-        double headPolarity = computeWordPolarity(head);
-        double dependantPolarity = computeWordPolarity(dependent);
+        double headPolarity = head.getPolarity();
+        double dependantPolarity = dependent.getPolarity();
 
         if (dependantPolarity != 0) {
             return dependantPolarity;
         } else {
             return headPolarity;
         }
-    }
-
-    private double computeWordPolarity(Word word) {
-        return word.getPolarity() != 0 ? word.getPolarity() : senticNetService.findWordPolarity(word);
     }
 }

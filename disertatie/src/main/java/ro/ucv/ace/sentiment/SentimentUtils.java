@@ -18,11 +18,7 @@ public class SentimentUtils {
         Word governor = dependency.getGovernor();
 
         dependency.setPolarity(polarity);
-        if (governor.getPolarity() == 0) {
-            governor.setPolarity(polarity);
-        }
-        if (dependent.getPolarity() == 0) {
-            dependent.setPolarity(polarity);
-        }
+        governor.setPolarity(polarity);
+        dependent.setPolarity(polarity);
     }
 }

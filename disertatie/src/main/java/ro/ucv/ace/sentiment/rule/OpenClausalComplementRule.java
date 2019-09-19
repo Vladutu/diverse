@@ -26,8 +26,8 @@ public class OpenClausalComplementRule extends RuleTemplate {
         Word dependent = dependency.getDependent();
         Dependency secondaryDependency = tryFindSecondaryDependency(dependent, sentence.getDependencies());
         if (secondaryDependency == null) {
-            double governorPolarity = computeWordPolarity(governor);
-            double dependentPolarity = computeWordPolarity(dependent);
+            double governorPolarity = governor.getPolarity();
+            double dependentPolarity = dependent.getPolarity();
             if (governorPolarity < 0) {
                 setPolarity(dependency, governorPolarity);
                 return;
@@ -60,9 +60,9 @@ public class OpenClausalComplementRule extends RuleTemplate {
         Word dependent = dependency.getDependent();
         Word governor = dependency.getGovernor();
         Double conceptPolarity = senticNetService.findConceptPolarity(dependent, secondaryDependent);
-        double governorPolarity = computeWordPolarity(governor);
-        double dependentPolarity = computeWordPolarity(dependent);
-        double secondaryDependentPolarity = computeWordPolarity(secondaryDependent);
+        double governorPolarity = governor.getPolarity();
+        double dependentPolarity = dependent.getPolarity();
+        double secondaryDependentPolarity = secondaryDependent.getPolarity();
 
         if (conceptPolarity != null && governorPolarity != 0) {
             if (governorPolarity < 0) {
@@ -139,9 +139,5 @@ public class OpenClausalComplementRule extends RuleTemplate {
                 .filter(dep -> SECONDARY_RELATION_WITH_PREPOSITION.get(1).equals(dep.getRelation()))
                 .findAny()
                 .orElse(null);
-    }
-
-    private double computeWordPolarity(Word word) {
-        return word.getPolarity() != 0 ? word.getPolarity() : senticNetService.findWordPolarity(word);
     }
 }
