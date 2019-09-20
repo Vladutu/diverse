@@ -8,7 +8,7 @@ import ro.ucv.ace.senticnet.SenticNetService;
 import java.util.Arrays;
 import java.util.List;
 
-import static ro.ucv.ace.sentiment.SentimentUtils.setPolarity;
+import static ro.ucv.ace.sentiment.SentimentUtils.*;
 
 public class DirectNominalObjectRule extends RuleTemplate {
 
@@ -21,17 +21,16 @@ public class DirectNominalObjectRule extends RuleTemplate {
 
     @Override
     public void executeRule(Dependency dependency, Sentence sentence) {
-        int firstPersonSubjectMultiplier = subjectIsFirstPerson(sentence) ? -1 : 1;
-        double dependencyPolarity = computeDependencyPolarity(dependency, firstPersonSubjectMultiplier);
+        double dependencyPolarity = computeDependencyPolarity(dependency, sentence);
 
         Double conceptPolarity = senticNetService.findConceptPolarity(dependency.getGovernor(), dependency.getDependent());
         if (conceptPolarity != null) {
-            int reversePolarityFactor = dependencyPolarity * conceptPolarity < 0 ? -1 : 1;
-            setPolarity(dependency, firstPersonSubjectMultiplier * reversePolarityFactor * conceptPolarity);
+            int reversePolarityFactor = neg(dependencyPolarity * conceptPolarity) ? -1 : 1;
+            setPolarity(dependency, reversePolarityFactor * conceptPolarity);
             return;
         }
 
-        setPolarity(dependency, firstPersonSubjectMultiplier * dependencyPolarity);
+        setPolarity(dependency, dependencyPolarity);
     }
 
     @Override
@@ -41,14 +40,18 @@ public class DirectNominalObjectRule extends RuleTemplate {
         return ACCEPTED_RELATIONS.contains(relation);
     }
 
-    private double computeDependencyPolarity(Dependency dependency, int firstPersonSubjectMultiplier) {
+    private double computeDependencyPolarity(Dependency dependency, Sentence sentence) {
         double governorPolarity = dependency.getGovernor().getPolarity();
         double dependentPolarity = dependency.getDependent().getPolarity();
+        boolean firstPerson = subjectIsFirstPerson(sentence);
 
         if (governorPolarity != 0) {
-            return firstPersonSubjectMultiplier * governorPolarity;
+            if (pos(governorPolarity) && neg(dependentPolarity) && !firstPerson) {
+                return -governorPolarity;
+            }
+            return governorPolarity;
         } else {
-            return firstPersonSubjectMultiplier * dependentPolarity;
+            return dependentPolarity;
         }
     }
 

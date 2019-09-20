@@ -8,6 +8,7 @@ import ro.ucv.ace.senticnet.SenticNetService;
 import java.util.Arrays;
 import java.util.List;
 
+import static ro.ucv.ace.sentiment.SentimentUtils.neg;
 import static ro.ucv.ace.sentiment.SentimentUtils.setPolarity;
 
 public class AdjectiveAndClausalComplementRule extends RuleTemplate {
@@ -27,7 +28,7 @@ public class AdjectiveAndClausalComplementRule extends RuleTemplate {
         Double conceptPolarity = senticNetService.findConceptPolarity(head, dependent);
 
         if (conceptPolarity != null) {
-            int reversePolarityFactor = dependencyPolarity * conceptPolarity < 0 ? -1 : 1;
+            int reversePolarityFactor = neg(dependencyPolarity * conceptPolarity) ? -1 : 1;
             setPolarity(dependency, reversePolarityFactor * conceptPolarity);
             return;
         }
@@ -51,6 +52,10 @@ public class AdjectiveAndClausalComplementRule extends RuleTemplate {
             return dependantPolarity;
         }
 
-        return dependantPolarity;
+        if (dependantPolarity != 0) {
+            return dependantPolarity;
+        }
+
+        return headPolarity;
     }
 }

@@ -21,6 +21,9 @@ public class ApplicationConfig {
         rules.add(new OpenClausalComplementRule(senticNetService, true));
         rules.add(new RelativeClauseRule(senticNetService, true));
         rules.add(new AdverbialClauseModifierRule(senticNetService, true));
+        rules.add(new UntypedDependencyRule(senticNetService, true));
+        rules.add(new AgainstRule(senticNetService, true));
+
         return rules;
     }
 }

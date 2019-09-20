@@ -28,7 +28,7 @@ public class OpenClausalComplementRule extends RuleTemplate {
         if (secondaryDependency == null) {
             double governorPolarity = governor.getPolarity();
             double dependentPolarity = dependent.getPolarity();
-            if (governorPolarity < 0) {
+            if (neg(governorPolarity)) {
                 setPolarity(dependency, governorPolarity);
                 return;
             }
@@ -41,7 +41,7 @@ public class OpenClausalComplementRule extends RuleTemplate {
         double dependencyPolarity = computeDependencyPolarity(dependency, secondaryDependent);
 
         if (tripleConceptPolarity != null) {
-            int reversePolarity = dependencyPolarity * tripleConceptPolarity < 0 ? -1 : 1;
+            int reversePolarity = neg(dependencyPolarity * tripleConceptPolarity) ? -1 : 1;
             setPolarity(dependency, reversePolarity * tripleConceptPolarity);
             setPolarity(secondaryDependency, reversePolarity * tripleConceptPolarity);
             return;
@@ -65,7 +65,7 @@ public class OpenClausalComplementRule extends RuleTemplate {
         double secondaryDependentPolarity = secondaryDependent.getPolarity();
 
         if (conceptPolarity != null && governorPolarity != 0) {
-            if (governorPolarity < 0) {
+            if (neg(governorPolarity)) {
                 return -Math.abs(conceptPolarity);
             }
 
@@ -85,6 +85,12 @@ public class OpenClausalComplementRule extends RuleTemplate {
             if (neg(governorPolarity) && neg(secondaryDependentPolarity)) {
                 return Math.min(governorPolarity, secondaryDependentPolarity);
             }
+
+            if (governorPolarity != 0) {
+                return governorPolarity;
+            }
+
+            return secondaryDependentPolarity;
         }
 
         if (pos(governorPolarity) && pos(dependentPolarity) && pos(secondaryDependentPolarity)) {
@@ -112,7 +118,21 @@ public class OpenClausalComplementRule extends RuleTemplate {
             return Math.min(secondaryDependentPolarity, Math.min(governorPolarity, dependentPolarity));
         }
 
-        return 0;
+        if (neg(governorPolarity)) {
+            return governorPolarity;
+        }
+
+        if (governorPolarity == 0 && secondaryDependentPolarity != 0) {
+            if (neg(dependentPolarity)) {
+                return dependentPolarity;
+            }
+
+            return secondaryDependentPolarity;
+        } else if (governorPolarity != 0 && secondaryDependentPolarity == 0) {
+            return governorPolarity;
+        }
+
+        return dependentPolarity;
     }
 
     private Dependency tryFindSecondaryDependency(Word dependent, List<Dependency> dependencies) {

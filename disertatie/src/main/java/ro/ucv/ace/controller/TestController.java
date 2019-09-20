@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import ro.ucv.ace.parser.Dependency;
-import ro.ucv.ace.parser.Sentence;
 import ro.ucv.ace.sentiment.SentimentalPolarityAlgorithm;
 
 import java.util.List;
@@ -23,7 +21,7 @@ public class TestController {
     private SentimentalPolarityAlgorithm sentimentalPolarityAlgorithm;
 
     @PostMapping(name = "/parseSentence", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<Pair<Dependency, Sentence>> parseSentence(@RequestBody String text) {
+    public ResponseEntity<Double> parseSentence(@RequestBody String text) {
         return ResponseEntity.ok(sentimentalPolarityAlgorithm.execute(text));
     }
 
@@ -31,14 +29,15 @@ public class TestController {
     public ResponseEntity<List<Pair<String, String>>> executeTests() {
         List<Pair<String, String>> result = provideValues()
                 .map(pair -> executeTest(pair.getFirst(), pair.getSecond()))
+                .filter(pair -> pair.getSecond().equals("WRONG"))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(result);
     }
 
     private Pair<String, String> executeTest(String input, Boolean output) {
-        Pair<Dependency, Sentence> result = sentimentalPolarityAlgorithm.execute(input);
-        boolean correct = (result.getFirst().getPolarity() < 0) == output;
+        Double result = sentimentalPolarityAlgorithm.execute(input);
+        boolean correct = (result < 0) == output;
         String resultText = correct ? "CORRECT" : "WRONG";
 
         return Pair.of(input, resultText);

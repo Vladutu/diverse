@@ -8,6 +8,7 @@ import ro.ucv.ace.senticnet.SenticNetService;
 import java.util.Arrays;
 import java.util.List;
 
+import static ro.ucv.ace.sentiment.SentimentUtils.neg;
 import static ro.ucv.ace.sentiment.SentimentUtils.setPolarity;
 
 public class AdverbialClauseModifierRule extends RuleTemplate {
@@ -26,7 +27,7 @@ public class AdverbialClauseModifierRule extends RuleTemplate {
         double dependencyPolarity = computeDependencyPolarity(dependency);
         Double conceptPolarity = senticNetService.findConceptPolarity(head, dependent);
         if (conceptPolarity != null) {
-            int reversePolarityFactor = dependencyPolarity * conceptPolarity < 0 ? -1 : 1;
+            int reversePolarityFactor = neg(dependencyPolarity * conceptPolarity) ? -1 : 1;
             setPolarity(dependency, reversePolarityFactor * conceptPolarity);
             return;
         }

@@ -29,7 +29,7 @@ public abstract class RuleTemplate implements Rule {
     public void execute(Dependency dependency, Sentence sentence) {
         tryExecuteRulesThatAreActivatedFirst(dependency, sentence);
         executeRule(dependency, sentence);
-        reversePolarityIfNegation(dependency);
+//        reversePolarityIfNegation(dependency);
     }
 
     private void reversePolarityIfNegation(Dependency dependency) {

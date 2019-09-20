@@ -15,23 +15,20 @@ public class ComplementClauseRule {
     private static final List<String> ACCEPTED_WORDS = Arrays.asList("that", "whether");
     private static final String NEGATION_RELATION = "neg";
 
-    public Pair<Dependency, Sentence> executeRule(Sentence sentence, Function<Sentence, Pair<Dependency, Sentence>> algorithmFunction) {
+    public Double executeRule(Sentence sentence, Function<Sentence, Double> algorithmFunction) {
         Pair<Sentence, Sentence> sentencePair = splitSentence(sentence);
 
-        Pair<Dependency, Sentence> firstSentenceResult = algorithmFunction.apply(sentencePair.getFirst());
-        Pair<Dependency, Sentence> secondSentenceResult = algorithmFunction.apply(sentencePair.getSecond());
-
-        Double firstPolarity = firstSentenceResult.getFirst().getPolarity();
-        Double secondPolarity = secondSentenceResult.getFirst().getPolarity();
+        Double firstPolarity = algorithmFunction.apply(sentencePair.getFirst());
+        Double secondPolarity = algorithmFunction.apply(sentencePair.getSecond());
 
         if (firstPolarity != null && firstPolarity != 0) {
-            return firstSentenceResult;
+            return firstPolarity;
         } else {
-            if (hasNegation(firstSentenceResult.getSecond())) {
-                secondSentenceResult.getFirst().setPolarity(-secondPolarity);
+            if (hasNegation(sentencePair.getFirst())) {
+                return -secondPolarity;
             }
 
-            return secondSentenceResult;
+            return secondPolarity;
         }
     }
 

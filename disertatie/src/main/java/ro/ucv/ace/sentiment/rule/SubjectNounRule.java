@@ -28,7 +28,7 @@ public class SubjectNounRule extends RuleTemplate {
         double dependencyPolarity = computeDependencyPolarity(dependency, sentence);
         Double conceptPolarity = senticNetService.findConceptPolarity(head, dependent);
         if (conceptPolarity != null) {
-            int polarityFactor = dependencyPolarity * conceptPolarity < 0 ? -1 : 1;
+            int polarityFactor = neg(dependencyPolarity * conceptPolarity) ? -1 : 1;
             setPolarity(dependency, polarityFactor * conceptPolarity);
             return;
         }
@@ -56,17 +56,27 @@ public class SubjectNounRule extends RuleTemplate {
             } else {
                 return Math.min(headPolarity, dependantPolarity);
             }
+        } else if (pos(headPolarity) && pos(dependantPolarity)) {
+            return Math.max(headPolarity, dependantPolarity);
         } else if (neg(headPolarity) && pos(dependantPolarity)) {
-            if (firstPerson) {
-                return Math.max(-headPolarity, dependantPolarity);
-            } else {
-                return Math.min(headPolarity, -dependantPolarity);
-            }
+            // could not find an example for first person -> positive
+//            if (firstPerson) {
+//                return Math.max(-headPolarity, dependantPolarity);
+//            } else {
+            return Math.min(headPolarity, -dependantPolarity);
+//            }
         } else if (pos(headPolarity) && neg(dependantPolarity)) {
+            if (passiveVoice) {
+                return Math.max(headPolarity, -dependantPolarity);
+            }
             return Math.min(-headPolarity, dependantPolarity);
         }
 
-        return Math.max(headPolarity, dependantPolarity); //case both positive
+        if (headPolarity != 0) {
+            return headPolarity;
+        }
+
+        return dependantPolarity;
     }
 
     private boolean sentenceIsFirstPerson(List<Word> words) {

@@ -11,16 +11,16 @@ import java.util.List;
 import static ro.ucv.ace.sentiment.SentimentUtils.neg;
 import static ro.ucv.ace.sentiment.SentimentUtils.setPolarity;
 
-public class AdjectivalAndAdverbialModifierRule extends RuleTemplate {
+public class UntypedDependencyRule extends RuleTemplate {
 
-    private static final List<String> ACCEPTED_RELATIONS = Arrays.asList("amod", "advmod");
+    private static final List<String> ACCEPTED_RELATIONS = Arrays.asList("dep");
 
-    public AdjectivalAndAdverbialModifierRule(SenticNetService senticNetService, boolean addRules) {
+    public UntypedDependencyRule(SenticNetService senticNetService, boolean addRules) {
         super(senticNetService, addRules);
     }
 
     @Override
-    public void executeRule(Dependency dependency, Sentence sentence) {
+    protected void executeRule(Dependency dependency, Sentence sentence) {
         Word head = dependency.getGovernor();
         Word dependent = dependency.getDependent();
 
@@ -35,22 +35,12 @@ public class AdjectivalAndAdverbialModifierRule extends RuleTemplate {
         setPolarity(dependency, dependencyPolarity);
     }
 
+    private double computeDependencyPolarity(Dependency dependency) {
+        return dependency.getDependent().getPolarity();
+    }
+
     @Override
     public boolean applies(Dependency dependency) {
         return ACCEPTED_RELATIONS.contains(dependency.getRelation());
-    }
-
-    private double computeDependencyPolarity(Dependency dependency) {
-        Word head = dependency.getGovernor();
-        Word dependent = dependency.getDependent();
-
-        double headPolarity = head.getPolarity();
-        double dependantPolarity = dependent.getPolarity();
-
-        if (dependantPolarity != 0) {
-            return dependantPolarity;
-        } else {
-            return headPolarity;
-        }
     }
 }
