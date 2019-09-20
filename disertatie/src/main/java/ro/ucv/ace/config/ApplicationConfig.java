@@ -4,8 +4,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import ro.ucv.ace.senticnet.SenticNetService;
 import ro.ucv.ace.sentiment.rule.*;
+import ro.ucv.ace.sentiment.rule.splitSentence.AdverbialClauseRule;
+import ro.ucv.ace.sentiment.rule.splitSentence.ComplementClauseRule;
+import ro.ucv.ace.sentiment.rule.splitSentence.SplitSentenceRule;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -13,17 +16,24 @@ public class ApplicationConfig {
 
     @Bean
     public List<Rule> rules(SenticNetService senticNetService) {
-        List<Rule> rules = new ArrayList<>();
-        rules.add(new SubjectNounRule(senticNetService, true));
-        rules.add(new AdjectivalAndAdverbialModifierRule(senticNetService, true));
-        rules.add(new DirectNominalObjectRule(senticNetService, true));
-        rules.add(new AdjectiveAndClausalComplementRule(senticNetService, true));
-        rules.add(new OpenClausalComplementRule(senticNetService, true));
-        rules.add(new RelativeClauseRule(senticNetService, true));
-        rules.add(new AdverbialClauseModifierRule(senticNetService, true));
-        rules.add(new UntypedDependencyRule(senticNetService, true));
-        rules.add(new AgainstRule(senticNetService, true));
+        return Arrays.asList(
+                new SubjectNounRule(senticNetService, true),
+                new AdjectivalAndAdverbialModifierRule(senticNetService, true),
+                new DirectNominalObjectRule(senticNetService, true),
+                new AdjectiveAndClausalComplementRule(senticNetService, true),
+                new OpenClausalComplementRule(senticNetService, true),
+                new RelativeClauseRule(senticNetService, true),
+                new AdverbialClauseModifierRule(senticNetService, true),
+                new UntypedDependencyRule(senticNetService, true),
+                new AgainstRule(senticNetService, true)
+        );
+    }
 
-        return rules;
+    @Bean
+    public List<SplitSentenceRule> splitSentenceRules() {
+        return Arrays.asList(
+                new ComplementClauseRule(),
+                new AdverbialClauseRule()
+        );
     }
 }

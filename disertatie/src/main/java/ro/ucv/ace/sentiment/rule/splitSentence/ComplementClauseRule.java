@@ -1,16 +1,14 @@
-package ro.ucv.ace.sentiment.rule;
+package ro.ucv.ace.sentiment.rule.splitSentence;
 
 import org.springframework.data.util.Pair;
-import ro.ucv.ace.parser.Dependency;
 import ro.ucv.ace.parser.Sentence;
 import ro.ucv.ace.parser.Word;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
-public class ComplementClauseRule {
+public class ComplementClauseRule implements SplitSentenceRule {
 
     private static final List<String> ACCEPTED_WORDS = Arrays.asList("that", "whether");
     private static final String NEGATION_RELATION = "neg";
@@ -32,6 +30,11 @@ public class ComplementClauseRule {
         }
     }
 
+    @Override
+    public boolean applies(Sentence sentence) {
+        return findAcceptedWord(sentence) != null;
+    }
+
     private boolean hasNegation(Sentence sentence) {
         return sentence.getDependencies().stream()
                 .anyMatch(dep -> dep.getRelation().equalsIgnoreCase(NEGATION_RELATION));
@@ -44,19 +47,6 @@ public class ComplementClauseRule {
         List<Word> secondWords = sentence.getWords().subList(acceptedWord.getIndex(), sentence.getWords().size());
 
         return Pair.of(createSentence(sentence.getDependencies(), firstWords), createSentence(sentence.getDependencies(), secondWords));
-    }
-
-    public boolean applies(Sentence sentence) {
-        return findAcceptedWord(sentence) != null;
-    }
-
-    private Sentence createSentence(List<Dependency> dependencies, List<Word> words) {
-        List<Dependency> acceptedDependencies = dependencies.stream()
-                .filter(dependency -> words.contains(dependency.getGovernor()) &&
-                        words.contains(dependency.getDependent()))
-                .collect(Collectors.toList());
-
-        return new Sentence(words, acceptedDependencies);
     }
 
     private Word findAcceptedWord(Sentence sentence) {

@@ -74,7 +74,8 @@ public class TestController {
                 Pair.of("I liked the movie you love.", false),
                 Pair.of("I disliked the movie you love.", true),
                 Pair.of("The machine slows down when the best games are playing.", true),
-                Pair.of("My failure makes him happy", true)
+                Pair.of("My failure makes him happy", true),
+                Pair.of("While I’m sure the quality of the product is fine, the color is very different.", true)
         );
     }
 }

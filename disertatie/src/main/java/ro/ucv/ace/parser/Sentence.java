@@ -15,4 +15,6 @@ public class Sentence {
     private List<Word> words = new ArrayList<>();
 
     private List<Dependency> dependencies = new ArrayList<>();
+
+    private ParseNode parseNode;
 }

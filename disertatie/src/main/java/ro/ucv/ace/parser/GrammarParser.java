@@ -6,6 +6,8 @@ import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.semgraph.SemanticGraph;
 import edu.stanford.nlp.semgraph.SemanticGraphCoreAnnotations;
+import edu.stanford.nlp.trees.Tree;
+import edu.stanford.nlp.trees.TreeCoreAnnotations;
 import edu.stanford.nlp.trees.TypedDependency;
 import edu.stanford.nlp.util.CoreMap;
 import org.springframework.stereotype.Component;
@@ -50,6 +52,11 @@ public class GrammarParser {
         setCurrentAndPreviousWords(words);
 
         SemanticGraph semanticGraph = s.get(SemanticGraphCoreAnnotations.BasicDependenciesAnnotation.class);
+        Tree tree = s.get(TreeCoreAnnotations.TreeAnnotation.class);
+        Tree sentence = tree.children()[0];
+        ParseNode parseNode = new ParseNode();
+        createParseTree(sentence, parseNode);
+
         Collection<TypedDependency> typedDependencies = semanticGraph.typedDependencies();
 
         List<Dependency> dependencies = typedDependencies.stream()
@@ -57,7 +64,22 @@ public class GrammarParser {
                 .map(typedDependency -> toDependency(typedDependency, words))
                 .collect(Collectors.toList());
 
-        return new Sentence(words, dependencies);
+        return new Sentence(words, dependencies, parseNode);
+    }
+
+    private void createParseTree(Tree tree, ParseNode sentenceNode) {
+        sentenceNode.setValue(tree.label().value());
+
+        Tree[] children = tree.children();
+        if (children == null) {
+            return;
+        }
+
+        for (Tree child : children) {
+            ParseNode childParse = new ParseNode();
+            createParseTree(child, childParse);
+            sentenceNode.addChild(childParse);
+        }
     }
 
     private Dependency toDependency(TypedDependency typedDependency, List<Word> words) {

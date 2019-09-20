@@ -11,9 +11,10 @@ import ro.ucv.ace.parser.GrammarParser;
 import ro.ucv.ace.parser.Sentence;
 import ro.ucv.ace.parser.Word;
 import ro.ucv.ace.senticnet.SenticNetService;
-import ro.ucv.ace.sentiment.rule.ComplementClauseRule;
 import ro.ucv.ace.sentiment.rule.FirstPersonRule;
 import ro.ucv.ace.sentiment.rule.Rule;
+import ro.ucv.ace.sentiment.rule.splitSentence.DefaultSplitSentenceRule;
+import ro.ucv.ace.sentiment.rule.splitSentence.SplitSentenceRule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,28 +30,30 @@ public class SentimentalPolarityAlgorithm {
 
     private SenticNetService senticNetService;
 
-    private Dependency lastProcessed = null;
+    private List<SplitSentenceRule> splitSentenceRules;
 
-    private ComplementClauseRule complementClauseRule = new ComplementClauseRule();
+    private Dependency lastProcessed = null;
 
     private FirstPersonRule firstPersonRule = new FirstPersonRule();
 
     @Autowired
-    public SentimentalPolarityAlgorithm(GrammarParser grammarParser, List<Rule> rules, SenticNetService senticNetService) {
+    public SentimentalPolarityAlgorithm(GrammarParser grammarParser, List<Rule> rules, SenticNetService senticNetService,
+                                        List<SplitSentenceRule> splitSentenceRules) {
         this.grammarParser = grammarParser;
         this.rules = rules;
         this.senticNetService = senticNetService;
+        this.splitSentenceRules = splitSentenceRules;
     }
 
     public Double execute(String text) {
         Sentence sentence = grammarParser.parse(text);
         setWordPolarities(sentence);
 
-        if (!complementClauseRule.applies(sentence)) {
-            return executeAlgorithm(sentence);
-        }
-
-        return complementClauseRule.executeRule(sentence, this::executeAlgorithm);
+        return splitSentenceRules.stream()
+                .filter(rule -> rule.applies(sentence))
+                .findFirst()
+                .orElseGet(DefaultSplitSentenceRule::new)
+                .executeRule(sentence, this::executeAlgorithm);
     }
 
     private void setWordPolarities(Sentence sentence) {
@@ -66,11 +69,7 @@ public class SentimentalPolarityAlgorithm {
             return polarity;
         }
 
-        List<Dependency> dependencies = sentence.getDependencies();
-
-        for (Dependency dependency : dependencies) {
-            executeRules(dependency, sentence);
-        }
+        sentence.getDependencies().forEach(dep -> executeRules(dep, sentence));
 
         if (lastProcessed == null) {
             return 0.0;
