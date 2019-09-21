@@ -6,6 +6,24 @@
 [ROOT [S [NP [DT The] [NN movie]] [VP [VBZ is] [ADJP [VBG boring]]] [. .]]]
 [ROOT [S [SBAR [IN while] [S [NP [EX there]] [VP [VBZ is] [NP [NP [DT no] [NN similarity]] [PP [IN between] [NP [NNS apples] [, ,] [NNS onions] [CC and] [NNS bananas]]]]]]] [, ,] [NP [PRP you]] [VP [MD can] [VP [VB eat] [NP [NP [DT all]] [PP [IN of] [NP [PRP them]]]]]] [. .]]]
 
+[ROOT [SBAR [IN While] [S [NP [PRP I]] [VP [VBP 'm] [ADJP [JJ sure] [SBAR [S [NP [NP [DT the] [NN quality]] [PP [IN of] [NP [DT the] [NN product]]]] [VP [VBZ is] [ADJP [JJ fine] [SBAR [S [NP [DT the] [NN color]] [VP [VBZ is] [ADJP [RB very] [JJ different]]]]]]]]]]]]]]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,6 +1,5 @@
 package ro.ucv.ace.sentiment.rule.splitSentence;
 
-import org.springframework.data.util.Pair;
 import ro.ucv.ace.parser.Sentence;
 import ro.ucv.ace.parser.Word;
 
@@ -8,21 +7,29 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
-public class ComplementClauseRule implements SplitSentenceRule {
+public class ComplementClauseRule extends SplitSentenceTemplate {
 
     private static final List<String> ACCEPTED_WORDS = Arrays.asList("that", "whether");
-    private static final String NEGATION_RELATION = "neg";
 
-    public Double executeRule(Sentence sentence, Function<Sentence, Double> algorithmFunction) {
-        Pair<Sentence, Sentence> sentencePair = splitSentence(sentence);
+    @Override
+    protected int findSplitWordIndex(Sentence sentence) {
+        return findAcceptedWord(sentence).getIndex();
+    }
 
-        Double firstPolarity = algorithmFunction.apply(sentencePair.getFirst());
-        Double secondPolarity = algorithmFunction.apply(sentencePair.getSecond());
+    @Override
+    protected boolean removeFirstWordOnFirstSentence() {
+        return false;
+    }
+
+    @Override
+    protected Double executeAlgorithmOnSentences(Sentence first, Sentence second, Function<Sentence, Double> algorithmFunction) {
+        Double firstPolarity = algorithmFunction.apply(first);
+        Double secondPolarity = algorithmFunction.apply(second);
 
         if (firstPolarity != null && firstPolarity != 0) {
             return firstPolarity;
         } else {
-            if (hasNegation(sentencePair.getFirst())) {
+            if (hasNegation(first)) {
                 return -secondPolarity;
             }
 
@@ -33,20 +40,6 @@ public class ComplementClauseRule implements SplitSentenceRule {
     @Override
     public boolean applies(Sentence sentence) {
         return findAcceptedWord(sentence) != null;
-    }
-
-    private boolean hasNegation(Sentence sentence) {
-        return sentence.getDependencies().stream()
-                .anyMatch(dep -> dep.getRelation().equalsIgnoreCase(NEGATION_RELATION));
-    }
-
-    private Pair<Sentence, Sentence> splitSentence(Sentence sentence) {
-        Word acceptedWord = findAcceptedWord(sentence);
-
-        List<Word> firstWords = sentence.getWords().subList(0, acceptedWord.getIndex() - 1);
-        List<Word> secondWords = sentence.getWords().subList(acceptedWord.getIndex(), sentence.getWords().size());
-
-        return Pair.of(createSentence(sentence.getDependencies(), firstWords), createSentence(sentence.getDependencies(), secondWords));
     }
 
     private Word findAcceptedWord(Sentence sentence) {
