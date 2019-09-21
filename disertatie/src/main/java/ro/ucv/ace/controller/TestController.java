@@ -75,7 +75,14 @@ public class TestController {
                 Pair.of("I disliked the movie you love.", true),
                 Pair.of("The machine slows down when the best games are playing.", true),
                 Pair.of("My failure makes him happy", true),
-                Pair.of("While I’m sure the quality of the product is fine, the color is very different.", true)
+                Pair.of("While I’m sure the quality of the product is fine, the color is very different.", true),
+                Pair.of("This car is nice but expensive.", true),
+                Pair.of("This car is expensive but nice", false),
+                Pair.of("The movie is not only boring but also offensive.", true),
+                Pair.of("Even though he's a millionaire, he lives in a very small flat.", true),
+                Pair.of("Despite being a millionaire, he lives in a very small flat.", true),
+                Pair.of("He won the race even though he's much older than the others.", false),
+                Pair.of("He won the race although he's much older than the others.", false)
         );
     }
 }

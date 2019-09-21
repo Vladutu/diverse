@@ -27,7 +27,8 @@ public class ParseNode {
     }
 
     public int indexOfCommaAfterSubordinateClause() {
-        if (!children.get(0).getValue().equalsIgnoreCase("SBAR")) {
+        if (!children.get(0).getValue().equalsIgnoreCase("SBAR") &&
+                !children.get(0).getValue().equalsIgnoreCase("PP")) {
             return -1;
         }
         if (!children.get(1).getValue().equalsIgnoreCase(",")) {

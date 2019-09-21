@@ -1,5 +1,6 @@
 package ro.ucv.ace.sentiment.rule.splitSentence;
 
+import org.springframework.data.util.Pair;
 import ro.ucv.ace.parser.Sentence;
 
 import java.util.function.Function;
@@ -9,13 +10,13 @@ public class AdverbialClauseRule extends SplitSentenceTemplate {
     private static final String ACCEPTED_WORD = "while";
 
     @Override
-    protected int findSplitWordIndex(Sentence sentence) {
-        return sentence.getParseNode().indexOfCommaAfterSubordinateClause();
+    protected Pair<Integer, Integer> findSplitWordIndexRange(Sentence sentence) {
+        return Pair.of(sentence.getParseNode().indexOfCommaAfterSubordinateClause(), sentence.getParseNode().indexOfCommaAfterSubordinateClause());
     }
 
     @Override
-    protected boolean removeFirstWordOnFirstSentence() {
-        return true;
+    protected int numberOfWordsToRemoveAtTheBeginningOfTheSentence(Sentence sentence) {
+        return 1;
     }
 
     @Override

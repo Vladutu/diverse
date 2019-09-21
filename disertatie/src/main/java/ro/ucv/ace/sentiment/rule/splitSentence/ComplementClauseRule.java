@@ -1,7 +1,7 @@
 package ro.ucv.ace.sentiment.rule.splitSentence;
 
+import org.springframework.data.util.Pair;
 import ro.ucv.ace.parser.Sentence;
-import ro.ucv.ace.parser.Word;
 
 import java.util.Arrays;
 import java.util.List;
@@ -12,13 +12,14 @@ public class ComplementClauseRule extends SplitSentenceTemplate {
     private static final List<String> ACCEPTED_WORDS = Arrays.asList("that", "whether");
 
     @Override
-    protected int findSplitWordIndex(Sentence sentence) {
-        return findAcceptedWord(sentence).getIndex();
+    protected Pair<Integer, Integer> findSplitWordIndexRange(Sentence sentence) {
+        int index = findAcceptedWord(sentence, ACCEPTED_WORDS).getIndex();
+        return Pair.of(index, index);
     }
 
     @Override
-    protected boolean removeFirstWordOnFirstSentence() {
-        return false;
+    protected int numberOfWordsToRemoveAtTheBeginningOfTheSentence(Sentence sentence) {
+        return 0;
     }
 
     @Override
@@ -39,18 +40,6 @@ public class ComplementClauseRule extends SplitSentenceTemplate {
 
     @Override
     public boolean applies(Sentence sentence) {
-        return findAcceptedWord(sentence) != null;
-    }
-
-    private Word findAcceptedWord(Sentence sentence) {
-        return sentence.getWords().stream()
-                .filter(this::wordMatches)
-                .findFirst()
-                .orElse(null);
-    }
-
-    private boolean wordMatches(Word word) {
-        return ACCEPTED_WORDS.stream()
-                .anyMatch(acceptedWord -> acceptedWord.equalsIgnoreCase(word.getValue()));
+        return findAcceptedWord(sentence, ACCEPTED_WORDS) != null;
     }
 }

@@ -4,9 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import ro.ucv.ace.senticnet.SenticNetService;
 import ro.ucv.ace.sentiment.rule.*;
-import ro.ucv.ace.sentiment.rule.splitSentence.AdverbialClauseRule;
-import ro.ucv.ace.sentiment.rule.splitSentence.ComplementClauseRule;
-import ro.ucv.ace.sentiment.rule.splitSentence.SplitSentenceRule;
+import ro.ucv.ace.sentiment.rule.splitSentence.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,7 +31,10 @@ public class ApplicationConfig {
     public List<SplitSentenceRule> splitSentenceRules() {
         return Arrays.asList(
                 new ComplementClauseRule(),
-                new AdverbialClauseRule()
+                new AdverbialClauseRule(),
+                new ButSplitRule(),
+                new AdversariesBeginOfSentenceSplitRule(),
+                new AdversariesDuringSentenceSplitRule()
         );
     }
 }

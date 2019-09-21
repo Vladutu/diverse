@@ -20,12 +20,11 @@ public abstract class SplitSentenceTemplate implements SplitSentenceRule {
         return executeAlgorithmOnSentences(sentencePair.getFirst(), sentencePair.getSecond(), algorithmFunction);
     }
 
-    private Pair<Sentence, Sentence> splitSentence(Sentence sentence) {
-        int index = findSplitWordIndex(sentence);
-        int startIndex = removeFirstWordOnFirstSentence() ? 1 : 0;
+    protected Pair<Sentence, Sentence> splitSentence(Sentence sentence) {
+        Pair<Integer, Integer> indexRange = findSplitWordIndexRange(sentence);
 
-        List<Word> firstWords = sentence.getWords().subList(startIndex, index - 1);
-        List<Word> secondWords = sentence.getWords().subList(index, sentence.getWords().size());
+        List<Word> firstWords = sentence.getWords().subList(numberOfWordsToRemoveAtTheBeginningOfTheSentence(sentence), indexRange.getFirst() - 1);
+        List<Word> secondWords = sentence.getWords().subList(indexRange.getSecond(), sentence.getWords().size());
 
         return Pair.of(createSentence(sentence.getDependencies(), firstWords), createSentence(sentence.getDependencies(), secondWords));
     }
@@ -44,9 +43,21 @@ public abstract class SplitSentenceTemplate implements SplitSentenceRule {
                 .anyMatch(dep -> dep.getRelation().equalsIgnoreCase(NEGATION_RELATION));
     }
 
-    protected abstract int findSplitWordIndex(Sentence sentence);
+    protected Word findAcceptedWord(Sentence sentence, List<String> acceptedWords) {
+        return sentence.getWords().stream()
+                .filter(word -> wordMatches(word, acceptedWords))
+                .findFirst()
+                .orElse(null);
+    }
 
-    protected abstract boolean removeFirstWordOnFirstSentence();
+    protected boolean wordMatches(Word word, List<String> acceptedWords) {
+        return acceptedWords.stream()
+                .anyMatch(acceptedWord -> acceptedWord.equalsIgnoreCase(word.getValue()));
+    }
+
+    protected abstract Pair<Integer, Integer> findSplitWordIndexRange(Sentence sentence);
+
+    protected abstract int numberOfWordsToRemoveAtTheBeginningOfTheSentence(Sentence sentence);
 
     protected abstract Double executeAlgorithmOnSentences(Sentence first, Sentence second, Function<Sentence, Double> algorithmFunction);
 }
