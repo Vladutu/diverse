@@ -40,7 +40,7 @@ public class GrammarParser {
         List<CoreMap> sent = annotation.get(CoreAnnotations.SentencesAnnotation.class);
 
         if (sent.size() > 1) {
-            throw new RuntimeException("Multi-sentence text");
+            throw new MultiSentenceException("Multi-sentence text");
         }
 
         CoreMap s = sent.get(0);

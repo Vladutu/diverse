@@ -4,9 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import ro.ucv.ace.sentiment.SentimentalPolarityAlgorithm;
 
@@ -14,18 +14,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@RestController("/test")
+@RestController
+@RequestMapping("/test")
 public class TestController {
 
     @Autowired
     private SentimentalPolarityAlgorithm sentimentalPolarityAlgorithm;
 
-    @PostMapping(name = "/parseSentence", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.TEXT_PLAIN_VALUE)
+    @Autowired
+    AlgorithmTester algorithmTester;
+
+    @RequestMapping(value = "/parseSentence", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.TEXT_PLAIN_VALUE, method = RequestMethod.POST)
     public ResponseEntity<Double> parseSentence(@RequestBody String text) {
         return ResponseEntity.ok(sentimentalPolarityAlgorithm.execute(text));
     }
 
-    @GetMapping(name = "/executeTests")
+    @RequestMapping(value = "/executeTests", method = RequestMethod.GET)
     public ResponseEntity<List<Pair<String, String>>> executeTests() {
         List<Pair<String, String>> result = provideValues()
                 .map(pair -> executeTest(pair.getFirst(), pair.getSecond()))
@@ -33,6 +37,13 @@ public class TestController {
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/executeDataset", method = RequestMethod.GET)
+    public ResponseEntity<Void> executeDataset() {
+        algorithmTester.test();
+
+        return ResponseEntity.ok().build();
     }
 
     private Pair<String, String> executeTest(String input, Boolean output) {
