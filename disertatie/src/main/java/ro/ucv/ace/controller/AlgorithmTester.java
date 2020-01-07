@@ -56,6 +56,10 @@ public class AlgorithmTester {
                 })
                 .filter(value -> value != -100.0)
                 .collect(Collectors.groupingBy(function));
+        toSave.add("--------------------RESULTS------------------------------");
+        toSave.add("TOTAL:" + Math.addExact(res.get(false).size(), res.get(true).size()));
+        toSave.add("CORRECT: " + res.get(true).size());
+
         try {
             Files.write(Paths.get("D:\\" + fileName), toSave);
         } catch (IOException e) {

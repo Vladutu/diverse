@@ -18,15 +18,18 @@ public class SentimentalPolarityAlgorithm {
 
     private final List<Rule> rules;
 
+    private final FallbackPolarityAlgorithm fallbackPolarityAlgorithm;
+
     private SenticNetService senticNetService;
 
     private List<SplitSentenceRule> splitSentenceRules;
 
     @Autowired
-    public SentimentalPolarityAlgorithm(GrammarParser grammarParser, List<Rule> rules, SenticNetService senticNetService,
-                                        List<SplitSentenceRule> splitSentenceRules) {
+    public SentimentalPolarityAlgorithm(GrammarParser grammarParser, List<Rule> rules, FallbackPolarityAlgorithm fallbackPolarityAlgorithm,
+                                        SenticNetService senticNetService, List<SplitSentenceRule> splitSentenceRules) {
         this.grammarParser = grammarParser;
         this.rules = rules;
+        this.fallbackPolarityAlgorithm = fallbackPolarityAlgorithm;
         this.senticNetService = senticNetService;
         this.splitSentenceRules = splitSentenceRules;
     }
@@ -34,7 +37,7 @@ public class SentimentalPolarityAlgorithm {
     public Double execute(String text) {
         Sentence sentence = grammarParser.parse(text);
         setWordPolarities(sentence);
-        AlgorithmExecutor algorithmExecutor = new AlgorithmExecutor(rules);
+        AlgorithmExecutor algorithmExecutor = new AlgorithmExecutor(rules, fallbackPolarityAlgorithm);
 
         return splitSentenceRules.stream()
                 .filter(rule -> rule.applies(sentence))

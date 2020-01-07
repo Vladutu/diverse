@@ -19,8 +19,11 @@ public class AlgorithmExecutor {
 
     private final List<Rule> rules;
 
-    public AlgorithmExecutor(List<Rule> rules) {
+    private final FallbackPolarityAlgorithm fallbackPolarityAlgorithm;
+
+    public AlgorithmExecutor(List<Rule> rules, FallbackPolarityAlgorithm fallbackPolarityAlgorithm) {
         this.rules = rules;
+        this.fallbackPolarityAlgorithm = fallbackPolarityAlgorithm;
     }
 
     public Double executeAlgorithm(Sentence sentence) {
@@ -28,6 +31,10 @@ public class AlgorithmExecutor {
         double polarity = firstPersonRule.execute(sentence);
         if (polarity != 0) {
             return polarity;
+        }
+
+        if (!anyRuleActivatable(sentence.getDependencies())) {
+            return fallbackPolarityAlgorithm.computePolarity(sentence);
         }
 
         sentence.getDependencies().forEach(dep -> executeRules(dep, sentence));
@@ -39,20 +46,32 @@ public class AlgorithmExecutor {
         return lastProcessed.getPolarity();
     }
 
+    private boolean anyRuleActivatable(List<Dependency> dependencies) {
+        for (Dependency dependency : dependencies) {
+            for (Rule rule : rules) {
+                if (rule.applies(dependency)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     private void executeRules(Dependency dependency, Sentence sentence) {
         if (dependency.isProcessed() || !dependency.isProcessable()) {
             return;
         }
 
-        List<Rule> activableRules = rules.stream()
+        List<Rule> activatableRules = rules.stream()
                 .filter(rule -> rule.applies(dependency))
                 .collect(Collectors.toList());
-        if (CollectionUtils.isEmpty(activableRules)) {
+        if (CollectionUtils.isEmpty(activatableRules)) {
             dependency.setProcessable(false);
             return;
         }
 
-        activableRules
+        activatableRules
                 .forEach(rule -> {
                     rule.execute(dependency, sentence);
                     lastProcessed = dependency;
@@ -68,11 +87,7 @@ public class AlgorithmExecutor {
 
         List<Dependency> nextDependencies = new ArrayList<>();
         sentence.getDependencies().stream()
-                .filter(dep -> dep.getGovernor().equals(governor))
-                .filter(dep -> !dep.equals(dependency))
-                .forEach(nextDependencies::add);
-        sentence.getDependencies().stream()
-                .filter(dep -> dep.getGovernor().equals(dependent))
+                .filter(dep -> dep.getGovernor().equals(governor) || dep.getGovernor().equals(dependent))
                 .filter(dep -> !dep.equals(dependency))
                 .forEach(nextDependencies::add);
 

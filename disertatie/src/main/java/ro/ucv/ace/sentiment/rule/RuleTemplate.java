@@ -29,25 +29,6 @@ public abstract class RuleTemplate implements Rule {
     public void execute(Dependency dependency, Sentence sentence) {
         tryExecuteRulesThatAreActivatedFirst(dependency, sentence);
         executeRule(dependency, sentence);
-//        reversePolarityIfNegation(dependency);
-    }
-
-    private void reversePolarityIfNegation(Dependency dependency) {
-        Word dependent = dependency.getDependent();
-        Word governor = dependency.getGovernor();
-        if (!dependent.isNegated() && !governor.isNegated()) {
-            return;
-        }
-
-        if (dependent.isNegationProcessed() || governor.isNegationProcessed()) {
-            return;
-        }
-
-        dependent.setNegationProcessed(true);
-        governor.setNegationProcessed(true);
-        dependent.setPolarity(-1 * dependent.getPolarity());
-        governor.setPolarity(-1 * governor.getPolarity());
-        dependency.setPolarity(-1 * dependency.getPolarity());
     }
 
     private void tryExecuteRulesThatAreActivatedFirst(Dependency thisDependency, Sentence sentence) {

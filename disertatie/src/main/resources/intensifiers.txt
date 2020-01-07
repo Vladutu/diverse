@@ -1,0 +1,13 @@
+very 10
+really 10
+super 15
+literally 15
+seriously 15
+obviously 15
+extremely 20
+incredibly 20
+insanely 20
+quite 10
+so 10
+too 15
+totally 20

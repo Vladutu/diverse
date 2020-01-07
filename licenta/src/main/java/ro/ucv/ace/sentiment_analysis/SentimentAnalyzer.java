@@ -78,45 +78,6 @@ public class SentimentAnalyzer {
         }
     }
 
-//    public double computePolarity(String review) {
-//        double polarity = 0;
-//
-//        Document document = grammarParser.parse(review.toLowerCase());
-//        for (Sentence sentence : document.getSentences()) {
-//            List<Word> negations = determineNegations(sentence.getDependencies());
-//            List<Word> intensifiers = determineIntensifiers(sentence.getWords());
-//            List<Word> excludes = Stream.of(negations, intensifiers).flatMap(List::stream).collect(Collectors.toList());
-//
-//            for (Word word : sentence.getWords()) {
-//                if (excludes.contains(word) || !acceptedPos.contains(word.getPos())) {
-//                    continue;
-//                }
-//
-//                int neg = computeNegation(word, sentence.getDependencies());
-//                int intensifier = computeIntensifier(word, sentence.getDependencies());
-//                double wordPolarity = computeWordPolarity(word);
-//                int inverse = 0;
-//                if (neg == 0) {
-//                    inverse = computePrevWordsDependencyInversion(word, sentence.getDependencies());
-//                }
-//
-//                double finalWordPolarity = ((double) intensifier / 100 * wordPolarity + wordPolarity)
-//                        * Math.pow(-1, neg) * Math.pow(-1, inverse);
-//
-//                polarity += finalWordPolarity;
-//            }
-//        }
-//
-//        if (polarity > 1) {
-//            polarity = 1;
-//        }
-//        if (polarity < -1) {
-//            polarity = -1;
-//        }
-//
-//        return polarity;
-//    }
-
     public double computePolarity(String review) {
         double polarity = 0;
         List<Double> maxPol = new ArrayList<>();
