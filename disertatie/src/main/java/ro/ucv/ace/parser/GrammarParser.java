@@ -13,6 +13,7 @@ import edu.stanford.nlp.util.CoreMap;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
@@ -34,37 +35,37 @@ public class GrammarParser {
         pipeline = new StanfordCoreNLP(props);
     }
 
-    public Sentence parse(String text) {
+    public List<Sentence> parse(String text) {
         Annotation annotation = new Annotation(text);
         pipeline.annotate(annotation);
         List<CoreMap> sent = annotation.get(CoreAnnotations.SentencesAnnotation.class);
+        List<Sentence> sentences = new ArrayList<>();
 
-        if (sent.size() > 1) {
-            throw new MultiSentenceException("Multi-sentence text");
+        for (CoreMap s : sent) {
+            List<CoreLabel> coreLabels = s.get(CoreAnnotations.TokensAnnotation.class);
+            List<Word> words = coreLabels.stream()
+                    .map(coreLabel -> new Word(coreLabel.index(), coreLabel.word(), coreLabel.lemma(), coreLabel.tag()))
+                    .collect(Collectors.toList());
+
+            setCurrentAndPreviousWords(words);
+
+            SemanticGraph semanticGraph = s.get(SemanticGraphCoreAnnotations.BasicDependenciesAnnotation.class);
+            Tree tree = s.get(TreeCoreAnnotations.TreeAnnotation.class);
+            Tree sentence = tree.children()[0];
+            ParseNode parseNode = new ParseNode();
+            createParseTree(sentence, parseNode);
+
+            Collection<TypedDependency> typedDependencies = semanticGraph.typedDependencies();
+
+            List<Dependency> dependencies = typedDependencies.stream()
+                    .filter(typedDependency -> !typedDependency.reln().getShortName().equals(ROOT_RELATION))
+                    .map(typedDependency -> toDependency(typedDependency, words))
+                    .collect(Collectors.toList());
+
+            sentences.add(new Sentence(words, dependencies, parseNode));
         }
 
-        CoreMap s = sent.get(0);
-        List<CoreLabel> coreLabels = s.get(CoreAnnotations.TokensAnnotation.class);
-        List<Word> words = coreLabels.stream()
-                .map(coreLabel -> new Word(coreLabel.index(), coreLabel.word(), coreLabel.lemma(), coreLabel.tag()))
-                .collect(Collectors.toList());
-
-        setCurrentAndPreviousWords(words);
-
-        SemanticGraph semanticGraph = s.get(SemanticGraphCoreAnnotations.BasicDependenciesAnnotation.class);
-        Tree tree = s.get(TreeCoreAnnotations.TreeAnnotation.class);
-        Tree sentence = tree.children()[0];
-        ParseNode parseNode = new ParseNode();
-        createParseTree(sentence, parseNode);
-
-        Collection<TypedDependency> typedDependencies = semanticGraph.typedDependencies();
-
-        List<Dependency> dependencies = typedDependencies.stream()
-                .filter(typedDependency -> !typedDependency.reln().getShortName().equals(ROOT_RELATION))
-                .map(typedDependency -> toDependency(typedDependency, words))
-                .collect(Collectors.toList());
-
-        return new Sentence(words, dependencies, parseNode);
+        return sentences;
     }
 
     private void createParseTree(Tree tree, ParseNode sentenceNode) {

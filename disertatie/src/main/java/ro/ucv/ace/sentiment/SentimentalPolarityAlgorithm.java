@@ -1,15 +1,17 @@
 package ro.ucv.ace.sentiment;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ro.ucv.ace.parser.GrammarParser;
 import ro.ucv.ace.parser.Sentence;
-import ro.ucv.ace.senticnet.SenticNetService;
+import ro.ucv.ace.senticnet.WordPolarityService;
 import ro.ucv.ace.sentiment.rule.Rule;
 import ro.ucv.ace.sentiment.rule.splitSentence.DefaultSplitSentenceRule;
 import ro.ucv.ace.sentiment.rule.splitSentence.SplitSentenceRule;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class SentimentalPolarityAlgorithm {
@@ -20,25 +22,32 @@ public class SentimentalPolarityAlgorithm {
 
     private final FallbackPolarityAlgorithm fallbackPolarityAlgorithm;
 
-    private SenticNetService senticNetService;
+    private WordPolarityService wordPolarityService;
 
     private List<SplitSentenceRule> splitSentenceRules;
 
     @Autowired
     public SentimentalPolarityAlgorithm(GrammarParser grammarParser, List<Rule> rules, FallbackPolarityAlgorithm fallbackPolarityAlgorithm,
-                                        SenticNetService senticNetService, List<SplitSentenceRule> splitSentenceRules) {
+                                        @Qualifier("wordPolarityCombinedSenticWordNetPreferredService") WordPolarityService wordPolarityService,
+                                        List<SplitSentenceRule> splitSentenceRules) {
         this.grammarParser = grammarParser;
         this.rules = rules;
         this.fallbackPolarityAlgorithm = fallbackPolarityAlgorithm;
-        this.senticNetService = senticNetService;
+        this.wordPolarityService = wordPolarityService;
         this.splitSentenceRules = splitSentenceRules;
     }
 
-    public Double execute(String text) {
-        Sentence sentence = grammarParser.parse(text);
-        setWordPolarities(sentence);
+    public List<Double> execute(String text) {
+        List<Sentence> sentences = grammarParser.parse(text);
         AlgorithmExecutor algorithmExecutor = new AlgorithmExecutor(rules, fallbackPolarityAlgorithm);
 
+        return sentences.stream()
+                .map(sentence -> calculatePolarity(sentence, algorithmExecutor))
+                .collect(Collectors.toList());
+    }
+
+    private Double calculatePolarity(Sentence sentence, AlgorithmExecutor algorithmExecutor) {
+        setWordPolarities(sentence);
         return splitSentenceRules.stream()
                 .filter(rule -> rule.applies(sentence))
                 .findFirst()
@@ -49,7 +58,7 @@ public class SentimentalPolarityAlgorithm {
     private void setWordPolarities(Sentence sentence) {
         sentence.getWords().forEach(word -> {
             int polarityFactor = word.isNegated() ? -1 : 1;
-            word.setPolarity(polarityFactor * senticNetService.findWordPolarity(word));
+            word.setPolarity(polarityFactor * wordPolarityService.findWordPolarity(word));
         });
     }
 }

@@ -4,10 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ro.ucv.ace.sentiment.SentimentalPolarityAlgorithm;
 
 import java.util.List;
@@ -24,9 +21,15 @@ public class TestController {
     @Autowired
     AlgorithmTester algorithmTester;
 
+    @Autowired
+    private ReviewTester reviewTester;
+
+    @Autowired
+    private ReviewProcessor reviewProcessor;
+
     @RequestMapping(value = "/parseSentence", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.TEXT_PLAIN_VALUE, method = RequestMethod.POST)
     public ResponseEntity<Double> parseSentence(@RequestBody String text) {
-        return ResponseEntity.ok(sentimentalPolarityAlgorithm.execute(text));
+        return ResponseEntity.ok(sentimentalPolarityAlgorithm.execute(text).get(0));
     }
 
     @RequestMapping(value = "/executeTests", method = RequestMethod.GET)
@@ -39,15 +42,29 @@ public class TestController {
         return ResponseEntity.ok(result);
     }
 
-    @RequestMapping(value = "/executeDataset", method = RequestMethod.GET)
-    public ResponseEntity<Void> executeDataset() {
-        algorithmTester.test();
+    @RequestMapping(value = "/executeDataset/{type}", method = RequestMethod.GET)
+    public ResponseEntity<Void> executeDataset(@PathVariable String type) {
+        algorithmTester.test(type);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @RequestMapping(value = "/testReviews", method = RequestMethod.GET)
+    public ResponseEntity<Void> testReviews() {
+        reviewTester.testReviews(821, 500);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @RequestMapping(value = "/processReviews", method = RequestMethod.GET)
+    public ResponseEntity<Void> processReviews() {
+        reviewProcessor.process();
 
         return ResponseEntity.ok().build();
     }
 
     private Pair<String, String> executeTest(String input, Boolean output) {
-        Double result = sentimentalPolarityAlgorithm.execute(input);
+        Double result = sentimentalPolarityAlgorithm.execute(input).get(0);
         boolean correct = (result < 0) == output;
         String resultText = correct ? "CORRECT" : "WRONG";
 

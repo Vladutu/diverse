@@ -1,0 +1,23 @@
+https://archive.ics.uci.edu/ml/datasets/Sentiment+Labelled+Sentences
+Negative total: 1500
+Negative correct: 834
+Negative accuracy: 55,6 %
+Positive total: 1500
+Positive correct: 1042
+Positive accuracy: 69,4 %
+
+http://www.cs.cornell.edu/people/pabo/movie-review-data/
+Negative total: 5331
+Negative correct: 3000
+Negative accuracy: 56,2 %
+Positive total: 5331
+Positive correct: 3698
+Positive accuracy: 69,3 %
+
+Crawled
+Negative total: 37029
+Negative correct: 20618
+Negative accuracy: 55,6 %
+Positive total: 334073
+Positive correct: 220234
+Positive accuracy: 65,9 %

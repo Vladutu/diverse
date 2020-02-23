@@ -1,11 +1,12 @@
 package ro.ucv.ace.sentiment;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ro.ucv.ace.parser.Dependency;
 import ro.ucv.ace.parser.Sentence;
 import ro.ucv.ace.parser.Word;
-import ro.ucv.ace.senticnet.SenticNetService;
+import ro.ucv.ace.senticnet.WordPolarityService;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,13 +22,13 @@ public class FallbackPolarityAlgorithm {
 
     private List<Intensifier> intensifiers;
 
-    private final SenticNetService senticNetService;
+    private final WordPolarityService wordPolarityService;
 
     private List<String> acceptedPos;
 
     @Autowired
-    public FallbackPolarityAlgorithm(SenticNetService senticNetService) {
-        this.senticNetService = senticNetService;
+    public FallbackPolarityAlgorithm(@Qualifier("senticWordNetService") WordPolarityService wordPolarityService) {
+        this.wordPolarityService = wordPolarityService;
         loadIntensifiers();
         populateAcceptedPos();
     }
@@ -118,7 +119,7 @@ public class FallbackPolarityAlgorithm {
     }
 
     private double computeWordPolarity(Word word) {
-        return senticNetService.findWordPolarity(word);
+        return wordPolarityService.findWordPolarity(word);
     }
 
     //returns the value of the intensifier if the word has one, otherwise 0

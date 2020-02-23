@@ -31,6 +31,10 @@ public class ParseNode {
                 !children.get(0).getValue().equalsIgnoreCase("PP")) {
             return -1;
         }
+        if (children.size() < 2) {
+            return -1;
+        }
+
         if (!children.get(1).getValue().equalsIgnoreCase(",")) {
             return -1;
         }

@@ -14,8 +14,8 @@ import java.util.stream.Stream;
 import static ro.ucv.ace.sentiment.SentimentUtils.neg;
 import static ro.ucv.ace.sentiment.SentimentUtils.pos;
 
-@Service
-public class SenticNetService {
+@Service("senticNetService")
+public class SenticNetService implements WordPolarityService {
 
     private SenticNetRepository senticNetRepository;
 
@@ -24,6 +24,7 @@ public class SenticNetService {
         this.senticNetRepository = senticNetRepository;
     }
 
+    @Override
     public Double findConceptPolarity(Word w1, Word w2) {
         List<String> concepts = new ArrayList<>();
         concepts.add(createConcept(w1.getValue(), w2.getValue()));
@@ -34,6 +35,7 @@ public class SenticNetService {
         return getSenticFromConcepts(concepts);
     }
 
+    @Override
     public Double findConceptPolarity(Word w1, Word w2, Word w3) {
         List<String> concepts = new ArrayList<>();
         concepts.add(createConcept(w1.getValue(), w2.getValue(), w3.getValue()));
@@ -48,6 +50,7 @@ public class SenticNetService {
         return getSenticFromConcepts(concepts);
     }
 
+    @Override
     public double findWordPolarity(Word word) {
         String newWord = word.getValue().replaceAll(" ", "_");
         String newLemma = word.getLemma().replaceAll(" ", "_");
