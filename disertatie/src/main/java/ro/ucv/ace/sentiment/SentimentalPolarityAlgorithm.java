@@ -1,8 +1,6 @@
 package ro.ucv.ace.sentiment;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import ro.ucv.ace.parser.GrammarParser;
 import ro.ucv.ace.parser.Sentence;
 import ro.ucv.ace.senticnet.WordPolarityService;
@@ -13,7 +11,6 @@ import ro.ucv.ace.sentiment.rule.splitSentence.SplitSentenceRule;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
 public class SentimentalPolarityAlgorithm {
 
     private final GrammarParser grammarParser;
@@ -26,9 +23,8 @@ public class SentimentalPolarityAlgorithm {
 
     private List<SplitSentenceRule> splitSentenceRules;
 
-    @Autowired
     public SentimentalPolarityAlgorithm(GrammarParser grammarParser, List<Rule> rules, FallbackPolarityAlgorithm fallbackPolarityAlgorithm,
-                                        @Qualifier("wordPolarityCombinedSenticWordNetPreferredService") WordPolarityService wordPolarityService,
+                                        @Qualifier("wordPolarityCombinedComparationService") WordPolarityService wordPolarityService,
                                         List<SplitSentenceRule> splitSentenceRules) {
         this.grammarParser = grammarParser;
         this.rules = rules;

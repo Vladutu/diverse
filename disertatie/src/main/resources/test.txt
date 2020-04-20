@@ -10,6 +10,9 @@
 
 
 
+[ROOT [S [SBAR [IN While] [S [NP [DT the] [DT the] [NN apartment]] [VP [VBD was] [UCP [ADJP [JJ cheap] [, ,] [JJ clean]] [CC and] [PP [IN in] [NP [DT a] [JJ safe] [NN area]]]]]]] [, ,] [NP [PRP it]] [VP [VBD was] [ADJP [RB very] [JJ small]]] [. .]]]
+
+
 
 
 

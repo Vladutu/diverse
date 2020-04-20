@@ -10,7 +10,8 @@ public class AdversariesBeginOfSentenceSplitRule extends AdversariesSplitRule {
 
     @Override
     protected Pair<Integer, Integer> findSplitWordIndexRange(Sentence sentence) {
-        return Pair.of(sentence.getParseNode().indexOfCommaAfterSubordinateClause(), sentence.getParseNode().indexOfCommaAfterSubordinateClause());
+        int indexOfCommaAfterSubordinateClause = sentence.getParseNode().indexOfCommaAfterSubordinateClause();
+        return Pair.of(indexOfCommaAfterSubordinateClause, indexOfCommaAfterSubordinateClause);
     }
 
     @Override

@@ -3,7 +3,7 @@ package ro.ucv.ace.sentiment.rule;
 import ro.ucv.ace.parser.Dependency;
 import ro.ucv.ace.parser.Sentence;
 import ro.ucv.ace.parser.Word;
-import ro.ucv.ace.senticnet.SenticNetService;
+import ro.ucv.ace.senticnet.WordPolarityService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,8 +15,8 @@ public class AdverbialClauseModifierRule extends RuleTemplate {
 
     private static final List<String> ACCEPTED_RELATIONS = Arrays.asList("advcl");
 
-    public AdverbialClauseModifierRule(SenticNetService senticNetService, boolean addRules) {
-        super(senticNetService, addRules);
+    public AdverbialClauseModifierRule(WordPolarityService wordPolarityService, boolean addRules) {
+        super(wordPolarityService, addRules);
     }
 
     @Override
@@ -25,7 +25,7 @@ public class AdverbialClauseModifierRule extends RuleTemplate {
         Word dependent = dependency.getDependent();
 
         double dependencyPolarity = computeDependencyPolarity(dependency);
-        Double conceptPolarity = senticNetService.findConceptPolarity(head, dependent);
+        Double conceptPolarity = wordPolarityService.findConceptPolarity(head, dependent);
         if (conceptPolarity != null) {
             int reversePolarityFactor = neg(dependencyPolarity * conceptPolarity) ? -1 : 1;
             setPolarity(dependency, reversePolarityFactor * conceptPolarity);

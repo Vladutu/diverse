@@ -4,16 +4,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ro.ucv.ace.parser.Word;
 
-@Service("wordPolarityCombinedComparationService")
-public class WordPolarityCombinedComparationService implements WordPolarityService {
+@Service("wordPolarityCombined3")
+public class WordPolarityCombined3 implements WordPolarityService {
 
     private final WordPolarityService senticWordNetService;
     private final WordPolarityService senticNetService;
+    private final WordPolarityService huAndLiuWordPolarityService;
 
     @Autowired
-    public WordPolarityCombinedComparationService(WordPolarityService senticWordNetService, WordPolarityService senticNetService) {
+    public WordPolarityCombined3(WordPolarityService senticWordNetService, WordPolarityService senticNetService,
+                                 WordPolarityService huAndLiuWordPolarityService) {
         this.senticWordNetService = senticWordNetService;
         this.senticNetService = senticNetService;
+        this.huAndLiuWordPolarityService = huAndLiuWordPolarityService;
     }
 
 
@@ -29,14 +32,16 @@ public class WordPolarityCombinedComparationService implements WordPolarityServi
 
     @Override
     public double findWordPolarity(Word word) {
-        double senticWordNetPolarity = senticWordNetService.findWordPolarity(word);
-        double senticNetPolarity = senticNetService.findWordPolarity(word);
+        double huAndLiuPolarity = huAndLiuWordPolarityService.findWordPolarity(word);
+        if (huAndLiuPolarity != 0.0) {
+            return huAndLiuPolarity;
+        }
 
-        if ((senticWordNetPolarity < 0 && senticNetPolarity > 0) ||
-                (senticWordNetPolarity > 0 && senticNetPolarity < 0)) {
+        double senticWordNetPolarity = senticWordNetService.findWordPolarity(word);
+        if (senticWordNetPolarity != 0.0) {
             return senticWordNetPolarity;
         }
 
-        return senticNetPolarity;
+        return senticNetService.findWordPolarity(word);
     }
 }

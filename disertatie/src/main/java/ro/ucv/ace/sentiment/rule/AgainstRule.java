@@ -2,7 +2,7 @@ package ro.ucv.ace.sentiment.rule;
 
 import ro.ucv.ace.parser.Dependency;
 import ro.ucv.ace.parser.Sentence;
-import ro.ucv.ace.senticnet.SenticNetService;
+import ro.ucv.ace.senticnet.WordPolarityService;
 
 import static ro.ucv.ace.sentiment.SentimentUtils.setPolarity;
 
@@ -11,8 +11,8 @@ public class AgainstRule extends RuleTemplate {
     private static final String ACCEPTED_WORD = "against";
     private static final String ACCEPTED_RELATION = "pobj";
 
-    public AgainstRule(SenticNetService senticNetService, boolean addRules) {
-        super(senticNetService, addRules);
+    public AgainstRule(WordPolarityService wordPolarityService, boolean addRules) {
+        super(wordPolarityService, addRules);
     }
 
     @Override

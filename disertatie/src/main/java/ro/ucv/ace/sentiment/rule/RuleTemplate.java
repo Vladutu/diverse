@@ -4,24 +4,25 @@ import ro.ucv.ace.parser.Dependency;
 import ro.ucv.ace.parser.Sentence;
 import ro.ucv.ace.parser.Word;
 import ro.ucv.ace.senticnet.SenticNetService;
+import ro.ucv.ace.senticnet.WordPolarityService;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class RuleTemplate implements Rule {
 
-    private List<Rule> rulesActivatedFirst;
-    protected SenticNetService senticNetService;
+    private final List<Rule> rulesActivatedFirst;
+    protected WordPolarityService wordPolarityService;
 
-    public RuleTemplate(SenticNetService senticNetService, boolean addRules) {
-        this.senticNetService = senticNetService;
+    public RuleTemplate(WordPolarityService wordPolarityService, boolean addRules) {
+        this.wordPolarityService = wordPolarityService;
         rulesActivatedFirst = new ArrayList<>();
 
         if (!addRules) {
             return;
         }
-        rulesActivatedFirst.add(new SubjectNounRule(senticNetService, false));
-        rulesActivatedFirst.add(new AdjectivalAndAdverbialModifierRule(senticNetService, false));
+        rulesActivatedFirst.add(new SubjectNounRule(wordPolarityService, false));
+        rulesActivatedFirst.add(new AdjectivalAndAdverbialModifierRule(wordPolarityService, false));
     }
 
     protected abstract void executeRule(Dependency dependency, Sentence sentence);
