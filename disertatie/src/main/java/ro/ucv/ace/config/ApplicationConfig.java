@@ -17,7 +17,7 @@ import java.util.List;
 @Configuration
 public class ApplicationConfig {
 
-    @Qualifier("wordPolarityCombinedComparationService")
+    @Qualifier("wordPolarityCombinedSenticWordNetPreferredService")
     @Autowired
     private WordPolarityService wordPolarityService;
 
