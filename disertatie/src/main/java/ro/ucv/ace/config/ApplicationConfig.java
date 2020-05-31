@@ -53,4 +53,9 @@ public class ApplicationConfig {
         return new SentimentalPolarityAlgorithm(grammarParser, rules(), fallbackPolarityAlgorithm, wordPolarityService,
                 splitSentenceRules());
     }
+
+    @Bean
+    public FallbackPolarityAlgorithm fallbackPolarityAlgorithm() {
+        return new FallbackPolarityAlgorithm(wordPolarityService);
+    }
 }

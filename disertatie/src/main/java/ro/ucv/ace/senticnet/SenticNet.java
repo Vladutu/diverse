@@ -4,9 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.util.Arrays;
 import java.util.List;
 
 @Data
@@ -24,6 +24,13 @@ public class SenticNet {
     private String secondaryMood;
     private String polarityLabel;
     private double polarityValue;
-    @ElementCollection
-    private List<String> semantics;
+    private String semantics;
+
+    public void setSemantics(List<String> semantics) {
+        this.semantics = String.join(",", semantics);
+    }
+
+    public List<String> getSemantics() {
+        return Arrays.asList(semantics.split(","));
+    }
 }

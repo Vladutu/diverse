@@ -1,8 +1,5 @@
 package ro.ucv.ace.sentiment;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import ro.ucv.ace.parser.Dependency;
 import ro.ucv.ace.parser.Sentence;
 import ro.ucv.ace.parser.Word;
@@ -17,7 +14,6 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Component
 public class FallbackPolarityAlgorithm {
 
     private List<Intensifier> intensifiers;
@@ -26,8 +22,7 @@ public class FallbackPolarityAlgorithm {
 
     private List<String> acceptedPos;
 
-    @Autowired
-    public FallbackPolarityAlgorithm(@Qualifier("senticWordNetService") WordPolarityService wordPolarityService) {
+    public FallbackPolarityAlgorithm(WordPolarityService wordPolarityService) {
         this.wordPolarityService = wordPolarityService;
         loadIntensifiers();
         populateAcceptedPos();
