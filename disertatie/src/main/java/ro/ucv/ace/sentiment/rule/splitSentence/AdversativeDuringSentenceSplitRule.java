@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
-public class AdversariesDuringSentenceSplitRule extends AdversariesSplitRule {
+public class AdversativeDuringSentenceSplitRule extends AdversativeSplitRule {
 
     @Override
     protected Pair<Integer, Integer> findSplitWordIndexRange(Sentence sentence) {

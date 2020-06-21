@@ -3,8 +3,7 @@ package ro.ucv.ace.sentiment.rule;
 import ro.ucv.ace.parser.Dependency;
 import ro.ucv.ace.parser.Sentence;
 import ro.ucv.ace.parser.Word;
-import ro.ucv.ace.senticnet.SenticNetService;
-import ro.ucv.ace.senticnet.WordPolarityService;
+import ro.ucv.ace.senticnet.PolarityService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,17 +11,17 @@ import java.util.List;
 public abstract class RuleTemplate implements Rule {
 
     private final List<Rule> rulesActivatedFirst;
-    protected WordPolarityService wordPolarityService;
+    protected PolarityService polarityService;
 
-    public RuleTemplate(WordPolarityService wordPolarityService, boolean addRules) {
-        this.wordPolarityService = wordPolarityService;
+    public RuleTemplate(PolarityService polarityService, boolean addRules) {
+        this.polarityService = polarityService;
         rulesActivatedFirst = new ArrayList<>();
 
         if (!addRules) {
             return;
         }
-        rulesActivatedFirst.add(new SubjectNounRule(wordPolarityService, false));
-        rulesActivatedFirst.add(new AdjectivalAndAdverbialModifierRule(wordPolarityService, false));
+        rulesActivatedFirst.add(new SubjectNounRule(polarityService, false));
+        rulesActivatedFirst.add(new AdjectivalAndAdverbialModifierRule(polarityService, false));
     }
 
     protected abstract void executeRule(Dependency dependency, Sentence sentence);

@@ -6,7 +6,7 @@ import ro.ucv.ace.parser.Word;
 
 import java.util.List;
 
-public class AdversariesBeginOfSentenceSplitRule extends AdversariesSplitRule {
+public class AdversativeBeginOfSentenceSplitRule extends AdversativeSplitRule {
 
     @Override
     protected Pair<Integer, Integer> findSplitWordIndexRange(Sentence sentence) {

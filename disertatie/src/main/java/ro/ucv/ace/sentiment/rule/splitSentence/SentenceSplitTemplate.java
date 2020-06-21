@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public abstract class SplitSentenceTemplate implements SplitSentenceRule {
+public abstract class SentenceSplitTemplate implements SentenceSplitRule {
 
     private static final String NEGATION_RELATION = "neg";
 

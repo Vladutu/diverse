@@ -24,6 +24,11 @@ dependencies {
     runtimeOnly 'mysql:mysql-connector-java'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    compile "org.springframework.social:spring-social-twitter:1.1.0.RELEASE"
+    compile group: 'org.jsoup', name: 'jsoup', version: '1.13.1'
+    compile group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '3.141.59'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf'
+
 
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.springframework.boot:spring-boot-devtools'

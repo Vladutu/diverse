@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
-public class ComplementClauseRule extends SplitSentenceTemplate {
+public class ComplementClauseSplitRule extends SentenceSplitTemplate {
 
     private static final List<String> ACCEPTED_WORDS = Arrays.asList("that", "whether");
 

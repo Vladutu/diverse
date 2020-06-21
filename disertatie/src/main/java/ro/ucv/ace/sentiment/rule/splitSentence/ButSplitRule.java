@@ -6,7 +6,7 @@ import ro.ucv.ace.parser.Word;
 
 import java.util.Collections;
 
-public class ButSplitRule extends AdversariesSplitRule {
+public class ButSplitRule extends AdversativeSplitRule {
 
     private static final String ACCEPTED_WORD = "but";
     private static final String REJECTED_WORD = "also";

@@ -3,7 +3,7 @@ package ro.ucv.ace.sentiment.rule;
 import ro.ucv.ace.parser.Dependency;
 import ro.ucv.ace.parser.Sentence;
 import ro.ucv.ace.parser.Word;
-import ro.ucv.ace.senticnet.WordPolarityService;
+import ro.ucv.ace.senticnet.PolarityService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,8 +15,8 @@ public class AdjectiveAndClausalComplementRule extends RuleTemplate {
 
     private static final List<String> ACCEPTED_RELATIONS = Arrays.asList("acomp", "ccomp");
 
-    public AdjectiveAndClausalComplementRule(WordPolarityService wordPolarityService, boolean addRules) {
-        super(wordPolarityService, addRules);
+    public AdjectiveAndClausalComplementRule(PolarityService polarityService, boolean addRules) {
+        super(polarityService, addRules);
     }
 
     @Override
@@ -25,7 +25,7 @@ public class AdjectiveAndClausalComplementRule extends RuleTemplate {
         Word dependent = dependency.getDependent();
 
         double dependencyPolarity = computeDependencyPolarity(dependency);
-        Double conceptPolarity = wordPolarityService.findConceptPolarity(head, dependent);
+        Double conceptPolarity = polarityService.findConceptPolarity(head, dependent);
 
         if (conceptPolarity != null) {
             int reversePolarityFactor = neg(dependencyPolarity * conceptPolarity) ? -1 : 1;

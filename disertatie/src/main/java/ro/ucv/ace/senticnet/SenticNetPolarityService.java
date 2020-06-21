@@ -14,13 +14,13 @@ import java.util.stream.Stream;
 import static ro.ucv.ace.sentiment.SentimentUtils.neg;
 import static ro.ucv.ace.sentiment.SentimentUtils.pos;
 
-@Service("senticNetService")
-public class SenticNetService implements WordPolarityService {
+@Service("senticNetPolarityService")
+public class SenticNetPolarityService implements PolarityService {
 
     private SenticNetRepository senticNetRepository;
 
     @Autowired
-    public SenticNetService(SenticNetRepository senticNetRepository) {
+    public SenticNetPolarityService(SenticNetRepository senticNetRepository) {
         this.senticNetRepository = senticNetRepository;
     }
 

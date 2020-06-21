@@ -3,7 +3,7 @@ package ro.ucv.ace.sentiment.rule;
 import ro.ucv.ace.parser.Dependency;
 import ro.ucv.ace.parser.Sentence;
 import ro.ucv.ace.parser.Word;
-import ro.ucv.ace.senticnet.WordPolarityService;
+import ro.ucv.ace.senticnet.PolarityService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,8 +16,8 @@ public class OpenClausalComplementRule extends RuleTemplate {
     private static final List<String> SECONDARY_RELATIONS = Arrays.asList("ccomp", "dobj");
     private static final List<String> SECONDARY_RELATION_WITH_PREPOSITION = Arrays.asList("prep", "pobj");
 
-    public OpenClausalComplementRule(WordPolarityService wordPolarityService, boolean addRules) {
-        super(wordPolarityService, addRules);
+    public OpenClausalComplementRule(PolarityService polarityService, boolean addRules) {
+        super(polarityService, addRules);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class OpenClausalComplementRule extends RuleTemplate {
             return;
         }
         Word secondaryDependent = secondaryDependency.getDependent();
-        Double tripleConceptPolarity = wordPolarityService.findConceptPolarity(governor, dependent, secondaryDependent);
+        Double tripleConceptPolarity = polarityService.findConceptPolarity(governor, dependent, secondaryDependent);
         double dependencyPolarity = computeDependencyPolarity(dependency, secondaryDependent);
 
         if (tripleConceptPolarity != null) {
@@ -59,7 +59,7 @@ public class OpenClausalComplementRule extends RuleTemplate {
     private double computeDependencyPolarity(Dependency dependency, Word secondaryDependent) {
         Word dependent = dependency.getDependent();
         Word governor = dependency.getGovernor();
-        Double conceptPolarity = wordPolarityService.findConceptPolarity(dependent, secondaryDependent);
+        Double conceptPolarity = polarityService.findConceptPolarity(dependent, secondaryDependent);
         double governorPolarity = governor.getPolarity();
         double dependentPolarity = dependent.getPolarity();
         double secondaryDependentPolarity = secondaryDependent.getPolarity();

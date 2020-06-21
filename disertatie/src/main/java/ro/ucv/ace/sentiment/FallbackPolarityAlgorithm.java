@@ -3,7 +3,7 @@ package ro.ucv.ace.sentiment;
 import ro.ucv.ace.parser.Dependency;
 import ro.ucv.ace.parser.Sentence;
 import ro.ucv.ace.parser.Word;
-import ro.ucv.ace.senticnet.WordPolarityService;
+import ro.ucv.ace.senticnet.PolarityService;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,12 +18,12 @@ public class FallbackPolarityAlgorithm {
 
     private List<Intensifier> intensifiers;
 
-    private final WordPolarityService wordPolarityService;
+    private final PolarityService polarityService;
 
     private List<String> acceptedPos;
 
-    public FallbackPolarityAlgorithm(WordPolarityService wordPolarityService) {
-        this.wordPolarityService = wordPolarityService;
+    public FallbackPolarityAlgorithm(PolarityService polarityService) {
+        this.polarityService = polarityService;
         loadIntensifiers();
         populateAcceptedPos();
     }
@@ -114,7 +114,7 @@ public class FallbackPolarityAlgorithm {
     }
 
     private double computeWordPolarity(Word word) {
-        return wordPolarityService.findWordPolarity(word);
+        return polarityService.findWordPolarity(word);
     }
 
     //returns the value of the intensifier if the word has one, otherwise 0

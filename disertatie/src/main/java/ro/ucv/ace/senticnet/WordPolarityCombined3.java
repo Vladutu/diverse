@@ -5,17 +5,17 @@ import org.springframework.stereotype.Service;
 import ro.ucv.ace.parser.Word;
 
 @Service("wordPolarityCombined3")
-public class WordPolarityCombined3 implements WordPolarityService {
+public class WordPolarityCombined3 implements PolarityService {
 
-    private final WordPolarityService senticWordNetService;
-    private final WordPolarityService senticNetService;
-    private final WordPolarityService huAndLiuWordPolarityService;
+    private final PolarityService senticWordNetService;
+    private final PolarityService senticNetService;
+    private final PolarityService huAndLiuWordPolarityService;
 
     @Autowired
-    public WordPolarityCombined3(WordPolarityService senticWordNetService, WordPolarityService senticNetService,
-                                 WordPolarityService huAndLiuWordPolarityService) {
-        this.senticWordNetService = senticWordNetService;
-        this.senticNetService = senticNetService;
+    public WordPolarityCombined3(PolarityService senticWordNetPolarityService, PolarityService senticNetPolarityService,
+                                 PolarityService huAndLiuWordPolarityService) {
+        this.senticWordNetService = senticWordNetPolarityService;
+        this.senticNetService = senticNetPolarityService;
         this.huAndLiuWordPolarityService = huAndLiuWordPolarityService;
     }
 

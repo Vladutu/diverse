@@ -4,16 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ro.ucv.ace.parser.Word;
 
-@Service("wordPolarityCombinedComparationService")
-public class WordPolarityCombinedComparationService implements WordPolarityService {
+@Service("wordPolarityCombinedComparisonService")
+public class WordPolarityCombinedComparisonService implements PolarityService {
 
-    private final WordPolarityService senticWordNetService;
-    private final WordPolarityService senticNetService;
+    private final PolarityService senticWordNetService;
+    private final PolarityService senticNetService;
 
     @Autowired
-    public WordPolarityCombinedComparationService(WordPolarityService senticWordNetService, WordPolarityService senticNetService) {
-        this.senticWordNetService = senticWordNetService;
-        this.senticNetService = senticNetService;
+    public WordPolarityCombinedComparisonService(PolarityService senticWordNetPolarityService, PolarityService senticNetPolarityService) {
+        this.senticWordNetService = senticWordNetPolarityService;
+        this.senticNetService = senticNetPolarityService;
     }
 
 

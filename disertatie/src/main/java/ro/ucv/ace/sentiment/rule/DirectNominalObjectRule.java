@@ -3,7 +3,7 @@ package ro.ucv.ace.sentiment.rule;
 import ro.ucv.ace.parser.Dependency;
 import ro.ucv.ace.parser.Sentence;
 import ro.ucv.ace.parser.Word;
-import ro.ucv.ace.senticnet.WordPolarityService;
+import ro.ucv.ace.senticnet.PolarityService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,15 +15,15 @@ public class DirectNominalObjectRule extends RuleTemplate {
     private static final List<String> ACCEPTED_RELATIONS = Arrays.asList("dobj");
     private static final List<String> FIRST_PERSON_PRONOUNS = Arrays.asList("i", "we", "me", "us", "my", "our", "mine", "ours");
 
-    public DirectNominalObjectRule(WordPolarityService wordPolarityService, boolean addRules) {
-        super(wordPolarityService, addRules);
+    public DirectNominalObjectRule(PolarityService polarityService, boolean addRules) {
+        super(polarityService, addRules);
     }
 
     @Override
     public void executeRule(Dependency dependency, Sentence sentence) {
         double dependencyPolarity = computeDependencyPolarity(dependency, sentence);
 
-        Double conceptPolarity = wordPolarityService.findConceptPolarity(dependency.getGovernor(), dependency.getDependent());
+        Double conceptPolarity = polarityService.findConceptPolarity(dependency.getGovernor(), dependency.getDependent());
         if (conceptPolarity != null) {
             int reversePolarityFactor = neg(dependencyPolarity * conceptPolarity) ? -1 : 1;
             setPolarity(dependency, reversePolarityFactor * conceptPolarity);

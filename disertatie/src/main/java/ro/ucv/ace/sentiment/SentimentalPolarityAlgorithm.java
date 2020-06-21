@@ -1,12 +1,11 @@
 package ro.ucv.ace.sentiment;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import ro.ucv.ace.parser.GrammarParser;
 import ro.ucv.ace.parser.Sentence;
-import ro.ucv.ace.senticnet.WordPolarityService;
+import ro.ucv.ace.senticnet.PolarityService;
 import ro.ucv.ace.sentiment.rule.Rule;
-import ro.ucv.ace.sentiment.rule.splitSentence.DefaultSplitSentenceRule;
-import ro.ucv.ace.sentiment.rule.splitSentence.SplitSentenceRule;
+import ro.ucv.ace.sentiment.rule.splitSentence.DefaultSplitRule;
+import ro.ucv.ace.sentiment.rule.splitSentence.SentenceSplitRule;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,42 +18,40 @@ public class SentimentalPolarityAlgorithm {
 
     private final FallbackPolarityAlgorithm fallbackPolarityAlgorithm;
 
-    private WordPolarityService wordPolarityService;
+    private PolarityService polarityService;
 
-    private List<SplitSentenceRule> splitSentenceRules;
+    private List<SentenceSplitRule> sentenceSplitRules;
 
     public SentimentalPolarityAlgorithm(GrammarParser grammarParser, List<Rule> rules, FallbackPolarityAlgorithm fallbackPolarityAlgorithm,
-                                        @Qualifier("wordPolarityCombinedComparationService") WordPolarityService wordPolarityService,
-                                        List<SplitSentenceRule> splitSentenceRules) {
+                                        PolarityService polarityService,
+                                        List<SentenceSplitRule> sentenceSplitRules) {
         this.grammarParser = grammarParser;
         this.rules = rules;
         this.fallbackPolarityAlgorithm = fallbackPolarityAlgorithm;
-        this.wordPolarityService = wordPolarityService;
-        this.splitSentenceRules = splitSentenceRules;
+        this.polarityService = polarityService;
+        this.sentenceSplitRules = sentenceSplitRules;
     }
 
     public List<Double> execute(String text) {
         List<Sentence> sentences = grammarParser.parse(text);
-        AlgorithmExecutor algorithmExecutor = new AlgorithmExecutor(rules, fallbackPolarityAlgorithm);
-
         return sentences.stream()
-                .map(sentence -> calculatePolarity(sentence, algorithmExecutor))
+                .map(sentence -> calculatePolarity(sentence, new AlgorithmExecutor(rules, fallbackPolarityAlgorithm)))
                 .collect(Collectors.toList());
     }
 
     private Double calculatePolarity(Sentence sentence, AlgorithmExecutor algorithmExecutor) {
         setWordPolarities(sentence);
-        return splitSentenceRules.stream()
+        return sentenceSplitRules.stream()
                 .filter(rule -> rule.applies(sentence))
                 .findFirst()
-                .orElseGet(DefaultSplitSentenceRule::new)
+                .orElseGet(DefaultSplitRule::new)
                 .executeRule(sentence, algorithmExecutor::executeAlgorithm);
     }
 
     private void setWordPolarities(Sentence sentence) {
         sentence.getWords().forEach(word -> {
             int polarityFactor = word.isNegated() ? -1 : 1;
-            word.setPolarity(polarityFactor * wordPolarityService.findWordPolarity(word));
+            word.setPolarity(polarityFactor * polarityService.findWordPolarity(word));
         });
     }
 }

@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 @Component("huAndLiuWordPolarityService")
-public class HuAndLiuWordPolarityService implements WordPolarityService {
+public class HuAndLiuWordPolarityService implements PolarityService {
 
     private Map<String, Double> dictionary = new HashMap<>();
 

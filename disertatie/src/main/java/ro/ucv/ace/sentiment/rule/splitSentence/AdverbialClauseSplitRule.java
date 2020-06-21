@@ -5,7 +5,7 @@ import ro.ucv.ace.parser.Sentence;
 
 import java.util.function.Function;
 
-public class AdverbialClauseRule extends SplitSentenceTemplate {
+public class AdverbialClauseSplitRule extends SentenceSplitTemplate {
 
     private static final String ACCEPTED_WORD = "while";
 

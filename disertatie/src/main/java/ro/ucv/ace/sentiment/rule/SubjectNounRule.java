@@ -3,7 +3,7 @@ package ro.ucv.ace.sentiment.rule;
 import ro.ucv.ace.parser.Dependency;
 import ro.ucv.ace.parser.Sentence;
 import ro.ucv.ace.parser.Word;
-import ro.ucv.ace.senticnet.WordPolarityService;
+import ro.ucv.ace.senticnet.PolarityService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,8 +16,8 @@ public class SubjectNounRule extends RuleTemplate {
     private static final String PASSIVE_VOICE_TOKEN = ACCEPTED_RELATIONS.get(1);
     private static final List<String> FIRST_PERSON_PRONOUNS = Arrays.asList("i", "we", "me", "us", "my", "our", "mine", "ours");
 
-    public SubjectNounRule(WordPolarityService wordPolarityService, boolean addRules) {
-        super(wordPolarityService, addRules);
+    public SubjectNounRule(PolarityService polarityService, boolean addRules) {
+        super(polarityService, addRules);
     }
 
     @Override
@@ -26,7 +26,7 @@ public class SubjectNounRule extends RuleTemplate {
         Word dependent = dependency.getDependent();
 
         double dependencyPolarity = computeDependencyPolarity(dependency, sentence);
-        Double conceptPolarity = wordPolarityService.findConceptPolarity(head, dependent);
+        Double conceptPolarity = polarityService.findConceptPolarity(head, dependent);
         if (conceptPolarity != null) {
             int polarityFactor = neg(dependencyPolarity * conceptPolarity) ? -1 : 1;
             setPolarity(dependency, polarityFactor * conceptPolarity);

@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import ro.ucv.ace.parser.GrammarParser;
-import ro.ucv.ace.senticnet.WordPolarityService;
+import ro.ucv.ace.senticnet.PolarityService;
 import ro.ucv.ace.sentiment.FallbackPolarityAlgorithm;
 import ro.ucv.ace.sentiment.SentimentalPolarityAlgorithm;
 import ro.ucv.ace.sentiment.rule.*;
@@ -17,45 +17,45 @@ import java.util.List;
 @Configuration
 public class ApplicationConfig {
 
-    @Qualifier("wordPolarityCombinedSenticWordNetPreferredService")
+    @Qualifier("senticNetAndSenticWordNetCombinedPolarityService")
     @Autowired
-    private WordPolarityService wordPolarityService;
+    private PolarityService polarityService;
 
     @Bean
     public List<Rule> rules() {
         return Arrays.asList(
-                new SubjectNounRule(wordPolarityService, true),
-                new AdjectivalAndAdverbialModifierRule(wordPolarityService, true),
-                new DirectNominalObjectRule(wordPolarityService, true),
-                new AdjectiveAndClausalComplementRule(wordPolarityService, true),
-                new OpenClausalComplementRule(wordPolarityService, true),
-                new RelativeClauseRule(wordPolarityService, true),
-                new AdverbialClauseModifierRule(wordPolarityService, true),
-                new UntypedDependencyRule(wordPolarityService, true),
-                new AgainstRule(wordPolarityService, true)
+                new SubjectNounRule(polarityService, true),
+                new AdjectivalAndAdverbialModifierRule(polarityService, true),
+                new DirectNominalObjectRule(polarityService, true),
+                new AdjectiveAndClausalComplementRule(polarityService, true),
+                new OpenClausalComplementRule(polarityService, true),
+                new RelativeClauseRule(polarityService, true),
+                new AdverbialClauseModifierRule(polarityService, true),
+                new UntypedDependencyRule(polarityService, true),
+                new AgainstRule(polarityService, true)
         );
     }
 
     @Bean
-    public List<SplitSentenceRule> splitSentenceRules() {
+    public List<SentenceSplitRule> sentenceSplitRules() {
         return Arrays.asList(
-                new ComplementClauseRule(),
-                new AdverbialClauseRule(),
+                new ComplementClauseSplitRule(),
+                new AdverbialClauseSplitRule(),
                 new ButSplitRule(),
-                new AdversariesBeginOfSentenceSplitRule(),
-                new AdversariesDuringSentenceSplitRule()
+                new AdversativeBeginOfSentenceSplitRule(),
+                new AdversativeDuringSentenceSplitRule()
         );
     }
 
     @Bean
     public SentimentalPolarityAlgorithm sentimentalPolarityAlgorithm(GrammarParser grammarParser,
                                                                      FallbackPolarityAlgorithm fallbackPolarityAlgorithm) {
-        return new SentimentalPolarityAlgorithm(grammarParser, rules(), fallbackPolarityAlgorithm, wordPolarityService,
-                splitSentenceRules());
+        return new SentimentalPolarityAlgorithm(grammarParser, rules(), fallbackPolarityAlgorithm, polarityService,
+                sentenceSplitRules());
     }
 
     @Bean
     public FallbackPolarityAlgorithm fallbackPolarityAlgorithm() {
-        return new FallbackPolarityAlgorithm(wordPolarityService);
+        return new FallbackPolarityAlgorithm(polarityService);
     }
 }

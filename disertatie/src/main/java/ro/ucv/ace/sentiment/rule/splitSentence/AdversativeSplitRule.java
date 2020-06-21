@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
-public abstract class AdversariesSplitRule extends SplitSentenceTemplate {
+public abstract class AdversativeSplitRule extends SentenceSplitTemplate {
 
     protected static final List<List<String>> ACCEPTED_WORDS = Arrays.asList(
             Arrays.asList("even", "though"),

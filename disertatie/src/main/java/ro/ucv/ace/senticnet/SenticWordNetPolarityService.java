@@ -12,13 +12,13 @@ import java.util.Scanner;
 import static ro.ucv.ace.sentiment.SentimentUtils.neg;
 import static ro.ucv.ace.sentiment.SentimentUtils.pos;
 
-@Component("senticWordNetService")
-public class SenticWordNetService implements WordPolarityService {
+@Component("senticWordNetPolarityService")
+public class SenticWordNetPolarityService implements PolarityService {
 
     private Map<String, Double> dictionary;
     private Map<String, String> posConversionMap;
 
-    public SenticWordNetService() {
+    public SenticWordNetPolarityService() {
         loadSenti();
         createConversionMap();
     }
